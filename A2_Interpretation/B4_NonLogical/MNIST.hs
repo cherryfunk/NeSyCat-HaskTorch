@@ -109,36 +109,38 @@ instance MNIST_Vocab TENS where
 
   digitPlus :: Digit TENS -> Digit TENS -> Digit TENS
   digitPlus p1 p2 =
-    let p1' = F.softmax (Torch.Dim 1) p1
-        p2' = F.softmax (Torch.Dim 1) p2
-        shapeData = Torch.shape p1'
+    -- True Continuous Logarithmic Convolution. 
+    -- To strictly prevent probability underflow bounds prior to the loss evaluation, 
+    -- we map `digitPlus` purely inside logarithmic topological space (`Log-of-Sums`) via LogSumExp matrices.
+    let l1 = F.logSoftmax (Torch.Dim 1) p1
+        l2 = F.logSoftmax (Torch.Dim 1) p2
+        shapeData = Torch.shape l1
         b = head shapeData :: Int     -- Batch size
         n = shapeData !! 1 :: Int     -- 10
 
-        -- Reverse p1' along dim=1 mathematically to avoid PyTorch MPS internal driver exceptions 
-        -- triggered by index_select integer arrays natively.
-        -- We dynamically generate an anti-diagonal matrix of size [n, n] here so it is shape-independent.
-        revList = [ [ if i + j == n - 1 then 1.0 else 0.0 | j <- [0..n-1] ] | i <- [0..n-1] ] :: [[Float]]
-        revMat = Torch.toDevice (Torch.device p1') $ Torch.asTensor revList
-        -- p1' is [B, n]. Matmul with revMat [n, n] reverses the inner elements.
-        kernel_1d = Torch.matmul p1' revMat
+        l1_exp = Torch.reshape [b, n, 1] l1
+        l2_exp = Torch.reshape [b, 1, n] l2
+        sum_mat = l1_exp + l2_exp -- [B, 10, 10] matrix of log(P(x) * P(y))
         
-        -- weight shape: [out_channels=B, in_channels/groups=1, length=n]
-        weight = Torch.reshape [b, 1, n] kernel_1d
-        -- input shape:  [batch=1, in_channels=B, length=m]
-        inputGrouped = Torch.reshape [1, b, n] p2'
-        bias   = Torch.toDevice (Torch.device p1') $ Torch.zeros' [b]
+        -- Geometrical masking matrix combining discrete bounds
+        mkMask :: Int -> [[Float]]
+        mkMask k = [ [ if i + j == k then (0.0 :: Float) else (-1e20 :: Float) | j <- [0..n-1] ] | i <- [0..n-1] ]
+        masks = Torch.toDevice (Torch.device p1) $ Torch.asTensor [ mkMask k | k <- [0..n+n-2] ]
         
-        -- f(weight, bias, stride=1, padding=n-1, dilation=1, groups=b, inputGrouped) -> output shape [1, B, 19]
-        conv   = F.conv1d weight bias 1 (n - 1) 1 b inputGrouped
-     in Torch.reshape [b, n + n - 1] conv
+        mask_exp = Torch.reshape [1, n + n - 1, n, n] masks
+        sum_mat_exp = Torch.reshape [b, 1, n, n] sum_mat
+        
+        combined = sum_mat_exp + mask_exp -- [B, 19, 10, 10]
+        
+        -- LogSumExp reduction flawlessly calculates logical probability without floating boundary collapse
+     in Torch.logsumexp False 2 (Torch.logsumexp False 2 combined)
 
   digitEq :: Digit TENS -> Digit TENS -> Omega TENS
-  digitEq a b =
-    -- a is [B, 19], b is [B, 19]
-    -- P(a == b) = sum(a_i * b_i) independently per batch row
-    let probEqual = Torch.sumDim (Torch.Dim 1) Torch.KeepDim Torch.Float (a * b)
-     in UnsafeMkTensor probEqual
+  digitEq logA b =
+    -- Because batchSum `logA` is already computed purely natively inside logarithmic tensors,
+    -- we immediately map the Sum-of-Logs Cross-Entropy without invoking `log(x+eps)` boundaries.
+    let logProbEqual = Torch.sumDim (Torch.Dim 1) Torch.KeepDim Torch.Float (b * logA)
+     in UnsafeMkTensor logProbEqual
 
 -- ============================================================
 --  BRIDGE: Encoding/Decoding between DATA and TENS
