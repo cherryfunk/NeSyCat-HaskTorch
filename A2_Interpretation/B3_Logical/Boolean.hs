@@ -16,43 +16,43 @@ infixr 2 `vee`
 -- | Omega := I(tau) = {True, False}
 type Omega = Bool
 
--- | $\mathcal{I}(\vdash)$ : Comparison ($\text{False} \leq \text{True}$)
+-- | \$\mathcal{I}(\vdash)$ : Comparison ($\text{False} \leq \text{True}$)
 vdash :: Omega -> Omega -> Bool
 vdash = (<=)
 
--- | $\mathcal{I}(\wedge)$ : Conjunction
+-- | \$\mathcal{I}(\wedge)$ : Conjunction
 wedge :: Omega -> Omega -> Omega
 wedge = (&&)
 
--- | $\mathcal{I}(\vee)$ : Disjunction
+-- | \$\mathcal{I}(\vee)$ : Disjunction
 vee :: Omega -> Omega -> Omega
 vee = (||)
 
--- | $\mathcal{I}(\bot)$ : Bottom
+-- | \$\mathcal{I}(\bot)$ : Bottom
 bot :: Omega
 bot = False
 
--- | $\mathcal{I}(\top)$ : Top
+-- | \$\mathcal{I}(\top)$ : Top
 top :: Omega
 top = True
 
--- | $\mathcal{I}(\oplus)$ : Disjunction
+-- | \$\mathcal{I}(\oplus)$ : Disjunction
 oplus :: Omega -> Omega -> Omega
 oplus = (||)
 
--- | $\mathcal{I}(\otimes)$ : Conjunction
+-- | \$\mathcal{I}(\otimes)$ : Conjunction
 otimes :: Omega -> Omega -> Omega
 otimes = (&&)
 
--- | $\mathcal{I}(\vec{0})$ : Additive unit
+-- | \$\mathcal{I}(\vec{0})$ : Additive unit
 v0 :: Omega
 v0 = False
 
--- | $\mathcal{I}(\vec{1})$ : Multiplicative unit
+-- | \$\mathcal{I}(\vec{1})$ : Multiplicative unit
 v1 :: Omega
 v1 = True
 
--- | $\mathcal{I}(\neg)$ : Negation
+-- | \$\mathcal{I}(\neg)$ : Negation
 neg :: Omega -> Omega
 neg = not
 
@@ -61,21 +61,33 @@ neg = not
 -- `any`/`all` are lazy and short-circuit on infinite lists.
 ------------------------------------------------------
 
--- | $\mathcal{I}(\bigvee)$ : Infinitary Join
+-- | \$\mathcal{I}(\bigvee)$ : Infinitary Join
 bigVee :: forall a. DATA a -> (a -> Omega) -> Omega
 bigVee Reals _ = error "Boolean bigVee over R is uncomputable."
 bigVee d phi = any phi (enumAll d)
 
--- | $\mathcal{I}(\bigwedge)$ : Infinitary Meet
+-- | \$\mathcal{I}(\bigwedge)$ : Infinitary Meet
 bigWedge :: forall a. DATA a -> (a -> Omega) -> Omega
 bigWedge Reals _ = error "Boolean bigWedge over R is uncomputable."
 bigWedge d phi = all phi (enumAll d)
 
--- | $\mathcal{I}(\bigoplus)$ : Infinitary Strong Disjunction
+-- | Monadic lift: $\bigwedge$ for predicates returning in a monad
+bigWedgeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
+bigWedgeM d phi = do
+  omegas <- mapM phi (enumAll d)
+  return (bigWedge (Finite omegas) id)
+
+-- | Monadic lift: $\bigvee$ for predicates returning in a monad
+bigVeeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
+bigVeeM d phi = do
+  omegas <- mapM phi (enumAll d)
+  return (bigVee (Finite omegas) id)
+
+-- | \$\mathcal{I}(\bigoplus)$ : Infinitary Strong Disjunction
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
 bigOplus = bigVee
 
--- | $\mathcal{I}(\bigotimes)$ : Infinitary Strong Conjunction
+-- | \$\mathcal{I}(\bigotimes)$ : Infinitary Strong Conjunction
 bigOtimes :: forall a. DATA a -> (a -> Omega) -> Omega
 bigOtimes = bigWedge
 
