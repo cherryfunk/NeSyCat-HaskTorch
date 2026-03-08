@@ -89,6 +89,8 @@ instance MNIST_Vocab DATA where
 --  TENS: tensor-space interpretation
 -- ============================================================
 
+-- | The MNIST addition table in TENS: a simple pre-built vectorial database.
+--   Keys are tensor images, values are tensor digits. Fixed at load time.
 {-# NOINLINE mnistMapTENS #-}
 mnistMapTENS :: Map.Map (Image TENS, Image TENS) (Digit TENS)
 mnistMapTENS = Map.fromList [((encImage @DATA @TENS k1, encImage @DATA @TENS k2), encDigit @DATA @TENS v) | ((k1, k2), v) <- Map.toList mnistMapDATA]
@@ -104,6 +106,7 @@ instance MNIST_Vocab TENS where
     m <- readIORef globalMLP
     return (hTheta m (toDynamic imgTensor))
 
+  -- Simple lookup in the pre-built tensor table. That's all add does.
   add :: (Image TENS, Image TENS) -> Digit TENS
   add (x, y) = mnistMapTENS Map.! (x, y)
 

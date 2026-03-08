@@ -62,17 +62,17 @@ trainMNIST numEpochs learningRate = do
 
 batchLoss :: MLP -> [ImagePairRow] -> Torch.Tensor
 batchLoss m batch =
-  -- 1. Extract unified batch index tensors avoiding Haskell looping overhead
   let idx1 = Torch.asTensor [fromIntegral (im1 row) :: Int | row <- batch]
       idx2 = Torch.asTensor [fromIntegral (im2 row) :: Int | row <- batch]
-      lbls = Torch.asTensor [fromIntegral (sumLabel row) :: Int | row <- batch]
       
       -- Native PyTorch memory slicing: [B, 784]
       img1s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx1 mnistImages
       img2s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx2 mnistImages
       
-      -- Embedding lookup for batched one-hot logic targets: [B, 19]
-      targets = toDevice (Device MPS 0) $ Torch.indexSelect 0 lbls (Torch.eye' 19 19)
+      -- Ground truth targets via the vocabulary function add @TENS
+      -- Each target is looked up from the pre-built tensor table
+      targets = Torch.stack (Torch.Dim 0)
+        [add @TENS (encImage @DATA @TENS (im1 r), encImage @DATA @TENS (im2 r)) | r <- batch]
       
       -- 2. Execute MLP natively on the [B, 784] batches yielding [B, 10]
       batchDx = hTheta m img1s
