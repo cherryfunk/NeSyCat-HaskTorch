@@ -75,8 +75,8 @@ batchLoss m batch =
       img1s = Torch.stack (Torch.Dim 0) [toDynamic (fst (fst entry)) | entry <- batch]
       img2s = Torch.stack (Torch.Dim 0) [toDynamic (snd (fst entry)) | entry <- batch]
       
-      -- Ground truth targets: already in the table. Just stack them: [B, 19]
-      targets = Torch.stack (Torch.Dim 0) [snd entry | entry <- batch]
+      -- Ground truth: apply the foreign key add @TENS to each image pair
+      targets = Torch.stack (Torch.Dim 0) [add @TENS (fst entry) | entry <- batch]
       
       -- Execute MLP on the batched images: [B, 784] -> [B, 10]
       batchDx = hTheta m img1s
