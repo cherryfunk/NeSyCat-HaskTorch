@@ -17,9 +17,10 @@ import A1_Syntax.B4_NonLogical.MNIST_Vocab (ImagePairRow (..))
 import Data.Bits (shiftL, (.|.))
 import qualified Data.ByteString as BS
 import Data.Word (Word8)
-import Numeric.Natural (Natural)
 import System.IO.Unsafe (unsafePerformIO)
 import Torch hiding (take)
+import Torch.Device (Device (..), DeviceType (..))
+import Torch.Tensor (Tensor, toDevice)
 
 ------------------------------------------------------
 -- IDX binary format parsing
@@ -43,8 +44,8 @@ loadImages path = do
       floats = map (\w -> fromIntegral w / 255.0 :: Float) pixels
   pure $ reshape [nImages, 784] (asTensor floats)
 
--- | Load labels → [Natural]
-loadLabels :: FilePath -> IO [Natural]
+-- | Load labels → [Int]
+loadLabels :: FilePath -> IO [Int]
 loadLabels path = do
   bs <- BS.readFile path
   let bytes = BS.unpack bs
@@ -76,12 +77,13 @@ loadTable path = do
 
 {-# NOINLINE mnistTable #-}
 mnistTable :: [ImagePairRow]
-mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table.csv")
+mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table_30k.csv")
+
 
 {-# NOINLINE mnistImages #-}
 mnistImages :: Tensor
 mnistImages = unsafePerformIO (loadImages "data/mnist/train-images-idx3-ubyte")
 
 {-# NOINLINE mnistLabels #-}
-mnistLabels :: [Natural]
+mnistLabels :: [Int]
 mnistLabels = unsafePerformIO (loadLabels "data/mnist/train-labels-idx1-ubyte")

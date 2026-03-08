@@ -30,14 +30,14 @@ import A2_Interpretation.B4_NonLogical.MNIST_MLP (MLP, hTheta, mnistSpec)
 import Data.Functor.Identity (Identity (..))
 import qualified Data.Map.Strict as Map
 import MNIST_Loader (mnistImages, mnistLabels, mnistTable)
-import Numeric.Natural (Natural)
 import Torch (Randomizable(..), asTensor)
 import qualified Torch
 import Torch.DType (DType (..))
-import Torch.Device (DeviceType (..))
+import Torch.Device (Device (..), DeviceType (..))
 import qualified Torch.Functional as F
 import Torch.Typed.Tensor (Tensor(UnsafeMkTensor), toDynamic)
 import qualified Torch.Tensor as Torch
+import Torch.Tensor (toDevice)
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -58,12 +58,12 @@ setGlobalMLP = writeIORef globalMLP
 -- ============================================================
 
 {-# NOINLINE mnistMapDATA #-}
-mnistMapDATA :: Map.Map (Natural, Natural) Natural
+mnistMapDATA :: Map.Map (Int, Int) Int
 mnistMapDATA = Map.fromList [((im1 r, im2 r), sumLabel r) | r <- mnistTable]
 
 instance MNIST_Vocab DATA where
-  type Image DATA = Natural
-  type Digit DATA = Natural
+  type Image DATA = Int
+  type Digit DATA = Int
   type Omega DATA = Bool
   type M DATA = Dist
 
@@ -109,22 +109,25 @@ instance MNIST_Vocab TENS where
 
   digitPlus :: Digit TENS -> Digit TENS -> Digit TENS
   digitPlus p1 p2 =
-    -- Input shape is [B, 10]
     let p1' = F.softmax (Torch.Dim 1) p1
         p2' = F.softmax (Torch.Dim 1) p2
         shapeData = Torch.shape p1'
         b = head shapeData :: Int     -- Batch size
         n = shapeData !! 1 :: Int     -- 10
 
-        -- reverse p1' along dim=1 because PyTorch conv1d computes true cross-correlation
-        indices   = Torch.asTensor [n - 1, n - 2 .. 0]
-        kernel_1d = Torch.indexSelect 1 indices p1'
+        -- Reverse p1' along dim=1 mathematically to avoid PyTorch MPS internal driver exceptions 
+        -- triggered by index_select integer arrays natively.
+        -- We dynamically generate an anti-diagonal matrix of size [n, n] here so it is shape-independent.
+        revList = [ [ if i + j == n - 1 then 1.0 else 0.0 | j <- [0..n-1] ] | i <- [0..n-1] ] :: [[Float]]
+        revMat = Torch.toDevice (Torch.device p1') $ Torch.asTensor revList
+        -- p1' is [B, n]. Matmul with revMat [n, n] reverses the inner elements.
+        kernel_1d = Torch.matmul p1' revMat
         
         -- weight shape: [out_channels=B, in_channels/groups=1, length=n]
         weight = Torch.reshape [b, 1, n] kernel_1d
         -- input shape:  [batch=1, in_channels=B, length=m]
         inputGrouped = Torch.reshape [1, b, n] p2'
-        bias   = Torch.zeros' [b]
+        bias   = Torch.toDevice (Torch.device p1') $ Torch.zeros' [b]
         
         -- f(weight, bias, stride=1, padding=n-1, dilation=1, groups=b, inputGrouped) -> output shape [1, B, 19]
         conv   = F.conv1d weight bias 1 (n - 1) 1 b inputGrouped
@@ -143,14 +146,14 @@ instance MNIST_Vocab TENS where
 
 instance MNIST_Bridge DATA TENS where
   encImage :: Image DATA -> Image TENS
-  encImage idx = UnsafeMkTensor (Torch.select 0 (fromIntegral idx) mnistImages)
+  encImage idx = UnsafeMkTensor (Torch.toDevice (Device MPS 0) $ Torch.select 0 (fromIntegral idx) mnistImages)
 
   encDigit :: Digit DATA -> Digit TENS
   encDigit d =
     let idx = fromIntegral d :: Int
         zeros = replicate 19 (0.0 :: Float)
         oneHot = take idx zeros ++ [1.0] ++ drop (idx + 1) zeros
-     in asTensor oneHot
+     in Torch.toDevice (Device MPS 0) (asTensor oneHot)
 
   decDigit :: Digit TENS -> (M DATA) (Digit DATA)
   decDigit logits =

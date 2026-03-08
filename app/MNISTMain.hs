@@ -12,7 +12,6 @@ import A2_Interpretation.B4_NonLogical.MNIST (mnistTable)
 import A2_Interpretation.B4_NonLogical.MNIST_MLP (MLP, hTheta)
 import A3_Semantics.B4_NonLogical.MNIST_Training (trainMNIST)
 import A3_Semantics.B4_NonLogical.Monads.Expectation (probDist)
-import Numeric.Natural (Natural)
 import qualified Torch
 import Torch.Typed.Tensor (toDynamic, Tensor(UnsafeMkTensor))
 
@@ -41,7 +40,7 @@ main = do
   
   -- Train the MLP for 20 Epochs
   putStrLn "\n[Start Training]"
-  _trained <- trainMNIST 20 0.001
+  _trained <- trainMNIST 20 0.0001
   putStrLn "[Training complete]"
   
   -- Re-evaluate the exact same logic formula natively substituting the new optimized parameters 

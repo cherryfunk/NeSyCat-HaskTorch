@@ -22,11 +22,12 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 
 import Torch.Optim (Adam (..), mkAdam, runStep)
-
+import Torch.Device (Device(..), DeviceType(..))
+import Torch.Tensor (toDevice)
 -- | Training loop: Adam optimizer on -log(truthValue) Mini-batches
 trainMNIST :: Int -> Float -> IO MLP
 trainMNIST numEpochs learningRate = do
-  initModel <- sample mnistSpec
+  initModel <- return . toDevice (Device MPS 0) =<< sample mnistSpec
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
   
   putStrLn $ "[Training] " ++ show numEpochs ++ " epochs, batch size=32, Adam lr=" ++ show learningRate
@@ -67,11 +68,11 @@ batchLoss m batch =
       lbls = Torch.asTensor [fromIntegral (sumLabel row) :: Int | row <- batch]
       
       -- Native PyTorch memory slicing: [B, 784]
-      img1s = Torch.indexSelect 0 idx1 mnistImages
-      img2s = Torch.indexSelect 0 idx2 mnistImages
+      img1s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx1 mnistImages
+      img2s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx2 mnistImages
       
       -- Embedding lookup for batched one-hot logic targets: [B, 19]
-      targets = Torch.indexSelect 0 lbls (Torch.eye' 19 19)
+      targets = toDevice (Device MPS 0) $ Torch.indexSelect 0 lbls (Torch.eye' 19 19)
       
       -- 2. Execute MLP natively on the [B, 784] batches yielding [B, 10]
       batchDx = hTheta m img1s
@@ -85,8 +86,11 @@ batchLoss m batch =
       batchTVs = toDynamic batchTVsTyped
       
       -- 5. Calculate loss (-log) over the vectorized truth values
-      clamped = Torch.clamp 1e-8 1.0 batchTVs
-      logTVs = Torch.log clamped
+      -- To avoid log(0) NaN, we add a continuous epsilon.
+      -- IMPORTANT: using `clamp` here mathematically destroys valid gradients!
+      eps = Torch.asTensor (1e-8 :: Float)
+      shifted = batchTVs + eps
+      logTVs = Torch.log shifted
       total = Torch.sumAll logTVs
    in (Torch.zeros' [] - total) / Torch.asTensor (fromIntegral (length batch) :: Float)
 

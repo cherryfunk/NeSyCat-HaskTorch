@@ -9,16 +9,15 @@
 module A1_Syntax.B4_NonLogical.MNIST_Vocab where
 
 import Data.Kind (Type)
-import Numeric.Natural (Natural)
 
 -- | Non-Logical Vocabulary Σ for the MNIST Addition domain.
 --
 -- Sor = {Image, Digit}
 -- Fun = {digit : Image → Digit, add : Image² → Digit}
 data ImagePairRow = ImagePairRow
-  { im1 :: Natural,
-    im2 :: Natural,
-    sumLabel :: Natural
+  { im1 :: Int,
+    im2 :: Int,
+    sumLabel :: Int
   }
   deriving (Eq, Show)
 
