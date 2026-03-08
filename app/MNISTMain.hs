@@ -40,7 +40,7 @@ main = do
   
   -- Train the MLP for 20 Epochs
   putStrLn "\n[Start Training]"
-  _trained <- trainMNIST 20 0.0001
+  _trained <- trainMNIST 20 0.001
   putStrLn "[Training complete]"
   
   -- Re-evaluate the exact same logic formula natively substituting the new optimized parameters 

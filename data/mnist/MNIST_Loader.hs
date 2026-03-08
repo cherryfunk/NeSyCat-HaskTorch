@@ -77,7 +77,7 @@ loadTable path = do
 
 {-# NOINLINE mnistTable #-}
 mnistTable :: [ImagePairRow]
-mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table_30k.csv")
+mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table_3k.csv")
 
 
 {-# NOINLINE mnistImages #-}
