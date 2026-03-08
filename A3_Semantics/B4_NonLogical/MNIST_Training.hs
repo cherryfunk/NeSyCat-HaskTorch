@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
@@ -24,16 +25,18 @@ import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Device (Device(..), DeviceType(..))
 import Torch.Tensor (toDevice)
 
--- | The tensor table as a flat list of training entries.
---   Each entry: ((image1_tensor, image2_tensor), sum_digit_tensor)
---   This IS the vectorial database. Pre-built, fixed at load time.
+-- | The tensor table, pre-joined via the foreign key add @TENS.
+--   add @TENS is applied once per entry at startup (materialized view).
+--   Each entry: (image1_tensor, image2_tensor, sum_digit_tensor)
 {-# NOINLINE tensTable #-}
-tensTable :: [((Image TENS, Image TENS), Digit TENS)]
-tensTable = Map.toList mnistMapTENS
+tensTable :: [(Image TENS, Image TENS, Digit TENS)]
+tensTable = [(img1, img2, add @TENS (img1, img2)) | ((img1, img2), _) <- Map.toList mnistMapTENS]
 
 -- | Training loop: Adam optimizer on -log(truthValue) Mini-batches
 trainMNIST :: Int -> Float -> IO MLP
 trainMNIST numEpochs learningRate = do
+  -- Force evaluation of the pre-joined tensor table
+  let !_ = length tensTable
   initModel <- return . toDevice (Device MPS 0) =<< sample mnistSpec
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
   
@@ -67,16 +70,15 @@ trainMNIST numEpochs learningRate = do
   
   return finalModel
 
--- | Batch loss: operates entirely in TENS, directly from the tensor table.
---   Each batch entry is ((img1_tensor, img2_tensor), sum_digit_tensor).
-batchLoss :: MLP -> [((Image TENS, Image TENS), Digit TENS)] -> Torch.Tensor
+-- | Batch loss: operates entirely in TENS, from the pre-joined tensor table.
+batchLoss :: MLP -> [(Image TENS, Image TENS, Digit TENS)] -> Torch.Tensor
 batchLoss m batch =
-  let -- Stack the tensor images from the table into batches: [B, 784]
-      img1s = Torch.stack (Torch.Dim 0) [toDynamic (fst (fst entry)) | entry <- batch]
-      img2s = Torch.stack (Torch.Dim 0) [toDynamic (snd (fst entry)) | entry <- batch]
+  let -- Stack the tensor images into batches: [B, 784]
+      img1s = Torch.stack (Torch.Dim 0) [toDynamic img1 | (img1, _, _) <- batch]
+      img2s = Torch.stack (Torch.Dim 0) [toDynamic img2 | (_, img2, _) <- batch]
       
-      -- Ground truth: apply the foreign key add @TENS to each image pair
-      targets = Torch.stack (Torch.Dim 0) [add @TENS (fst entry) | entry <- batch]
+      -- Ground truth: pre-computed via add @TENS at table construction time
+      targets = Torch.stack (Torch.Dim 0) [tgt | (_, _, tgt) <- batch]
       
       -- Execute MLP on the batched images: [B, 784] -> [B, 10]
       batchDx = hTheta m img1s
