@@ -28,16 +28,16 @@ class MNIST_Vocab (cat :: Type -> Type) where
   type Omega cat :: Type
   type M cat :: Type -> Type
 
-  -- digit : Image → Digit
+  -- digit : Image -> Digit
   digit :: Image cat -> (M cat) (Digit cat)
 
-  -- add : Image² → Digit
+  -- add : Image^2 -> Digit
   add :: (Image cat, Image cat) -> Digit cat
 
-  -- digitPlus : Digit × Digit → Digit  (addition of digits)
+  -- digitPlus : Digit x Digit -> Digit  (addition of digits)
   digitPlus :: Digit cat -> Digit cat -> Digit cat
 
-  -- digitEq : Digit × Digit → Omega  (equality predicate)
+  -- digitEq : Digit x Digit -> Omega  (equality predicate)
   digitEq :: Digit cat -> Digit cat -> Omega cat
 
 -- | Bridge: encoding/decoding functor between two categories.
