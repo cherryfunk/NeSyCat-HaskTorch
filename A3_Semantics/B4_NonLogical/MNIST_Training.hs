@@ -17,7 +17,7 @@ import A2_Interpretation.B4_NonLogical.MNIST_MLP (MLP, hTheta, mnistSpec)
 import MNIST_Loader (mnistImages, mnistTable)
 import Torch (Parameterized (..), Randomizable (..))
 import qualified Torch
-import Torch.Typed.Tensor (toDynamic)
+import Torch.Typed.Tensor (Tensor(UnsafeMkTensor), toDynamic)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 
@@ -69,10 +69,10 @@ batchLoss m batch =
       img1s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx1 mnistImages
       img2s = toDevice (Device MPS 0) $ Torch.indexSelect 0 idx2 mnistImages
       
-      -- Ground truth targets via the vocabulary function add @TENS
-      -- Each target is looked up from the pre-built tensor table
+      -- Ground truth targets via add @TENS: simple lookup in the tensor table
       targets = Torch.stack (Torch.Dim 0)
-        [add @TENS (encImage @DATA @TENS (im1 r), encImage @DATA @TENS (im2 r)) | r <- batch]
+        [ add @TENS (UnsafeMkTensor (Torch.select 0 i img1s), UnsafeMkTensor (Torch.select 0 i img2s))
+        | i <- [0 .. length batch - 1] ]
       
       -- 2. Execute MLP natively on the [B, 784] batches yielding [B, 10]
       batchDx = hTheta m img1s

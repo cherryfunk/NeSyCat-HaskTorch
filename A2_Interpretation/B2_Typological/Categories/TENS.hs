@@ -1,8 +1,9 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE InstanceSigs #-}
 
@@ -13,13 +14,6 @@ import Torch.Typed.Tensor (Tensor, toDynamic)
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))
-
--- | Objects of TENS: shape-indexed tensor spaces.
---   The GADT witnesses that every valid TENS object supports Eq and Ord.
-data TENS a where
-  TensorSpace :: TENS (Tensor device dtype shape) -- R^shape
-  TensProd :: TENS a -> TENS b -> TENS (a, b)
-  TensUnit :: TENS ()
 
 -- | Eq for typed Tensors: device-polymorphic.
 --   Delegates to the untyped Torch.Tensor Eq via toDynamic.
@@ -34,3 +28,11 @@ instance Ord (Tensor device dtype shape) where
     let flatA = Torch.reshape [-1] (toDynamic a)
         flatB = Torch.reshape [-1] (toDynamic b)
     in compare (Torch.asValue flatA :: [Float]) (Torch.asValue flatB :: [Float])
+
+-- | Objects of TENS: shape-indexed tensor spaces.
+--   The TensorSpace constructor witnesses that every valid TENS object supports Eq and Ord.
+data TENS a where
+  TensorSpace :: (Eq (Tensor d dt s), Ord (Tensor d dt s))
+              => TENS (Tensor d dt s) -- R^shape, with Eq/Ord evidence
+  TensProd :: TENS a -> TENS b -> TENS (a, b)
+  TensUnit :: TENS ()
