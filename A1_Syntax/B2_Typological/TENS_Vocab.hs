@@ -1,16 +1,20 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PolyKinds #-}
+
 module A1_Syntax.B2_Typological.TENS_Vocab where
 
-import Torch (Tensor)
+import GHC.TypeLits (Nat)
+import Torch.Typed.Tensor (Tensor)
 
--- | The typological vocabulary for the tensor/vector category TENS.
---   Objects are tensor spaces (embedding spaces for vectorial interpretations).
---
---   In the vectorial interpretation (Def. parameterized-interpretation):
---     I^vec(S) : TensVocab   for each sort S in Sigma.
+-- | Vocabulary for the tensor category TENS.
+--   Objects are shape-indexed tensor spaces R^shape.
+--   Morphisms are ordinary functions (Sec. 4.1: differentiability only in theta).
 class TensVocab a
 
--- | A tensor space (R^n, R^{n x m}, etc.)
-instance TensVocab Tensor
+instance TensVocab (Tensor device dtype shape)
 
--- | Product of tensor spaces.
 instance (TensVocab a, TensVocab b) => TensVocab (a, b)
+
+instance TensVocab ()
