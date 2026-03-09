@@ -80,7 +80,7 @@ wedgeR a b = negR (veeR (negR a) (negR b))
 --   Uses native fused logaddexp kernel for two scalars.
 veeR :: BatchOmega -> BatchOmega -> BatchOmega
 veeR a b =
-  let p = beta a
+  let p = betaLike a
       pa = a `Torch.mul` p
       pb = b `Torch.mul` p
    in F.logaddexp pa pb `Torch.div` p
@@ -146,11 +146,11 @@ bigVeeR :: BatchOmega -> BatchOmega -> Omega
 bigVeeR g phi =
   let eps = epsLike g
       logG = Torch.log (g `Torch.add` eps) -- log(g), with eps to avoid log(0)
-      p = beta phi
+      p = betaLike phi
       pphi = (phi `Torch.mul` p) `Torch.add` logG -- p*φ + log(g)
       lse = F.logsumexp pphi 0 False -- native fused kernel
       sG = Torch.sumAll g
-      p_scalar = beta sG
+      p_scalar = betaLike sG
       res = (lse `Torch.sub` Torch.log sG) `Torch.div` p_scalar
    in UnsafeMkTensor (Torch.reshape [1] res)
 
@@ -176,21 +176,15 @@ bigOtimesR g phi =
 --  Dynamic JIT-safe Constants
 -- ============================================================
 
--- | LogSumExp smoothing parameter β = 5/4 = 1.25.
---   Optimal value found via hyperparameter sweep.
---   Corresponds to p-Mean p ≈ 2.25 via the shift β ≈ p−1.
---   Built from onesLike arithmetic for JIT safety.
-beta :: Torch.Tensor -> Torch.Tensor
-beta x =
-  let one = Torch.onesLike x
-      two = one `Torch.add` one
-      four = two `Torch.mul` two
-      five = four `Torch.add` one
-   in five `Torch.div` four
+-- | LogSumExp smoothing parameter β.
+--   β=1 corresponds to p-Mean p=2 via the shift β ≈ p−1.
+--   This gives TensReal the same "gentleness" as TensUniform's p-Mean.
+betaLike :: Torch.Tensor -> Torch.Tensor
+betaLike x = Torch.onesLike x `Torch.mul` Torch.asTensor (1.5 :: Float)
 
 -- | Synthesizes a constant tensor of 0.5 dynamically.
 halfLike :: Torch.Tensor -> Torch.Tensor
-halfLike x = Torch.onesLike x `Torch.div` beta x
+halfLike x = Torch.onesLike x `Torch.div` betaLike x
 
 -- | Synthesizes a constant tensor of 1e-8 dynamically using pure graph mathematics.
 --   PyTorch's JIT compiler will perform constant-folding to optimize this entirely.
