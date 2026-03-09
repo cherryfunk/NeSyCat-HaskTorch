@@ -57,6 +57,10 @@ library
     D_Inference.D_NonLogical.BinaryTrainingReal,
     D_Inference.D_NonLogical.BinaryTrainingUniformJIT,
     D_Inference.D_NonLogical.BinaryTrainingRealJIT,
+    B_Interpretation.C_Logical.TensRealBeta,
+    B_Interpretation.E_Grammatical.BinaryFormulasRealBeta,
+    D_Inference.C_Logical.BetaTrainingReal,
+    D_Inference.D_NonLogical.BinaryTrainingRealBeta,
     B_Interpretation.E_Grammatical.BinaryFormulasUniform,
     B_Interpretation.E_Grammatical.BinaryFormulasReal,
     E_Benchmark.Metrics.Metrics
@@ -137,4 +141,17 @@ executable binary-test-jit-real
     containers,
     hasktorch,
     time
+  default-language: Haskell2010
+
+executable binary-test-real-beta
+  main-is: BinaryMainRealBeta.hs
+  hs-source-dirs: .
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time,
+    statistics
   default-language: Haskell2010
