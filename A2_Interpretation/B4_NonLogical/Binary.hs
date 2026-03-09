@@ -89,13 +89,24 @@ instance Binary_Vocab TENS where
   labelA :: Point TENS -> M TENS (Omega TENS)
   labelA ptTensor =
     let pt = toDynamic ptTensor
-        center = Torch.asTensor ([0.5, 0.5] :: [Float])
-        diff = pt `Torch.sub` center
+        diff = pt `Torch.sub` centerTensor
         -- KeepDim ensures shape [N, 1] or [1] for broadcasting against A(x) logits
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
-        isInside = Torch.lt dist2 (Torch.asTensor (0.09 :: Float))
+        isInside = Torch.lt dist2 radiusSqTensor
         val = Torch.toType Torch.Float isInside
      in Identity (UnsafeMkTensor val)
+
+------------------------------------------------------
+-- Global Consts (Prevents FFI Overhead in hot loops)
+------------------------------------------------------
+
+{-# NOINLINE centerTensor #-}
+centerTensor :: Torch.Tensor
+centerTensor = Torch.toDevice (Device CPU 0) (Torch.asTensor ([0.5, 0.5] :: [Float]))
+
+{-# NOINLINE radiusSqTensor #-}
+radiusSqTensor :: Torch.Tensor
+radiusSqTensor = Torch.toDevice (Device CPU 0) (Torch.asTensor (0.09 :: Float))
 
 -- ============================================================
 --  BRIDGE: Encoding/Decoding

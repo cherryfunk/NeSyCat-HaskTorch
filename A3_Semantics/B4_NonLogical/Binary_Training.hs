@@ -50,28 +50,24 @@ trainBinary numEpochs learningRate kbSatFormula = do
   let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
 
   startTime <- getCurrentTime
+  let oneTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (1.0 :: Float))
+  let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
 
   (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
-    epochStart <- getCurrentTime
 
-    -- Set the model so classifierA can read it
-    setGlobalBinaryMLP model
-
-    -- Evaluate the axiom with training data as empirical measure
+    -- Hot inner loop: ONLY axiom + loss + optimizer step
     let kbSat = kbSatFormula trainData model
         kbSatDyn = toDynamic kbSat
-        avgLoss = Torch.onesLike kbSatDyn - kbSatDyn
-        lr = Torch.asTensor learningRate
+        avgLoss = oneTens `Torch.sub` kbSatDyn
 
-    (newModel, newOpt) <- runStep model opt avgLoss lr
+    (newModel, newOpt) <- runStep model opt avgLoss lrTens
 
-    epochEnd <- getCurrentTime
-    let lossVal = Torch.asValue avgLoss :: Float
-    let diffMs = (realToFrac (diffUTCTime epochEnd epochStart) :: Double) * 1000
-
+    -- Metrics: only evaluated every 100 epochs (NOT in the hot path)
     if epoch `mod` 100 == 0 || epoch == 1000 || epoch == 1
       then do
+        epochStart <- getCurrentTime
         setGlobalBinaryMLP model
+        let lossVal = Torch.asValue avgLoss :: Float
         -- Sat Level (matching LTN's metric: the pME value itself)
         let satLevel = Torch.asValue kbSatDyn :: Float
 
@@ -113,6 +109,8 @@ trainBinary numEpochs learningRate kbSatFormula = do
             recall    = if tp + fn > 0 then tp / (tp + fn) else 0.0
             f1        = if precision + recall > 0 then 2.0 * precision * recall / (precision + recall) else 0.0
 
+        epochEnd <- getCurrentTime
+        let diffMs = (realToFrac (diffUTCTime epochEnd epochStart) :: Double) * 1000
         putStrLn $ printf "[Epoch %3d/%d] Loss=%7.5f Sat=%.3f | Acc Tr=%.2f Te=%.2f | MeanPos=%.3f MeanNeg=%.3f | F1=%.3f | %.2fms" epoch numEpochs lossVal satLevel accTrain accTest meanPos meanNeg f1 diffMs
       else return ()
 

@@ -6,7 +6,7 @@ import A1_Syntax.B4_NonLogical.Binary_Vocab (Binary_Vocab (classifierA, labelA))
 import A2_Interpretation.B1_Categorical.Monads.Giry (Giry (..))
 import A2_Interpretation.B2_Typological.Categories.DATA (DATA (..))
 import A2_Interpretation.B2_Typological.Categories.TENS (TENS (..))
-import A2_Interpretation.B3_Logical.Tensor (Omega, neg, otimes, wedge, bigWedge)
+import A2_Interpretation.B3_Logical.Tensor (Omega, neg, wedge, bigWedgeDirect)
 import A2_Interpretation.B4_NonLogical.Binary_MLP (Binary_MLP)
 import A3_Semantics.B4_NonLogical.Binary_Training (trainBinary)
 import Data.Functor.Identity (Identity (..), runIdentity)
@@ -15,22 +15,20 @@ import Torch.Typed.Tensor (Tensor (..))
 
 -- | The pure logical axiom, interpreted via the Semantic TENS Category.
 --
---   (∀_{x | label(x)}^μ.  A(x))  ⊗  (∀_{x | ¬label(x)}^μ.  ¬A(x))
+--   (∀_{x | label(x)}^μ.  A(x))  ∧  (∀_{x | ¬label(x)}^μ.  ¬A(x))
 --
---   where μ = empirical measure (training data).
---
---   This IS a conditional expectation:
---     bigWedge dom μ guard φ  =  1 − pMean_μ( (1−φ) | guard )
---     = 1 − ( E_μ[ guard · (1−φ)^p ] / E_μ[ guard ] )^(1/p)
+--   OPTIMIZED: MLP and labelA are evaluated ONCE, results cached and reused
+--   for both quantifiers. Uses bigWedgeDirect to skip expectTENS lambdas.
 axiom :: Torch.Tensor -> Binary_MLP -> Omega
 axiom dataTensor m =
-  bigWedge TensorSpace mu mask  pred'            -- ∀_{x | label(x)}^μ.  A(x)
-  `otimes`
-  bigWedge TensorSpace mu (neg . mask) (neg . pred')  -- ∀_{x | ¬label(x)}^μ.  ¬A(x)
-  where
-    mu    = Pure (UnsafeMkTensor dataTensor)     -- empirical measure μ = training data
-    mask  x = runIdentity (labelA @TENS x)
-    pred' x = runIdentity (classifierA @TENS m x)
+  let pt      = UnsafeMkTensor dataTensor
+      -- Cache: evaluate MLP and labels exactly ONCE
+      preds   = runIdentity (classifierA @TENS m pt)   -- h_θ(x) for all x
+      labels  = runIdentity (labelA @TENS pt)          -- label(x) for all x
+      -- Reuse cached tensors for both quantifiers
+      forallPos = bigWedgeDirect labels preds               -- ∀_{x|label}. A(x)
+      forallNeg = bigWedgeDirect (neg labels) (neg preds)   -- ∀_{x|¬label}. ¬A(x)
+   in forallPos `wedge` forallNeg
 
 main :: IO ()
 main = do
