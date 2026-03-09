@@ -1,13 +1,14 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE InstanceSigs #-}
 
 module A1_Syntax.B2_Typological.TENS_Vocab where
 
 import GHC.TypeLits (Nat)
+import qualified Torch.Tensor
 import Torch.Typed.Tensor (Tensor)
 
 -- | Vocabulary for the tensor category TENS.
@@ -16,6 +17,8 @@ import Torch.Typed.Tensor (Tensor)
 class TensVocab a
 
 instance TensVocab (Tensor device dtype shape)
+
+instance TensVocab Torch.Tensor.Tensor
 
 instance (TensVocab a, TensVocab b) => TensVocab (a, b)
 

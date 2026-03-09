@@ -13,7 +13,7 @@
 module A2_Interpretation.B4_NonLogical.MNIST
   ( mnistTable,
     mnistMapDATA,
-    mnistMapTENS,
+    mnistTableTENS,
     setGlobalMLP,
     module A1_Syntax.B4_NonLogical.MNIST_Vocab,
     module A2_Interpretation.B4_NonLogical.MNIST_MLP,
@@ -21,25 +21,26 @@ module A2_Interpretation.B4_NonLogical.MNIST
 where
 
 import A1_Syntax.B2_Typological.TENS_Vocab ()
-import A1_Syntax.B4_NonLogical.MNIST_Vocab (ImagePairRow (..), MNIST_Vocab (..), MNIST_Bridge (..))
+import A1_Syntax.B4_NonLogical.MNIST_Vocab (ImagePairRow (..), MNIST_Bridge (..), MNIST_Vocab (..))
 import A2_Interpretation.B1_Categorical.Monads.Dist (Dist (..))
 import A2_Interpretation.B2_Typological.Categories.DATA (DATA (..))
 import A2_Interpretation.B2_Typological.Categories.TENS (TENS (..))
-import A2_Interpretation.B3_Logical.Tensor hiding (Omega)
+import A2_Interpretation.B3_Logical.Tensor hiding (Omega, TENS)
 import A2_Interpretation.B4_NonLogical.MNIST_MLP (MLP, hTheta, mnistSpec)
 import Data.Functor.Identity (Identity (..))
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import Data.List (find)
 import qualified Data.Map.Strict as Map
 import MNIST_Loader (mnistImages, mnistLabels, mnistTable)
-import Torch (Randomizable(..), asTensor)
+import System.IO.Unsafe (unsafePerformIO)
+import Torch (Randomizable (..), asTensor)
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (Device (..), DeviceType (..))
 import qualified Torch.Functional as F
-import Torch.Typed.Tensor (Tensor(UnsafeMkTensor), toDynamic)
-import qualified Torch.Tensor as Torch
 import Torch.Tensor (toDevice)
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
-import System.IO.Unsafe (unsafePerformIO)
+import qualified Torch.Tensor as Torch
+import Torch.Typed.Tensor (Tensor (UnsafeMkTensor), toDynamic)
 
 -- | Global IORef to store the active neural network parameters.
 -- This allows the pure `DATA` typeclass to dynamically evaluate the neural perception
@@ -71,9 +72,9 @@ instance MNIST_Vocab DATA where
   digit :: Image DATA -> (M DATA) (Digit DATA)
   digit idx = unsafePerformIO $ do
     m <- readIORef globalMLP
-    -- We evaluate the neural network on-demand for this specific image 
+    -- We evaluate the neural network on-demand for this specific image
     let imgTens = toDynamic (encImage @DATA @TENS idx)
-        logits  = hTheta m (Torch.reshape [1, 784] imgTens)
+        logits = hTheta m (Torch.reshape [1, 784] imgTens)
     return (decDigit @DATA @TENS (Torch.reshape [10] logits))
 
   add :: (Image DATA, Image DATA) -> Digit DATA
@@ -89,11 +90,20 @@ instance MNIST_Vocab DATA where
 --  TENS: tensor-space interpretation
 -- ============================================================
 
--- | The MNIST addition table in TENS: a simple pre-built vectorial database.
---   Keys are tensor images, values are tensor digits. Fixed at load time.
-{-# NOINLINE mnistMapTENS #-}
-mnistMapTENS :: Map.Map (Image TENS, Image TENS) (Digit TENS)
-mnistMapTENS = Map.fromList [((encImage @DATA @TENS k1, encImage @DATA @TENS k2), encDigit @DATA @TENS v) | ((k1, k2), v) <- Map.toList mnistMapDATA]
+-- | Static mask tensor for digitPlus convolutions, pre-allocated on MPS 0
+{-# NOINLINE digitPlusMaskTENS #-}
+digitPlusMaskTENS :: Torch.Tensor
+digitPlusMaskTENS = unsafePerformIO $ do
+  let n = 10 :: Int
+      mkMask :: Int -> [[Float]]
+      mkMask k = [[if i + j == k then (0.0 :: Float) else (-1e20 :: Float) | j <- [0 .. n - 1]] | i <- [0 .. n - 1]]
+  return $ Torch.toDevice (Device MPS 0) $ Torch.asTensor [mkMask k | k <- [0 .. n + n - 2]]
+
+-- | The MNIST addition table in TENS: a plain list of tuples.
+--   Each entry: (image1, image2, sum_digit). Fixed at load time.
+{-# NOINLINE mnistTableTENS #-}
+mnistTableTENS :: [(Image TENS, Image TENS, Digit TENS)]
+mnistTableTENS = [(encImage @DATA @TENS k1, encImage @DATA @TENS k2, encDigit @DATA @TENS v) | ((k1, k2), v) <- Map.toList mnistMapDATA]
 
 instance MNIST_Vocab TENS where
   type Image TENS = Tensor '( 'CPU, 0) 'Float '[784]
@@ -108,35 +118,31 @@ instance MNIST_Vocab TENS where
 
   -- Simple lookup in the pre-built tensor table. That's all add does.
   add :: (Image TENS, Image TENS) -> Digit TENS
-  add (x, y) = mnistMapTENS Map.! (x, y)
+  add (x, y) = case Data.List.find (\(img1, img2, _) -> img1 == x && img2 == y) mnistTableTENS of
+    Just (_, _, d) -> d
+    Nothing -> error "add @TENS: key not in table"
 
   digitPlus :: Digit TENS -> Digit TENS -> Digit TENS
   digitPlus p1 p2 =
-    -- True Continuous Logarithmic Convolution. 
-    -- To strictly prevent probability underflow bounds prior to the loss evaluation, 
+    -- True Continuous Logarithmic Convolution.
+    -- To strictly prevent probability underflow bounds prior to the loss evaluation,
     -- we map `digitPlus` purely inside logarithmic topological space (`Log-of-Sums`) via LogSumExp matrices.
     let l1 = F.logSoftmax (Torch.Dim 1) p1
         l2 = F.logSoftmax (Torch.Dim 1) p2
         shapeData = Torch.shape l1
-        b = head shapeData :: Int     -- Batch size
-        n = shapeData !! 1 :: Int     -- 10
-
+        b = head shapeData :: Int -- Batch size
+        n = shapeData !! 1 :: Int -- 10
         l1_exp = Torch.reshape [b, n, 1] l1
         l2_exp = Torch.reshape [b, 1, n] l2
         sum_mat = l1_exp + l2_exp -- [B, 10, 10] matrix of log(P(x) * P(y))
-        
-        -- Geometrical masking matrix combining discrete bounds
-        mkMask :: Int -> [[Float]]
-        mkMask k = [ [ if i + j == k then (0.0 :: Float) else (-1e20 :: Float) | j <- [0..n-1] ] | i <- [0..n-1] ]
-        masks = Torch.toDevice (Torch.device p1) $ Torch.asTensor [ mkMask k | k <- [0..n+n-2] ]
-        
-        mask_exp = Torch.reshape [1, n + n - 1, n, n] masks
+
+        -- We use the top-level pre-allocated tensor to eliminate FFI mask overhead inside the training loop.
+        mask_exp = Torch.reshape [1, n + n - 1, n, n] digitPlusMaskTENS
         sum_mat_exp = Torch.reshape [b, 1, n, n] sum_mat
-        
+
         combined = sum_mat_exp + mask_exp -- [B, 19, 10, 10]
-        
-        -- LogSumExp reduction flawlessly calculates logical probability without floating boundary collapse
-     in Torch.logsumexp False 2 (Torch.logsumexp False 2 combined)
+     in -- LogSumExp reduction flawlessly calculates logical probability without floating boundary collapse
+        Torch.logsumexp False 2 (Torch.logsumexp False 2 combined)
 
   digitEq :: Digit TENS -> Digit TENS -> Omega TENS
   digitEq logA b =
@@ -151,8 +157,7 @@ instance MNIST_Vocab TENS where
 
 instance MNIST_Bridge DATA TENS where
   encImage :: Image DATA -> Image TENS
-  encImage idx = UnsafeMkTensor (Torch.toDevice (Device MPS 0) $ Torch.select 0 (fromIntegral idx) mnistImages)
-
+  encImage idx = UnsafeMkTensor (Torch.select 0 (fromIntegral idx) mnistImages)
   encDigit :: Digit DATA -> Digit TENS
   encDigit d =
     let idx = fromIntegral d :: Int
@@ -162,8 +167,8 @@ instance MNIST_Bridge DATA TENS where
 
   decDigit :: Digit TENS -> (M DATA) (Digit DATA)
   decDigit logits =
-    -- The MNIST logic runs over 5000 images, and Dist evaluates full list permutations mathematically! 
-    -- Returning 10 fractional SoftMax permutations expands the list into $10 * 10 = 100$ branches per row, 
+    -- The MNIST logic runs over 5000 images, and Dist evaluates full list permutations mathematically!
+    -- Returning 10 fractional SoftMax permutations expands the list into $10 * 10 = 100$ branches per row,
     -- resulting in $100^{5000}$ RAM permutation branches! We MUST collapse the neural outcome via deterministic Top-1 ArgMax.
     let maxIdx = Torch.asValue (Torch.argmax (Torch.Dim 0) Torch.RemoveDim logits) :: Int
      in Dist [(fromIntegral maxIdx, 1.0)]

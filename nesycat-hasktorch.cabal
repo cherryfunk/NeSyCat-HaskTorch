@@ -20,6 +20,7 @@ library
     A1_Syntax.B4_NonLogical.Countable_Vocab,
     A1_Syntax.B4_NonLogical.Weather_Vocab,
     A1_Syntax.B4_NonLogical.MNIST_Vocab,
+    A1_Syntax.B4_NonLogical.Binary_Vocab,
     A1_Syntax.Formulas,
     A2_Interpretation.B1_Categorical.Monads.Dist,
     A2_Interpretation.B1_Categorical.Monads.Giry,
@@ -41,10 +42,14 @@ library
     A2_Interpretation.B4_NonLogical.Supremum,
     A2_Interpretation.B4_NonLogical.MNIST,
     A2_Interpretation.B4_NonLogical.MNIST_MLP,
+    A2_Interpretation.B4_NonLogical.Binary,
+    A2_Interpretation.B4_NonLogical.Binary_MLP,
     MNIST_Loader,
     A3_Semantics.B4_NonLogical.Monads.Expectation,
+    A3_Semantics.B4_NonLogical.Monads.Expectation_TENS,
     A3_Semantics.B4_NonLogical.Training,
-    A3_Semantics.B4_NonLogical.MNIST_Training
+    A3_Semantics.B4_NonLogical.MNIST_Training,
+    A3_Semantics.B4_NonLogical.Binary_Training
   hs-source-dirs: ., data/mnist
   build-depends:
     base >=4.16,
@@ -63,7 +68,7 @@ executable nesycat-hasktorch
   build-depends:
     base,
     nesycat-hasktorch,
-    containers
+    containers,
   default-language: Haskell2010
 
 executable mnist-test
@@ -72,5 +77,18 @@ executable mnist-test
   build-depends:
     base,
     nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch
+  default-language: Haskell2010
+
+executable binary-test
+  main-is: BinaryMain.hs
+  hs-source-dirs: app
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
     hasktorch
   default-language: Haskell2010

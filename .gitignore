@@ -4,4 +4,3 @@ dist-newstyle/
 *.o
 *.dyn_hi
 *.dyn_o
-logictensornetworks_reference/

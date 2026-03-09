@@ -77,12 +77,13 @@ loadTable path = do
 
 {-# NOINLINE mnistTable #-}
 mnistTable :: [ImagePairRow]
-mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table_3k.csv")
-
+mnistTable = unsafePerformIO (loadTable "data/mnist/addition_table_30k.csv")
 
 {-# NOINLINE mnistImages #-}
 mnistImages :: Tensor
-mnistImages = unsafePerformIO (loadImages "data/mnist/train-images-idx3-ubyte")
+mnistImages = unsafePerformIO $ do
+  imgs <- loadImages "data/mnist/train-images-idx3-ubyte"
+  return (toDevice (Device MPS 0) imgs)
 
 {-# NOINLINE mnistLabels #-}
 mnistLabels :: [Int]

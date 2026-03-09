@@ -34,6 +34,7 @@ dieSen1 = do
   x <- die
   return (x .== 6 `wedge` b2o (even x))
 
+dieExp1 :: Double
 dieExp1 = probDist dieSen1
 
 dieSen2 :: Dist Omega
@@ -42,6 +43,7 @@ dieSen2 = do
   q <- do x <- die; return (b2o (even x))
   return (p `wedge` q)
 
+dieExp2 :: Double
 dieExp2 = probDist dieSen2
 
 ------------------------------------------------------
