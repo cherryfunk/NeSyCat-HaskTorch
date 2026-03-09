@@ -20,7 +20,7 @@ library
     A_Syntax.D_NonLogical.Countable_Vocab,
     A_Syntax.D_NonLogical.Weather_Vocab,
     A_Syntax.D_NonLogical.MNIST_Vocab,
-    A_Syntax.D_NonLogical.Binary_Vocab,
+    A_Syntax.D_NonLogical.BinaryVocab,
     A_Syntax.E_Grammatical.Formulas,
     C_Semantics.A_Categorical.Monads.Dist,
     C_Semantics.A_Categorical.Monads.Giry,
@@ -45,16 +45,20 @@ library
     B_Interpretation.D_NonLogical.Supremum,
     B_Interpretation.D_NonLogical.MNIST,
     B_Interpretation.D_NonLogical.MNIST_MLP,
-    B_Interpretation.D_NonLogical.Binary,
-    B_Interpretation.D_NonLogical.Binary_MLP,
-    B_Interpretation.D_NonLogical.Binary_Real,
-    B_Interpretation.D_NonLogical.Binary_MLP_Real,
+    B_Interpretation.D_NonLogical.BinaryUniform,
+    B_Interpretation.D_NonLogical.BinaryUniformMLP,
+    B_Interpretation.D_NonLogical.BinaryReal,
+    B_Interpretation.D_NonLogical.BinaryRealMLP,
     MNIST_Loader,
     C_Semantics.A_Categorical.Monads.Expectation,
     C_Semantics.A_Categorical.Monads.Expectation_TENS,
     D_Inference.D_NonLogical.MNIST_Training,
-    D_Inference.D_NonLogical.Binary_Training,
-    D_Inference.D_NonLogical.Binary_Training_Real,
+    D_Inference.D_NonLogical.BinaryTrainingUniform,
+    D_Inference.D_NonLogical.BinaryTrainingReal,
+    D_Inference.D_NonLogical.BinaryTrainingUniformJIT,
+    D_Inference.D_NonLogical.BinaryTrainingRealJIT,
+    B_Interpretation.E_Grammatical.BinaryFormulasUniform,
+    B_Interpretation.E_Grammatical.BinaryFormulasReal,
     E_Benchmark.Metrics.Metrics
   hs-source-dirs: ., B_Interpretation/D_NonLogical/data/mnist
   build-depends:
@@ -89,7 +93,7 @@ executable mnist-test
   default-language: Haskell2010
 
 executable binary-test
-  main-is: BinaryMain.hs
+  main-is: BinaryMainUniform.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,
@@ -100,7 +104,7 @@ executable binary-test
   default-language: Haskell2010
 
 executable binary-test-jit
-  main-is: BinaryMainJIT.hs
+  main-is: BinaryMainUniformJIT.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,
@@ -124,7 +128,7 @@ executable binary-test-real
   default-language: Haskell2010
 
 executable binary-test-jit-real
-  main-is: BinaryMainJITReal.hs
+  main-is: BinaryMainRealJIT.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,

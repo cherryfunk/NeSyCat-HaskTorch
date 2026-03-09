@@ -6,22 +6,22 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module B_Interpretation.D_NonLogical.Binary
+module B_Interpretation.D_NonLogical.BinaryReal
   ( setGlobalBinaryMLP,
-    module A_Syntax.D_NonLogical.Binary_Vocab,
-    module B_Interpretation.D_NonLogical.Binary_MLP,
+    module A_Syntax.D_NonLogical.BinaryVocab,
+    module B_Interpretation.D_NonLogical.BinaryRealMLP,
   )
 where
 
 import A_Syntax.B_Typological.TENS_Vocab ()
-import A_Syntax.D_NonLogical.Binary_Vocab (Binary_Bridge (..), Binary_Vocab (..))
+import A_Syntax.D_NonLogical.BinaryVocab (Binary_Bridge (..), Binary_Vocab (..))
 import C_Semantics.A_Categorical.Monads.Dist (Dist (..))
 import B_Interpretation.B_Typological.DATA (DATA (..))
 import B_Interpretation.B_Typological.TENS (TENS (..))
 import qualified B_Interpretation.C_Logical.Boolean as BoolLogic
-import B_Interpretation.C_Logical.Tensor hiding (Omega, TENS)
-import qualified B_Interpretation.C_Logical.Tensor as TensLogic
-import B_Interpretation.D_NonLogical.Binary_MLP (Binary_MLP, binarySpec, hTheta)
+import B_Interpretation.C_Logical.TensReal hiding (Omega, TENS)
+import qualified B_Interpretation.C_Logical.TensReal as TensLogic
+import B_Interpretation.D_NonLogical.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
 import Data.Functor.Identity (Identity (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import System.IO.Unsafe (unsafePerformIO)
@@ -35,7 +35,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 {-# NOINLINE globalBinaryMLP #-}
 globalBinaryMLP :: IORef Binary_MLP
 globalBinaryMLP = unsafePerformIO $ do
-  m <- sample binarySpec
+  m <- sample binarySpecReal
   newIORef m
 
 setGlobalBinaryMLP :: Binary_MLP -> IO ()
@@ -56,7 +56,7 @@ instance Binary_Vocab DATA where
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
     let ptTens = encPoint @DATA @TENS pt
-        logits = UnsafeMkTensor (hTheta m (Torch.reshape [1, 2] (toDynamic ptTens)))
+        logits = UnsafeMkTensor (hThetaReal m (Torch.reshape [1, 2] (toDynamic ptTens)))
     return (decOmega @DATA @TENS logits)
 
   -- \| Ground truth label: a computable predicate
@@ -82,22 +82,25 @@ instance Binary_Vocab TENS where
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
     -- Allow dynamic batch sizes: pass directly
-    let logits = hTheta m (toDynamic ptTensor)
+    let logits = hThetaReal m (toDynamic ptTensor)
     -- Keep output shape identical to computation graph (e.g. [N, 1])
     UnsafeMkTensor logits
 
-  -- \| Ground truth label as a typed tensor: 1.0 if inside, 0.0 if outside (vectorized)
   labelA :: Point TENS -> M TENS (Omega TENS)
   labelA ptTensor =
     let pt = toDynamic ptTensor
-        center = F.mulScalar (Torch.onesLike pt) 0.5
+        center = F.mulScalar (Torch.onesLike pt) (0.5 :: Float)
         diff = pt `Torch.sub` center
         -- KeepDim ensures shape [N, 1] or [1] for broadcasting against A(x) logits
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
-        radiusSq = F.mulScalar (Torch.onesLike dist2) 0.09
+        radiusSq = F.mulScalar (Torch.onesLike dist2) (0.09 :: Float)
         isInside = Torch.lt dist2 radiusSq
         val = Torch.toType Torch.Float isInside
      in Identity (UnsafeMkTensor val)
+
+------------------------------------------------------
+-- Global Consts (Prevents FFI Overhead in hot loops)
+------------------------------------------------------
 
 -- ============================================================
 --  BRIDGE: Encoding/Decoding
@@ -109,6 +112,6 @@ instance Binary_Bridge DATA TENS where
 
   decOmega :: Omega TENS -> (M DATA) (Omega DATA)
   decOmega probs =
-    let val = Torch.asValue (toDynamic probs) :: [[Float]]
+    let val = Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
         p = realToFrac (head (head val)) :: Double
      in Dist [(True, p), (False, 1.0 - p)]

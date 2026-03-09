@@ -6,7 +6,7 @@
 
 {- HLINT ignore "Use camelCase" -}
 
-module A_Syntax.D_NonLogical.Binary_Vocab where
+module A_Syntax.D_NonLogical.BinaryVocab where
 
 import Data.Kind (Type)
 

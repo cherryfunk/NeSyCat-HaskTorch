@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 -- | Binary Classification MLP: A simple architecture h_theta : R^2 -> R^1
-module B_Interpretation.D_NonLogical.Binary_MLP_Real
+module B_Interpretation.D_NonLogical.BinaryRealMLP
   ( Binary_MLP (..),
     Binary_MLPSpec (..),
     hThetaReal,

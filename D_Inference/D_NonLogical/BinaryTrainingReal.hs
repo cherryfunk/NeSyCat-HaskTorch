@@ -3,15 +3,15 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
-module D_Inference.D_NonLogical.Binary_Training
-  ( trainBinary,
+module D_Inference.D_NonLogical.BinaryTrainingReal
+  ( trainBinaryReal,
   )
 where
 
-import A_Syntax.D_NonLogical.Binary_Vocab (Binary_Vocab (..))
+import A_Syntax.D_NonLogical.BinaryVocab (Binary_Vocab (..))
 import qualified B_Interpretation.C_Logical.Tensor as TENS
-import B_Interpretation.D_NonLogical.Binary (setGlobalBinaryMLP)
-import B_Interpretation.D_NonLogical.Binary_MLP (Binary_MLP, binarySpec, hTheta)
+import B_Interpretation.D_NonLogical.BinaryReal (setGlobalBinaryMLP)
+import B_Interpretation.D_NonLogical.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..))
@@ -21,11 +21,12 @@ import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
--- | Training loop for Binary Classification.
+-- | Training loop for Binary Classification using TensReal logic.
 --   The axiom takes training data (empirical measure) and the model.
-trainBinary :: Int -> Float -> (Torch.Tensor -> Binary_MLP -> TENS.Omega) -> IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
-trainBinary numEpochs learningRate kbSatFormula = do
-  initModel <- return . toDevice (Device CPU 0) =<< sample binarySpec
+--   Loss = -sat (negate satisfaction for minimization on ℝ).
+trainBinaryReal :: Int -> Float -> (Torch.Tensor -> Binary_MLP -> TENS.Omega) -> IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
+trainBinaryReal numEpochs learningRate kbSatFormula = do
+  initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
 
   -- Generate 100 random points in [0, 1]^2
@@ -50,18 +51,18 @@ trainBinary numEpochs learningRate kbSatFormula = do
   let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
 
   startTime <- getCurrentTime
-  let oneTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (1.0 :: Float))
   let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
 
   (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
     -- Hot inner loop: ONLY axiom + loss + optimizer step
     let kbSat = kbSatFormula trainData model
         kbSatDyn = toDynamic kbSat
-        avgLoss = oneTens `Torch.sub` kbSatDyn
+        -- loss = -log(σ(sat)) = softplus(-sat), single fused kernel
+        avgLoss = negate (Torch.log (Torch.sigmoid kbSatDyn))
 
     (newModel, newOpt) <- runStep model opt avgLoss lrTens
 
-    -- Metrics: only record loss/sat every 100 epochs
+    -- Metrics: only evaluated every 100 epochs (NOT in the hot path)
     if epoch `mod` 100 == 0 || epoch == numEpochs || epoch == 1
       then do
         epochEnd <- getCurrentTime

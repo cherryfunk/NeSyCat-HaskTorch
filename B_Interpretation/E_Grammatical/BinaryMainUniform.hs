@@ -1,25 +1,24 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Binary Classification evaluation (TensReal, eager only).
+-- | Binary Classification evaluation (TensUniform, eager only).
 module Main where
 
 import B_Interpretation.B_Typological.DATA (DATA (..))
-import B_Interpretation.D_NonLogical.BinaryRealMLP (hThetaReal)
-import B_Interpretation.D_NonLogical.BinaryReal ()
-import D_Inference.D_NonLogical.BinaryTrainingReal (trainBinaryReal)
-import B_Interpretation.E_Grammatical.BinaryFormulasReal (axiomReal)
+import B_Interpretation.D_NonLogical.BinaryUniformMLP (hTheta)
+import B_Interpretation.D_NonLogical.BinaryUniform ()
+import D_Inference.D_NonLogical.BinaryTrainingUniform (trainBinaryUniform)
+import B_Interpretation.E_Grammatical.BinaryFormulasUniform (axiomUniform)
 import A_Syntax.D_NonLogical.BinaryVocab (Binary_Vocab (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
-import qualified Torch
 
 main :: IO ()
 main = do
-  putStrLn "Starting Binary Classification TensReal Evaluation"
-  (finalModel, trainData, trainLabels, testData, testLabels) <- trainBinaryReal 1000 0.001 axiomReal
+  putStrLn "Starting Binary Classification TensUniform Evaluation"
+  (finalModel, trainData, trainLabels, testData, testLabels) <- trainBinaryUniform 1000 0.001 axiomUniform
 
   putStrLn "\n=== Evaluation ==="
-  evaluateMetrics (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
+  evaluateMetrics (hTheta finalModel trainData) trainLabels (hTheta finalModel testData) testLabels
 
   putStrLn "\n--- Inference Test using DATA Category (Encoder + Decoder) ---"
   let pt1 = [0.5, 0.5] :: [Float]
