@@ -9,49 +9,54 @@ maintainer: user@example.com
 
 library
   exposed-modules:
-    A1_Syntax.B1_Categorical.CatVocab,
-    A1_Syntax.B2_Typological.DATA_Vocab,
-    A1_Syntax.B2_Typological.FDATA_Vocab,
-    A1_Syntax.B2_Typological.TENS_Vocab,
-    A1_Syntax.B3_Logical.TwoMonBLat,
-    A1_Syntax.B3_Logical.A2MonBLat,
-    A1_Syntax.B4_NonLogical.Dice_Vocab,
-    A1_Syntax.B4_NonLogical.Crossing_Vocab,
-    A1_Syntax.B4_NonLogical.Countable_Vocab,
-    A1_Syntax.B4_NonLogical.Weather_Vocab,
-    A1_Syntax.B4_NonLogical.MNIST_Vocab,
-    A1_Syntax.B4_NonLogical.Binary_Vocab,
-    A1_Syntax.Formulas,
-    A2_Interpretation.B1_Categorical.Monads.Dist,
-    A2_Interpretation.B1_Categorical.Monads.Giry,
-    A2_Interpretation.B2_Typological.Categories.DATA,
-    A2_Interpretation.B2_Typological.Categories.FDATA,
-    A2_Interpretation.B2_Typological.Categories.TENS,
-    A2_Interpretation.B3_Logical.Real,
-    A2_Interpretation.B3_Logical.Boolean,
-    A2_Interpretation.B3_Logical.Tensor,
-    A2_Interpretation.B3_Logical.TensUniform,
-    A2_Interpretation.B3_Logical.Product,
-    A2_Interpretation.B3_Logical.SProd,
-    A2_Interpretation.B3_Logical.LTNp,
-    A2_Interpretation.B3_Logical.Goedel,
-    A2_Interpretation.B3_Logical.Lukasiewicz,
-    A2_Interpretation.B4_NonLogical.Dice,
-    A2_Interpretation.B4_NonLogical.Weather,
-    A2_Interpretation.B4_NonLogical.Crossing,
-    A2_Interpretation.B4_NonLogical.Countable,
-    A2_Interpretation.B4_NonLogical.Supremum,
-    A2_Interpretation.B4_NonLogical.MNIST,
-    A2_Interpretation.B4_NonLogical.MNIST_MLP,
-    A2_Interpretation.B4_NonLogical.Binary,
-    A2_Interpretation.B4_NonLogical.Binary_MLP,
+    A_Syntax.A_Categorical.CatVocab,
+    A_Syntax.B_Typological.DATA_Vocab,
+    A_Syntax.B_Typological.FDATA_Vocab,
+    A_Syntax.B_Typological.TENS_Vocab,
+    A_Syntax.C_Logical.TwoMonBLat,
+    A_Syntax.C_Logical.A2MonBLat,
+    A_Syntax.D_NonLogical.Dice_Vocab,
+    A_Syntax.D_NonLogical.Crossing_Vocab,
+    A_Syntax.D_NonLogical.Countable_Vocab,
+    A_Syntax.D_NonLogical.Weather_Vocab,
+    A_Syntax.D_NonLogical.MNIST_Vocab,
+    A_Syntax.D_NonLogical.Binary_Vocab,
+    A_Syntax.E_Grammatical.Formulas,
+    C_Semantics.A_Categorical.Monads.Dist,
+    C_Semantics.A_Categorical.Monads.Giry,
+    B_Interpretation.B_Typological.DATA,
+    B_Interpretation.B_Typological.FDATA,
+    B_Interpretation.B_Typological.TENS,
+    B_Interpretation.C_Logical.Real,
+    B_Interpretation.C_Logical.Boolean,
+    B_Interpretation.C_Logical.Tensor,
+    B_Interpretation.C_Logical.TensUniform,
+    B_Interpretation.C_Logical.JitCompile,
+    B_Interpretation.C_Logical.TensReal,
+    B_Interpretation.C_Logical.Product,
+    B_Interpretation.C_Logical.SProd,
+    B_Interpretation.C_Logical.LTNp,
+    B_Interpretation.C_Logical.Goedel,
+    B_Interpretation.C_Logical.Lukasiewicz,
+    B_Interpretation.D_NonLogical.Dice,
+    B_Interpretation.D_NonLogical.Weather,
+    B_Interpretation.D_NonLogical.Crossing,
+    B_Interpretation.D_NonLogical.Countable,
+    B_Interpretation.D_NonLogical.Supremum,
+    B_Interpretation.D_NonLogical.MNIST,
+    B_Interpretation.D_NonLogical.MNIST_MLP,
+    B_Interpretation.D_NonLogical.Binary,
+    B_Interpretation.D_NonLogical.Binary_MLP,
+    B_Interpretation.D_NonLogical.Binary_Real,
+    B_Interpretation.D_NonLogical.Binary_MLP_Real,
     MNIST_Loader,
-    A3_Semantics.B4_NonLogical.Monads.Expectation,
-    A3_Semantics.B4_NonLogical.Monads.Expectation_TENS,
-    A3_Semantics.B4_NonLogical.Training,
-    A3_Semantics.B4_NonLogical.MNIST_Training,
-    A3_Semantics.B4_NonLogical.Binary_Training
-  hs-source-dirs: ., data/mnist
+    C_Semantics.A_Categorical.Monads.Expectation,
+    C_Semantics.A_Categorical.Monads.Expectation_TENS,
+    D_Inference.D_NonLogical.MNIST_Training,
+    D_Inference.D_NonLogical.Binary_Training,
+    D_Inference.D_NonLogical.Binary_Training_Real,
+    E_Benchmark.Metrics.Metrics
+  hs-source-dirs: ., B_Interpretation/D_NonLogical/data/mnist
   build-depends:
     base >=4.16,
     bytestring,
@@ -65,7 +70,7 @@ library
 
 executable nesycat-hasktorch
   main-is: Main.hs
-  hs-source-dirs: app
+  hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,
     nesycat-hasktorch,
@@ -74,7 +79,7 @@ executable nesycat-hasktorch
 
 executable mnist-test
   main-is: MNISTMain.hs
-  hs-source-dirs: app
+  hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,
     nesycat-hasktorch,
@@ -85,11 +90,47 @@ executable mnist-test
 
 executable binary-test
   main-is: BinaryMain.hs
-  hs-source-dirs: app
+  hs-source-dirs: B_Interpretation/E_Grammatical
   build-depends:
     base,
     nesycat-hasktorch,
     mtl,
     containers,
     hasktorch
+  default-language: Haskell2010
+
+executable binary-test-jit
+  main-is: BinaryMainJIT.hs
+  hs-source-dirs: B_Interpretation/E_Grammatical
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
+executable binary-test-real
+  main-is: BinaryMainReal.hs
+  hs-source-dirs: B_Interpretation/E_Grammatical
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
+executable binary-test-jit-real
+  main-is: BinaryMainJITReal.hs
+  hs-source-dirs: B_Interpretation/E_Grammatical
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
   default-language: Haskell2010
