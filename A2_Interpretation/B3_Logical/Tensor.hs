@@ -43,10 +43,13 @@ instance TwoMonBLat Omega where
 
   -- | p-Mean disjunction (primitive):
   --   vee(a, b) = ((a^p + b^p) / 2)^{1/p}
+  --   with pi_0 stability: clamp inputs away from 0 to prevent gradient death.
+  --   This makes the De Morgan wedge(a,b) = ¬vee(¬a,¬b) stable at x→1,
+  --   matching LTNtorch's pi_1 clamping inside pMeanError.
   vee a b =
     let a' = toDynamic a; b' = toDynamic b
-        ap = powP a' -- using fast square for p=2.0
-        bp = powP b'
+        ap = powP (pi0 a') -- pi_0 stability + fast square for p=2.0
+        bp = powP (pi0 b')
         meanP = (ap `Torch.add` bp) `Torch.mul` half
      in UnsafeMkTensor (powInvP meanP)
 
@@ -87,7 +90,7 @@ instance A2MonBLat TENS Omega where
   bigVee TensorSpace mu guard phi =
     let evals  = expectTENS TensorSpace mu (\x -> toDynamic (phi x))
         guards = expectTENS TensorSpace mu (\x -> toDynamic (guard x))
-        evals_p  = powP evals
+        evals_p  = powP (pi0 evals)  -- pi_0 stability: prevent gradient death at x=0
         weighted = guards `Torch.mul` evals_p
         sumW     = Torch.sumAll weighted
         sumG     = Torch.sumAll guards
@@ -108,14 +111,36 @@ instance A2MonBLat TENS Omega where
 bigWedgeDirect :: Omega -> Omega -> Omega
 bigWedgeDirect guardT phiT =
   let g  = toDynamic guardT
-      e  = toDynamic phiT
-      e' = one `Torch.sub` e         -- (1 − φ)
-      ep = powP e'                    -- (1 − φ)^p
-      w  = g `Torch.mul` ep           -- guard · (1−φ)^p
+      e  = pi1 (toDynamic phiT)       -- pi_1 stability: prevent gradient death at x=1
+      e' = one `Torch.sub` e          -- (1 − φ)
+      ep = powP e'                     -- (1 − φ)^p
+      w  = g `Torch.mul` ep            -- guard · (1−φ)^p
       sW = Torch.sumAll w
       sG = Torch.sumAll g
       meanP = sW `Torch.div` (sG `Torch.add` eps)
    in UnsafeMkTensor (Torch.reshape [1] (one `Torch.sub` powInvP meanP))
+
+------------------------------------------------------
+-- Gradient Stability Projections (matching LTN's stable=True)
+------------------------------------------------------
+
+-- | pi_0: maps [0,1] → (0, 1], prevents gradient death at x=0.
+--   Matches LTNtorch: pi_0(x) = (1-eps_s)*x + eps_s
+pi0 :: Torch.Tensor -> Torch.Tensor
+pi0 x = (x `Torch.mul` stableScale) `Torch.add` stableEps
+
+-- | pi_1: maps [0,1] → [0, 1), prevents gradient death at x=1.
+--   Matches LTNtorch: pi_1(x) = (1-eps_s)*x
+pi1 :: Torch.Tensor -> Torch.Tensor
+pi1 x = x `Torch.mul` stableScale
+
+{-# NOINLINE stableEps #-}
+stableEps :: Torch.Tensor
+stableEps = Torch.toDevice (Torch.Device CPU 0) $ Torch.asTensor (1.0e-4 :: Float)
+
+{-# NOINLINE stableScale #-}
+stableScale :: Torch.Tensor
+stableScale = Torch.toDevice (Torch.Device CPU 0) $ Torch.asTensor (0.9999 :: Float)
 
 ------------------------------------------------------
 -- Internal Helper Constants & Parameters

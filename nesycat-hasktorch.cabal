@@ -30,6 +30,7 @@ library
     A2_Interpretation.B3_Logical.Real,
     A2_Interpretation.B3_Logical.Boolean,
     A2_Interpretation.B3_Logical.Tensor,
+    A2_Interpretation.B3_Logical.TensUniform,
     A2_Interpretation.B3_Logical.Product,
     A2_Interpretation.B3_Logical.SProd,
     A2_Interpretation.B3_Logical.LTNp,
