@@ -145,13 +145,15 @@ bigWedgeR g phi =
 bigVeeR :: BatchOmega -> BatchOmega -> Omega
 bigVeeR g phi =
   let eps = epsLike g
-      logG = Torch.log (g `Torch.add` eps) -- log(g), with eps to avoid log(0)
-      p = beta phi
+      logG = Torch.log (g `Torch.add` eps) -- log(g), eps masks zeros
+      p = beta phi -- shape = phi.shape (e.g. [50])
       pphi = (phi `Torch.mul` p) `Torch.add` logG -- p*φ + log(g)
-      lse = F.logsumexp pphi 0 False -- native fused kernel
-      sG = Torch.sumAll g
-      p_scalar = beta sG
-      res = (lse `Torch.sub` Torch.log sG) `Torch.div` p_scalar
+      lse = F.logsumexp pphi 0 False -- scalar via native fused kernel
+      sG = Torch.sumAll g -- scalar
+      -- F.divScalar betaVal (not `Torch.div res (beta sG)`) because beta() creates
+      -- a same-shaped tensor just to hold a constant — needless FFI overhead.
+      -- Both reference betaVal, so changing beta means changing one place only.
+      res = F.divScalar (lse `Torch.sub` Torch.log sG) betaVal
    in UnsafeMkTensor (Torch.reshape [1] res)
 
 -- | Guarded ⊕-aggregation (weighted mean):
@@ -176,17 +178,14 @@ bigOtimesR g phi =
 --  Dynamic JIT-safe Constants
 -- ============================================================
 
--- | LogSumExp smoothing parameter β = 5/4 = 1.25.
---   Optimal value found via hyperparameter sweep.
---   Corresponds to p-Mean p ≈ 2.25 via the shift β ≈ p−1.
---   Built from onesLike arithmetic for JIT safety.
+-- | The single canonical value for β (LogSumExp smoothing parameter).
+--   Change this one constant to retune the entire logic.
+betaVal :: Float
+betaVal = 1.25
+
+-- | LogSumExp smoothing parameter β as a tensor (matches shape/device of input).
 beta :: Torch.Tensor -> Torch.Tensor
-beta x =
-  let one = Torch.onesLike x
-      two = one `Torch.add` one
-      four = two `Torch.mul` two
-      five = four `Torch.add` one
-   in five `Torch.div` four
+beta x = F.mulScalar (Torch.onesLike x) betaVal
 
 -- | Synthesizes a constant tensor of 0.5 dynamically.
 halfLike :: Torch.Tensor -> Torch.Tensor

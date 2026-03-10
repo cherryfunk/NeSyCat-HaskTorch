@@ -1,0 +1,230 @@
+=== uniform_jit run 1 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.01s]
+[Epoch   1/1000] Loss=0.00000 | 26.70ms
+[Epoch 100/1000] Loss=    NaN | 85.67ms
+[Epoch 200/1000] Loss=    NaN | 118.73ms
+[Epoch 300/1000] Loss=    NaN | 151.49ms
+[Epoch 400/1000] Loss=    NaN | 184.22ms
+[Epoch 500/1000] Loss=    NaN | 217.63ms
+[Epoch 600/1000] Loss=    NaN | 251.68ms
+[Epoch 700/1000] Loss=    NaN | 285.10ms
+[Epoch 800/1000] Loss=    NaN | 318.61ms
+[Epoch 900/1000] Loss=    NaN | 352.07ms
+[Epoch 1000/1000] Loss=    NaN | 385.13ms
+[Training complete] Total Time (incl. trace):  0.39s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.68, Test=0.72
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 2 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 18.11ms
+[Epoch 100/1000] Loss=    NaN | 76.03ms
+[Epoch 200/1000] Loss=    NaN | 109.56ms
+[Epoch 300/1000] Loss=    NaN | 142.54ms
+[Epoch 400/1000] Loss=    NaN | 175.94ms
+[Epoch 500/1000] Loss=    NaN | 209.34ms
+[Epoch 600/1000] Loss=    NaN | 243.04ms
+[Epoch 700/1000] Loss=    NaN | 276.62ms
+[Epoch 800/1000] Loss=    NaN | 310.01ms
+[Epoch 900/1000] Loss=    NaN | 344.61ms
+[Epoch 1000/1000] Loss=    NaN | 379.17ms
+[Training complete] Total Time (incl. trace):  0.38s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.66, Test=0.56
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 3 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 18.22ms
+[Epoch 100/1000] Loss=    NaN | 76.53ms
+[Epoch 200/1000] Loss=    NaN | 109.93ms
+[Epoch 300/1000] Loss=    NaN | 144.47ms
+[Epoch 400/1000] Loss=    NaN | 180.68ms
+[Epoch 500/1000] Loss=    NaN | 215.28ms
+[Epoch 600/1000] Loss=    NaN | 250.22ms
+[Epoch 700/1000] Loss=    NaN | 284.94ms
+[Epoch 800/1000] Loss=    NaN | 318.82ms
+[Epoch 900/1000] Loss=    NaN | 352.22ms
+[Epoch 1000/1000] Loss=    NaN | 385.55ms
+[Training complete] Total Time (incl. trace):  0.39s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.66, Test=0.74
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 4 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.98ms
+[Epoch 100/1000] Loss=    NaN | 76.00ms
+[Epoch 200/1000] Loss=    NaN | 109.43ms
+[Epoch 300/1000] Loss=    NaN | 142.74ms
+[Epoch 400/1000] Loss=    NaN | 176.44ms
+[Epoch 500/1000] Loss=    NaN | 209.79ms
+[Epoch 600/1000] Loss=    NaN | 243.05ms
+[Epoch 700/1000] Loss=    NaN | 278.38ms
+[Epoch 800/1000] Loss=    NaN | 311.92ms
+[Epoch 900/1000] Loss=    NaN | 345.47ms
+[Epoch 1000/1000] Loss=    NaN | 379.28ms
+[Training complete] Total Time (incl. trace):  0.38s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.7, Test=0.72
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 5 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.69ms
+[Epoch 100/1000] Loss=    NaN | 75.45ms
+[Epoch 200/1000] Loss=    NaN | 108.75ms
+[Epoch 300/1000] Loss=    NaN | 142.11ms
+[Epoch 400/1000] Loss=    NaN | 175.45ms
+[Epoch 500/1000] Loss=    NaN | 208.06ms
+[Epoch 600/1000] Loss=    NaN | 240.80ms
+[Epoch 700/1000] Loss=    NaN | 274.61ms
+[Epoch 800/1000] Loss=    NaN | 307.45ms
+[Epoch 900/1000] Loss=    NaN | 340.44ms
+[Epoch 1000/1000] Loss=    NaN | 374.06ms
+[Training complete] Total Time (incl. trace):  0.37s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.72, Test=0.72
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 6 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.71ms
+[Epoch 100/1000] Loss=    NaN | 74.85ms
+[Epoch 200/1000] Loss=    NaN | 109.48ms
+[Epoch 300/1000] Loss=    NaN | 153.32ms
+[Epoch 400/1000] Loss=    NaN | 189.53ms
+[Epoch 500/1000] Loss=    NaN | 223.14ms
+[Epoch 600/1000] Loss=    NaN | 257.02ms
+[Epoch 700/1000] Loss=    NaN | 291.06ms
+[Epoch 800/1000] Loss=    NaN | 324.63ms
+[Epoch 900/1000] Loss=    NaN | 358.13ms
+[Epoch 1000/1000] Loss=    NaN | 391.66ms
+[Training complete] Total Time (incl. trace):  0.39s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.54, Test=0.74
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 7 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.38ms
+[Epoch 100/1000] Loss=    NaN | 75.03ms
+[Epoch 200/1000] Loss=    NaN | 108.17ms
+[Epoch 300/1000] Loss=    NaN | 140.95ms
+[Epoch 400/1000] Loss=    NaN | 173.63ms
+[Epoch 500/1000] Loss=    NaN | 206.32ms
+[Epoch 600/1000] Loss=    NaN | 239.02ms
+[Epoch 700/1000] Loss=    NaN | 272.35ms
+[Epoch 800/1000] Loss=    NaN | 305.86ms
+[Epoch 900/1000] Loss=    NaN | 339.15ms
+[Epoch 1000/1000] Loss=    NaN | 372.53ms
+[Training complete] Total Time (incl. trace):  0.37s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.76, Test=0.8
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 8 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.86ms
+[Epoch 100/1000] Loss=    NaN | 75.30ms
+[Epoch 200/1000] Loss=    NaN | 110.88ms
+[Epoch 300/1000] Loss=    NaN | 144.92ms
+[Epoch 400/1000] Loss=    NaN | 178.32ms
+[Epoch 500/1000] Loss=    NaN | 215.38ms
+[Epoch 600/1000] Loss=    NaN | 249.26ms
+[Epoch 700/1000] Loss=    NaN | 282.62ms
+[Epoch 800/1000] Loss=    NaN | 316.46ms
+[Epoch 900/1000] Loss=    NaN | 349.96ms
+[Epoch 1000/1000] Loss=    NaN | 383.09ms
+[Training complete] Total Time (incl. trace):  0.38s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.66, Test=0.68
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 9 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.85ms
+[Epoch 100/1000] Loss=    NaN | 75.60ms
+[Epoch 200/1000] Loss=    NaN | 109.13ms
+[Epoch 300/1000] Loss=    NaN | 142.47ms
+[Epoch 400/1000] Loss=    NaN | 175.95ms
+[Epoch 500/1000] Loss=    NaN | 209.27ms
+[Epoch 600/1000] Loss=    NaN | 242.57ms
+[Epoch 700/1000] Loss=    NaN | 276.13ms
+[Epoch 800/1000] Loss=    NaN | 309.64ms
+[Epoch 900/1000] Loss=    NaN | 342.92ms
+[Epoch 1000/1000] Loss=    NaN | 376.13ms
+[Training complete] Total Time (incl. trace):  0.38s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.78, Test=0.8
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.
+=== uniform_jit run 10 ===
+Starting Binary Classification TensUniform (JIT Compiled) Evaluation
+[COMPILED Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
+  [Trace time:  0.00s]
+[Epoch   1/1000] Loss=0.00000 | 17.85ms
+[Epoch 100/1000] Loss=    NaN | 75.66ms
+[Epoch 200/1000] Loss=    NaN | 108.41ms
+[Epoch 300/1000] Loss=    NaN | 141.88ms
+[Epoch 400/1000] Loss=    NaN | 174.54ms
+[Epoch 500/1000] Loss=    NaN | 207.90ms
+[Epoch 600/1000] Loss=    NaN | 242.08ms
+[Epoch 700/1000] Loss=    NaN | 277.35ms
+[Epoch 800/1000] Loss=    NaN | 310.45ms
+[Epoch 900/1000] Loss=    NaN | 347.67ms
+[Epoch 1000/1000] Loss=    NaN | 385.38ms
+[Training complete] Total Time (incl. trace):  0.39s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.82, Test=0.58
+  Mean Confidence: P+=NaN, P-=NaN
+  F1 Score: 0.0
+Finished.

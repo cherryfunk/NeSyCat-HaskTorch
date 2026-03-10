@@ -99,6 +99,7 @@ executable mnist-test
 executable binary-test
   main-is: BinaryMainUniform.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,
@@ -110,6 +111,7 @@ executable binary-test
 executable binary-test-jit
   main-is: BinaryMainUniformJIT.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,
@@ -122,6 +124,7 @@ executable binary-test-jit
 executable binary-test-real
   main-is: BinaryMainReal.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,
@@ -134,6 +137,7 @@ executable binary-test-real
 executable binary-test-jit-real
   main-is: BinaryMainRealJIT.hs
   hs-source-dirs: B_Interpretation/E_Grammatical
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,
@@ -146,6 +150,7 @@ executable binary-test-jit-real
 executable binary-test-real-beta
   main-is: BinaryMainRealBeta.hs
   hs-source-dirs: .
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,

@@ -1,0 +1,21 @@
+[Run  1] 0.1824 ms/epoch | TrainAcc=1.0000 TestAcc=0.9800 F1=0.9825 P+=0.9311 P-=0.0376
+[Run  2] 0.1517 ms/epoch | TrainAcc=0.9000 TestAcc=0.7400 F1=0.5263 P+=0.4686 P-=0.1490
+[Run  3] 0.1479 ms/epoch | TrainAcc=0.8600 TestAcc=0.7800 F1=0.0000 P+=0.1558 P-=0.1440
+[Run  4] 0.1462 ms/epoch | TrainAcc=1.0000 TestAcc=0.9600 F1=0.9643 P+=0.8530 P-=0.0482
+[Run  5] 0.1474 ms/epoch | TrainAcc=0.9000 TestAcc=0.7400 F1=0.6538 P+=0.4826 P-=0.1318
+[Run  6] 0.1479 ms/epoch | TrainAcc=0.9400 TestAcc=0.8600 F1=0.8387 P+=0.7596 P-=0.1498
+[Run  7] 0.1501 ms/epoch | TrainAcc=0.9400 TestAcc=0.9800 F1=0.9231 P+=0.6238 P-=0.1268
+[Run  8] 0.1543 ms/epoch | TrainAcc=0.9200 TestAcc=0.8600 F1=0.8358 P+=0.7439 P-=0.1302
+[Run  9] 0.1487 ms/epoch | TrainAcc=0.9200 TestAcc=0.9000 F1=0.7805 P+=0.4841 P-=0.1418
+[Run 10] 0.1559 ms/epoch | TrainAcc=0.9800 TestAcc=0.9200 F1=0.9091 P+=0.7108 P-=0.0741
+
+=== MLP BASELINE SUMMARY (10 runs x 1000 epochs) ===
+Speed:    0.1533 +/- 0.0102 ms/epoch
+TrainAcc: 0.9360 +/- 0.0436
+TestAcc:  0.8720 +/- 0.0882
+F1:       0.7414 +/- 0.2815
+P+:       0.6213 +/- 0.2168
+P-:       0.1133 +/- 0.0408
+
+RESULT_LINE:
+MLP Baseline | BCE | 0.1533+/-0.0102ms | TrainAcc=0.9360 TestAcc=0.8720 F1=0.7414 P+=0.6213 P-=0.1133

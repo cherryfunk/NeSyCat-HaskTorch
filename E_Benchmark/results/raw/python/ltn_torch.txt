@@ -1,0 +1,19 @@
+[Run  1] 0.3903 ms/epoch | Sat=0.9594 TrainAcc=1.0000 TestAcc=0.9400 F1=0.9362 P+=0.9630 P-=0.0416
+[Run  2] 0.3670 ms/epoch | Sat=0.9039 TrainAcc=0.9800 TestAcc=0.9200 F1=0.9153 P+=0.9252 P-=0.0571
+[Run  3] 0.3665 ms/epoch | Sat=0.9701 TrainAcc=1.0000 TestAcc=0.9000 F1=0.9091 P+=0.8703 P-=0.0346
+[Run  4] 0.3780 ms/epoch | Sat=0.9624 TrainAcc=1.0000 TestAcc=1.0000 F1=1.0000 P+=0.9709 P-=0.0248
+[Run  5] 0.3633 ms/epoch | Sat=0.9013 TrainAcc=1.0000 TestAcc=0.9400 F1=0.9268 P+=0.9019 P-=0.0460
+[Run  6] 0.3668 ms/epoch | Sat=0.9305 TrainAcc=1.0000 TestAcc=0.9600 F1=0.9615 P+=0.9704 P-=0.0399
+[Run  7] 0.3664 ms/epoch | Sat=0.9130 TrainAcc=1.0000 TestAcc=1.0000 F1=1.0000 P+=0.9433 P-=0.0223
+[Run  8] 0.3691 ms/epoch | Sat=0.9845 TrainAcc=1.0000 TestAcc=0.9600 F1=0.9688 P+=0.9622 P-=0.0301
+[Run  9] 0.3787 ms/epoch | Sat=0.9559 TrainAcc=1.0000 TestAcc=0.9400 F1=0.9589 P+=0.9423 P-=0.0556
+[Run 10] 0.3830 ms/epoch | Sat=0.9617 TrainAcc=1.0000 TestAcc=1.0000 F1=1.0000 P+=0.9736 P-=0.0213
+
+=== LTNTORCH SUMMARY (10 runs x 1000 epochs) ===
+Speed:    0.3729 +/- 0.0085 ms/epoch
+Sat:      0.9443 +/- 0.0282
+TrainAcc: 0.9980 +/- 0.0060
+TestAcc:  0.9560 +/- 0.0332
+F1:       0.9577 +/- 0.0333
+P+:       0.9423 +/- 0.0324
+P-:       0.0373 +/- 0.0124

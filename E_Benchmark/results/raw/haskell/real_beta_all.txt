@@ -1,0 +1,280 @@
+=== real_beta run 1 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.02882 Sat=-0.587 beta=1.250272 | 11.97ms
+[Epoch 100/1000] Loss=0.99962 Sat=-0.541 beta=1.277454 | 57.78ms
+[Epoch 200/1000] Loss=0.98545 Sat=-0.518 beta=1.303596 | 102.05ms
+[Epoch 300/1000] Loss=0.91934 Sat=-0.411 beta=1.328018 | 145.77ms
+[Epoch 400/1000] Loss=0.75838 Sat=-0.126 beta=1.346870 | 190.58ms
+[Epoch 500/1000] Loss=0.56188 Sat=0.282 beta=1.356679 | 236.99ms
+[Epoch 600/1000] Loss=0.39677 Sat=0.719 beta=1.358852 | 284.55ms
+[Epoch 700/1000] Loss=0.28277 Sat=1.118 beta=1.356286 | 334.71ms
+[Epoch 800/1000] Loss=0.21408 Sat=1.432 beta=1.350237 | 381.21ms
+[Epoch 900/1000] Loss=0.18775 Sat=1.577 beta=1.336845 | 426.87ms
+[Epoch 1000/1000] Loss=0.17396 Sat=1.661 beta=1.320345 | 472.55ms
+[Training complete] Total:  0.47s | Learned beta=1.320345
+
+=== Learned Beta: 1.3203452 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.96
+  Mean Confidence: P+=0.90304214, P-=4.95713e-2
+  F1 Score: 0.9583333
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.99978107213974),(False,2.1892786026000977e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,6.601669156225398e-5),(False,0.9999339833084377)]}
+Finished.
+=== real_beta run 2 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.01592 Sat=-0.566 beta=1.250278 | 1.20ms
+[Epoch 100/1000] Loss=0.99767 Sat=-0.538 beta=1.277388 | 46.32ms
+[Epoch 200/1000] Loss=0.97964 Sat=-0.509 beta=1.303325 | 93.66ms
+[Epoch 300/1000] Loss=0.90814 Sat=-0.392 beta=1.327395 | 139.81ms
+[Epoch 400/1000] Loss=0.76948 Sat=-0.147 beta=1.345880 | 187.15ms
+[Epoch 500/1000] Loss=0.53166 Sat=0.354 beta=1.357350 | 232.68ms
+[Epoch 600/1000] Loss=0.33353 Sat=0.927 beta=1.360475 | 278.74ms
+[Epoch 700/1000] Loss=0.22107 Sat=1.397 beta=1.358216 | 324.59ms
+[Epoch 800/1000] Loss=0.17765 Sat=1.638 beta=1.347822 | 370.56ms
+[Epoch 900/1000] Loss=0.15552 Sat=1.782 beta=1.332937 | 416.48ms
+[Epoch 1000/1000] Loss=0.13620 Sat=1.925 beta=1.317798 | 462.00ms
+[Training complete] Total:  0.46s | Learned beta=1.317798
+
+=== Learned Beta: 1.3177984 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.98
+  Mean Confidence: P+=0.9169124, P-=4.5485623e-2
+  F1 Score: 0.98039216
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.998141884803772),(False,1.8581151962280273e-3)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,1.3298397789185401e-5),(False,0.9999867016022108)]}
+Finished.
+=== real_beta run 3 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.02041 Sat=-0.573 beta=1.250276 | 1.35ms
+[Epoch 100/1000] Loss=0.99829 Sat=-0.539 beta=1.277441 | 45.27ms
+[Epoch 200/1000] Loss=0.98591 Sat=-0.519 beta=1.303454 | 90.29ms
+[Epoch 300/1000] Loss=0.94814 Sat=-0.458 beta=1.327922 | 135.00ms
+[Epoch 400/1000] Loss=0.76542 Sat=-0.140 beta=1.348517 | 178.90ms
+[Epoch 500/1000] Loss=0.56039 Sat=0.286 beta=1.354273 | 222.36ms
+[Epoch 600/1000] Loss=0.52826 Sat=0.362 beta=1.348270 | 265.45ms
+[Epoch 700/1000] Loss=0.45467 Sat=0.552 beta=1.340986 | 308.85ms
+[Epoch 800/1000] Loss=0.33208 Sat=0.932 beta=1.335051 | 351.52ms
+[Epoch 900/1000] Loss=0.23890 Sat=1.310 beta=1.328345 | 394.41ms
+[Epoch 1000/1000] Loss=0.19084 Sat=1.559 beta=1.317740 | 437.99ms
+[Training complete] Total:  0.44s | Learned beta=1.317740
+
+=== Learned Beta: 1.3177395 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.9
+  Mean Confidence: P+=0.85563135, P-=0.111135416
+  F1 Score: 0.90909094
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9993815422058105),(False,6.184577941894531e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,4.59980292362161e-5),(False,0.9999540019707638)]}
+Finished.
+=== real_beta run 4 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.01695 Sat=-0.568 beta=1.250278 | 1.19ms
+[Epoch 100/1000] Loss=0.99014 Sat=-0.526 beta=1.277169 | 45.47ms
+[Epoch 200/1000] Loss=0.95008 Sat=-0.461 beta=1.302480 | 87.97ms
+[Epoch 300/1000] Loss=0.77190 Sat=-0.152 beta=1.324089 | 130.59ms
+[Epoch 400/1000] Loss=0.54257 Sat=0.328 beta=1.336077 | 173.17ms
+[Epoch 500/1000] Loss=0.34951 Sat=0.871 beta=1.339714 | 215.54ms
+[Epoch 600/1000] Loss=0.23206 Sat=1.342 beta=1.337689 | 257.59ms
+[Epoch 700/1000] Loss=0.18376 Sat=1.601 beta=1.328004 | 300.40ms
+[Epoch 800/1000] Loss=0.15277 Sat=1.801 beta=1.315672 | 343.23ms
+[Epoch 900/1000] Loss=0.12925 Sat=1.981 beta=1.303206 | 386.30ms
+[Epoch 1000/1000] Loss=0.10912 Sat=2.160 beta=1.291027 | 429.45ms
+[Training complete] Total:  0.43s | Learned beta=1.291027
+
+=== Learned Beta: 1.2910267 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.98
+  Mean Confidence: P+=0.95389855, P-=4.452224e-2
+  F1 Score: 0.9824561
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9999089241027832),(False,9.107589721679688e-5)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,7.846427507729459e-8),(False,0.9999999215357249)]}
+Finished.
+=== real_beta run 5 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.00746 Sat=-0.553 beta=1.250281 | 1.12ms
+[Epoch 100/1000] Loss=0.98571 Sat=-0.519 beta=1.276971 | 44.78ms
+[Epoch 200/1000] Loss=0.92279 Sat=-0.416 beta=1.301619 | 87.80ms
+[Epoch 300/1000] Loss=0.76243 Sat=-0.134 beta=1.320200 | 131.12ms
+[Epoch 400/1000] Loss=0.64959 Sat=0.089 beta=1.328344 | 174.33ms
+[Epoch 500/1000] Loss=0.48380 Sat=0.474 beta=1.331424 | 216.90ms
+[Epoch 600/1000] Loss=0.33252 Sat=0.930 beta=1.329919 | 259.46ms
+[Epoch 700/1000] Loss=0.25021 Sat=1.258 beta=1.323347 | 302.36ms
+[Epoch 800/1000] Loss=0.20634 Sat=1.473 beta=1.313004 | 344.66ms
+[Epoch 900/1000] Loss=0.18724 Sat=1.580 beta=1.297725 | 386.88ms
+[Epoch 1000/1000] Loss=0.16996 Sat=1.686 beta=1.281016 | 429.53ms
+[Training complete] Total:  0.43s | Learned beta=1.281016
+
+=== Learned Beta: 1.2810155 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.96
+  Mean Confidence: P+=0.8891867, P-=4.6208322e-2
+  F1 Score: 0.95454544
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998829364776611),(False,1.1706352233886719e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,5.515043540071929e-6),(False,0.9999944849564599)]}
+Finished.
+=== real_beta run 6 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.01367 Sat=-0.563 beta=1.250280 | 1.11ms
+[Epoch 100/1000] Loss=0.99239 Sat=-0.529 beta=1.277417 | 44.37ms
+[Epoch 200/1000] Loss=0.91984 Sat=-0.411 beta=1.303114 | 87.51ms
+[Epoch 300/1000] Loss=0.67186 Sat=0.043 beta=1.323563 | 130.96ms
+[Epoch 400/1000] Loss=0.44271 Sat=0.585 beta=1.332545 | 173.48ms
+[Epoch 500/1000] Loss=0.30947 Sat=1.014 beta=1.332240 | 215.77ms
+[Epoch 600/1000] Loss=0.22248 Sat=1.390 beta=1.327874 | 258.58ms
+[Epoch 700/1000] Loss=0.17578 Sat=1.649 beta=1.318629 | 301.78ms
+[Epoch 800/1000] Loss=0.15832 Sat=1.763 beta=1.302978 | 344.90ms
+[Epoch 900/1000] Loss=0.14649 Sat=1.847 beta=1.285893 | 388.27ms
+[Epoch 1000/1000] Loss=0.13497 Sat=1.934 beta=1.268858 | 431.09ms
+[Training complete] Total:  0.43s | Learned beta=1.268858
+
+=== Learned Beta: 1.2688581 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.92
+  Mean Confidence: P+=0.9276839, P-=6.2384546e-2
+  F1 Score: 0.9090909
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998464584350586),(False,1.5354156494140625e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,5.532244176720269e-5),(False,0.9999446775582328)]}
+Finished.
+=== real_beta run 7 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.02378 Sat=-0.579 beta=1.250274 | 1.14ms
+[Epoch 100/1000] Loss=0.97406 Sat=-0.500 beta=1.276518 | 43.82ms
+[Epoch 200/1000] Loss=0.95356 Sat=-0.467 beta=1.300286 | 87.13ms
+[Epoch 300/1000] Loss=0.89182 Sat=-0.364 beta=1.322053 | 130.27ms
+[Epoch 400/1000] Loss=0.71894 Sat=-0.051 beta=1.339644 | 172.98ms
+[Epoch 500/1000] Loss=0.52573 Sat=0.369 beta=1.348604 | 215.76ms
+[Epoch 600/1000] Loss=0.39682 Sat=0.719 beta=1.349229 | 258.44ms
+[Epoch 700/1000] Loss=0.31606 Sat=0.990 beta=1.344630 | 302.03ms
+[Epoch 800/1000] Loss=0.26762 Sat=1.181 beta=1.335825 | 347.86ms
+[Epoch 900/1000] Loss=0.24354 Sat=1.288 beta=1.321599 | 391.56ms
+[Epoch 1000/1000] Loss=0.22650 Sat=1.370 beta=1.304611 | 435.42ms
+[Training complete] Total:  0.44s | Learned beta=1.304611
+
+=== Learned Beta: 1.3046112 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.96
+  Mean Confidence: P+=0.941035, P-=9.5894724e-2
+  F1 Score: 0.9655172
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9995050430297852),(False,4.949569702148438e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,2.6844567400985397e-5),(False,0.999973155432599)]}
+Finished.
+=== real_beta run 8 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.00450 Sat=-0.548 beta=1.250279 | 1.11ms
+[Epoch 100/1000] Loss=0.97863 Sat=-0.507 beta=1.276938 | 44.57ms
+[Epoch 200/1000] Loss=0.86936 Sat=-0.326 beta=1.301340 | 87.48ms
+[Epoch 300/1000] Loss=0.65891 Sat=0.070 beta=1.317994 | 130.44ms
+[Epoch 400/1000] Loss=0.42142 Sat=0.646 beta=1.325139 | 172.60ms
+[Epoch 500/1000] Loss=0.24882 Sat=1.264 beta=1.325455 | 214.83ms
+[Epoch 600/1000] Loss=0.15174 Sat=1.809 beta=1.322472 | 257.42ms
+[Epoch 700/1000] Loss=0.10443 Sat=2.207 beta=1.317215 | 300.35ms
+[Epoch 800/1000] Loss=0.08255 Sat=2.453 beta=1.309452 | 343.14ms
+[Epoch 900/1000] Loss=0.07023 Sat=2.621 beta=1.300978 | 386.74ms
+[Epoch 1000/1000] Loss=0.06284 Sat=2.736 beta=1.291915 | 430.65ms
+[Training complete] Total:  0.43s | Learned beta=1.291915
+
+=== Learned Beta: 1.291915 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.92
+  Mean Confidence: P+=0.95990163, P-=7.409381e-2
+  F1 Score: 0.93333334
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998881816864014),(False,1.1181831359863281e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,9.112100815400481e-4),(False,0.99908878991846)]}
+Finished.
+=== real_beta run 9 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.01295 Sat=-0.562 beta=1.250280 | 1.11ms
+[Epoch 100/1000] Loss=0.98367 Sat=-0.515 beta=1.276948 | 44.29ms
+[Epoch 200/1000] Loss=0.96454 Sat=-0.485 beta=1.301576 | 86.76ms
+[Epoch 300/1000] Loss=0.89141 Sat=-0.364 beta=1.324350 | 129.92ms
+[Epoch 400/1000] Loss=0.66189 Sat=0.064 beta=1.341043 | 173.34ms
+[Epoch 500/1000] Loss=0.53894 Sat=0.337 beta=1.344709 | 216.29ms
+[Epoch 600/1000] Loss=0.37014 Sat=0.803 beta=1.343729 | 259.57ms
+[Epoch 700/1000] Loss=0.24658 Sat=1.274 beta=1.339779 | 301.70ms
+[Epoch 800/1000] Loss=0.19821 Sat=1.518 beta=1.328482 | 344.12ms
+[Epoch 900/1000] Loss=0.17553 Sat=1.651 beta=1.311826 | 386.02ms
+[Epoch 1000/1000] Loss=0.15476 Sat=1.788 beta=1.294558 | 428.33ms
+[Training complete] Total:  0.43s | Learned beta=1.294558
+
+=== Learned Beta: 1.2945583 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.94
+  Mean Confidence: P+=0.89467734, P-=3.8543064e-2
+  F1 Score: 0.9508197
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9995964169502258),(False,4.035830497741699e-4)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,5.206291098147631e-5),(False,0.9999479370890185)]}
+Finished.
+=== real_beta run 10 ===
+Starting Binary Classification with Learnable Beta
+[Joint beta+theta Training] 1000 epochs, lr=1.0e-3, init_beta=1.25
+[Epoch   1/1000] Loss=1.02777 Sat=-0.585 beta=1.250277 | 1.12ms
+[Epoch 100/1000] Loss=0.98766 Sat=-0.522 beta=1.277189 | 44.17ms
+[Epoch 200/1000] Loss=0.97368 Sat=-0.499 beta=1.302152 | 87.17ms
+[Epoch 300/1000] Loss=0.95093 Sat=-0.463 beta=1.325613 | 130.22ms
+[Epoch 400/1000] Loss=0.86711 Sat=-0.322 beta=1.347110 | 173.80ms
+[Epoch 500/1000] Loss=0.70736 Sat=-0.028 beta=1.363006 | 216.98ms
+[Epoch 600/1000] Loss=0.52653 Sat=0.367 beta=1.370357 | 260.13ms
+[Epoch 700/1000] Loss=0.37749 Sat=0.780 beta=1.371230 | 303.58ms
+[Epoch 800/1000] Loss=0.26798 Sat=1.180 beta=1.368523 | 346.95ms
+[Epoch 900/1000] Loss=0.20692 Sat=1.470 beta=1.361276 | 389.85ms
+[Epoch 1000/1000] Loss=0.17706 Sat=1.641 beta=1.349102 | 432.70ms
+[Training complete] Total:  0.43s | Learned beta=1.349102
+
+=== Learned Beta: 1.3491017 ===
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.98
+  Mean Confidence: P+=0.9297851, P-=4.982788e-2
+  F1 Score: 0.9824561
+
+--- Inference Test using DATA Category ---
+Inference for [0.5,0.5]: Dist {runDist = [(True,0.9969981908798218),(False,3.0018091201782227e-3)]}
+Inference for [0.9,0.9]: Dist {runDist = [(True,8.965847518993542e-5),(False,0.9999103415248101)]}
+Finished.
