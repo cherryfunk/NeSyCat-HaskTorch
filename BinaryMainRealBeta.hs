@@ -7,11 +7,11 @@
 module Main where
 
 import B_Interpretation.B_Typological.DATA (DATA (..))
-import B_Interpretation.D_NonLogical.BinaryRealMLP (hThetaReal)
-import B_Interpretation.D_NonLogical.BinaryReal ()
-import D_Inference.D_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
-import B_Interpretation.E_Grammatical.BinaryFormulasRealBeta (axiomRealBeta)
-import A_Syntax.D_NonLogical.BinaryVocab (Binary_Vocab (classifierA))
+import B_Interpretation.C_NonLogical.BinaryRealMLP (hThetaReal)
+import B_Interpretation.C_NonLogical.BinaryReal ()
+import D_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
+import B_Interpretation.D_Grammatical.BinaryFormulasRealBeta (axiomRealBeta)
+import A_Syntax.C_NonLogical.BinaryVocab (Binary_Vocab (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 
