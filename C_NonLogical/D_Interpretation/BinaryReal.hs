@@ -13,7 +13,7 @@ module C_NonLogical.D_Interpretation.BinaryReal
   )
 where
 
-import B_Logical.B_Vocabulary.TENS_Vocab ()
+import B_Logical.C_Vocabulary.TENS_Vocab ()
 import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), Binary_Sig (..))
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
 import B_Logical.D_Interpretation.DATA (DATA (..))
