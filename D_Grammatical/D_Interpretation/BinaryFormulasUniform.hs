@@ -6,7 +6,7 @@ module D_Grammatical.D_Interpretation.BinaryFormulasUniform
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFuns (classifierA, labelA))
+import C_NonLogical.A_Signature.BinarySig (BinaryFuns (labelA), BinaryKlFuns (classifierA))
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensUniform (Omega, bigWedgeU, negU, wedge)
@@ -22,7 +22,7 @@ axiomUniform :: Torch.Tensor -> Binary_MLP -> Omega
 axiomUniform dataTensor m =
   let pt = UnsafeMkTensor dataTensor
       preds = toDynamic (runIdentity (classifierA @TENS m pt))
-      labels = toDynamic (runIdentity (labelA @TENS pt))
+      labels = toDynamic (labelA @TENS pt)
       forallPos = bigWedgeU labels preds
       forallNeg = bigWedgeU (negU labels) (negU preds)
    in forallPos `wedge` forallNeg

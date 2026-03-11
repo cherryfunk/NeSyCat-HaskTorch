@@ -12,26 +12,31 @@ import Data.Kind (Type)
 
 -- | Non-Logical Signature Σ_γ for the Binary Classification domain.
 --
--- Sorts = {Point, Omega, M}
--- Funs  = {classifierA : Point → M(Omega),
---          labelA      : Point → M(Omega)}
+-- Sorts  = {Point, Omega}
+-- Fun    = {labelA : Point → Omega}            — plain (interpreted in C)
+-- KlFun  = {classifierA : Point → Omega}       — Kleisli (interpreted in Kl(M))
 --
 -- Additionally, Θ (parameter space) parameterizes the interpretation I_θ
 
--- | BinarySorts: assigns abstract sort names to concrete Haskell types,
---   plus the parameter space Θ of the parameterized interpretation.
+-- | BinarySorts: assigns abstract sort names to concrete Haskell types.
 --   Instances live in B_Realization/.
 class BinarySorts (cat :: Type -> Type) where
-  type Point cat :: Type -- sort: input data point (e.g. ℝ²)
-  type Omega cat :: Type -- sort: truth value (e.g. Bool, [0,1])
-  type M cat :: Type -> Type -- sort: computational context (monad)
-  type Params cat :: Type -- !!! WIP: NOT SURE YET IF THIS IS THE RIGHT PLACE FOR THIS
+  type Point cat :: Type         -- sort: input data point (e.g. ℝ²)
+  type Omega cat :: Type         -- sort: truth value (e.g. Bool, [0,1])
+  type M cat :: Type -> Type     -- monad M defining the Kleisli category Kl(M)
+  type Params cat :: Type        -- Θ: parameter space of I_θ
 
--- | BinaryFuns: interprets the function symbols classifierA and labelA.
---   Requires BinarySorts. Instances live in D_Interpretation/.
+-- | BinaryFuns: plain (deterministic) function symbols.
+--   Interpreted as morphisms in C (not Kl(M)).
+--   Instances live in D_Interpretation/.
 class (BinarySorts cat) => BinaryFuns (cat :: Type -> Type) where
+  labelA :: Point cat -> Omega cat
+
+-- | BinaryKlFuns: Kleisli function symbols.
+--   Interpreted as morphisms in Kl(M), i.e. A → M(B) in Haskell.
+--   Instances live in D_Interpretation/.
+class (BinaryFuns cat) => BinaryKlFuns (cat :: Type -> Type) where
   classifierA :: Params cat -> Point cat -> (M cat) (Omega cat)
-  labelA :: Point cat -> (M cat) (Omega cat)
 
 -- | Bridge for encoding/decoding between two category interpretations.
 --   Only requires BinarySorts: encPoint/decOmega use only sort assignments.

@@ -6,7 +6,7 @@ module D_Grammatical.D_Interpretation.BinaryFormulasReal
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFuns (classifierA, labelA))
+import C_NonLogical.A_Signature.BinarySig (BinaryFuns (labelA), BinaryKlFuns (classifierA))
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensReal (bigWedgeR, negR, wedgeR)
@@ -23,7 +23,7 @@ axiomReal :: Torch.Tensor -> Binary_MLP -> Omega
 axiomReal dataTensor m =
   let pt = UnsafeMkTensor dataTensor
       preds = toDynamic (runIdentity (classifierA @TENS m pt))
-      labels = toDynamic (runIdentity (labelA @TENS pt))
+      labels = toDynamic (labelA @TENS pt)
       negLabels = Torch.onesLike labels - labels
       forallPos = bigWedgeR labels preds
       forallNeg = bigWedgeR negLabels (negR preds)

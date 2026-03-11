@@ -9,7 +9,7 @@ import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import C_NonLogical.D_Interpretation.BinaryReal ()
 import E_Inference.C_NonLogical.BinaryTrainingReal (trainBinaryReal)
 import D_Grammatical.D_Interpretation.BinaryFormulasReal (axiomReal)
-import C_NonLogical.A_Signature.BinarySig (BinaryFuns (classifierA))
+import C_NonLogical.A_Signature.BinarySig (BinaryKlFuns (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 

@@ -14,7 +14,7 @@ module C_NonLogical.D_Interpretation.BinaryUniform
 where
 
 import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), BinarySorts (..))
+import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), BinaryKlFuns (..), BinarySorts (..))
 import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
 import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
@@ -43,10 +43,21 @@ setGlobalBinaryMLP :: Binary_MLP -> IO ()
 setGlobalBinaryMLP = writeIORef globalBinaryMLP
 
 -- ============================================================
---  DATA: classifierA + labelA
+--  DATA: plain function symbols (BinaryFuns)
 -- ============================================================
 
 instance BinaryFuns DATA where
+  labelA :: Point DATA -> Omega DATA
+  labelA (x1, x2) =
+    let dx = x1 - 0.5
+        dy = x2 - 0.5
+     in dx * dx + dy * dy < 0.09
+
+-- ============================================================
+--  DATA: Kleisli function symbols (BinaryKlFuns)
+-- ============================================================
+
+instance BinaryKlFuns DATA where
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
@@ -54,24 +65,12 @@ instance BinaryFuns DATA where
         logits = UnsafeMkTensor (hTheta m (Torch.reshape [1, 2] (toDynamic ptTens)))
     return (decOmega @DATA @TENS logits)
 
-  labelA :: Point DATA -> M DATA (Omega DATA)
-  labelA (x1, x2) =
-    let dx = x1 - 0.5
-        dy = x2 - 0.5
-        isInside = dx * dx + dy * dy < 0.09
-     in Dist [(True, if isInside then 1.0 else 0.0), (False, if isInside then 0.0 else 1.0)]
-
 -- ============================================================
---  TENS: classifierA + labelA
+--  TENS: plain function symbols (BinaryFuns)
 -- ============================================================
 
 instance BinaryFuns TENS where
-  classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
-  classifierA m ptTensor = Identity $ do
-    let logits = hTheta m (toDynamic ptTensor)
-    UnsafeMkTensor logits
-
-  labelA :: Point TENS -> M TENS (Omega TENS)
+  labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
         center = F.mulScalar (Torch.onesLike pt) 0.5
@@ -80,7 +79,17 @@ instance BinaryFuns TENS where
         radiusSq = F.mulScalar (Torch.onesLike dist2) 0.09
         isInside = Torch.lt dist2 radiusSq
         val = Torch.toType Torch.Float isInside
-     in Identity (UnsafeMkTensor val)
+     in UnsafeMkTensor val
+
+-- ============================================================
+--  TENS: Kleisli function symbols (BinaryKlFuns)
+-- ============================================================
+
+instance BinaryKlFuns TENS where
+  classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
+  classifierA m ptTensor = Identity $ do
+    let logits = hTheta m (toDynamic ptTensor)
+    UnsafeMkTensor logits
 
 -- ============================================================
 --  BRIDGE: DATA <-> TENS encoding/decoding
