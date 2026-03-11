@@ -6,12 +6,12 @@
 --   Joint optimization of β (LogSumExp sharpness) and θ (MLP weights).
 module Main where
 
-import B_Interpretation.B_Typological.DATA (DATA (..))
-import B_Interpretation.C_NonLogical.BinaryRealMLP (hThetaReal)
-import B_Interpretation.C_NonLogical.BinaryReal ()
-import D_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
-import B_Interpretation.D_Grammatical.BinaryFormulasRealBeta (axiomRealBeta)
-import A_Syntax.C_NonLogical.BinaryVocab (Binary_Vocab (classifierA))
+import B_Logical.C_Category.DATA (DATA (..))
+import C_NonLogical.C_Category.BinaryRealMLP (hThetaReal)
+import C_NonLogical.C_Category.BinaryReal ()
+import E_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
+import D_Grammatical.C_Category.BinaryFormulasRealBeta (axiomRealBeta)
+import C_NonLogical.A_Signature.BinarySig (Binary_Sig (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 

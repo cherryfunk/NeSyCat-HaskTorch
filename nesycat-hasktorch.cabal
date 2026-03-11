@@ -9,62 +9,62 @@ maintainer: user@example.com
 
 library
   exposed-modules:
-    A_Syntax.A_Categorical.CatVocab,
-    A_Syntax.B_Logical.TwoMonBLat,
-    A_Syntax.B_Logical.A2MonBLat,
-    A_Syntax.B_Logical.TENS_Vocab,
-    A_Syntax.B_Logical.FDATA_Vocab,
-    A_Syntax.C_NonLogical.DATA_Vocab,
-    A_Syntax.C_NonLogical.Dice_Vocab,
-    A_Syntax.C_NonLogical.Crossing_Vocab,
-    A_Syntax.C_NonLogical.Countable_Vocab,
-    A_Syntax.C_NonLogical.Weather_Vocab,
-    A_Syntax.C_NonLogical.MNIST_Vocab,
-    A_Syntax.C_NonLogical.BinaryVocab,
-    A_Syntax.D_Grammatical.Formulas,
-    C_Semantics.A_Categorical.Monads.Dist,
-    C_Semantics.A_Categorical.Monads.Giry,
-    B_Interpretation.B_Typological.DATA,
-    B_Interpretation.B_Typological.FDATA,
-    B_Interpretation.B_Typological.TENS,
-    B_Interpretation.B_Logical.Real,
-    B_Interpretation.B_Logical.Boolean,
-    B_Interpretation.B_Logical.Tensor,
-    B_Interpretation.B_Logical.TensUniform,
-    B_Interpretation.B_Logical.JitCompile,
-    B_Interpretation.B_Logical.TensReal,
-    B_Interpretation.B_Logical.Product,
-    B_Interpretation.B_Logical.SProd,
-    B_Interpretation.B_Logical.LTNp,
-    B_Interpretation.B_Logical.Goedel,
-    B_Interpretation.B_Logical.Lukasiewicz,
-    B_Interpretation.C_NonLogical.Dice,
-    B_Interpretation.C_NonLogical.Weather,
-    B_Interpretation.C_NonLogical.Crossing,
-    B_Interpretation.C_NonLogical.Countable,
-    B_Interpretation.C_NonLogical.Supremum,
-    B_Interpretation.C_NonLogical.MNIST,
-    B_Interpretation.C_NonLogical.MNIST_MLP,
-    B_Interpretation.C_NonLogical.BinaryUniform,
-    B_Interpretation.C_NonLogical.BinaryUniformMLP,
-    B_Interpretation.C_NonLogical.BinaryReal,
-    B_Interpretation.C_NonLogical.BinaryRealMLP,
+    A_Categorical.A_Signature.CatSig,
+    A_Categorical.C_Category.Monads.Dist,
+    A_Categorical.C_Category.Monads.Giry,
+    A_Categorical.C_Category.Monads.Expectation,
+    A_Categorical.C_Category.Monads.Expectation_TENS,
+    B_Logical.A_Signature.TwoMonBLatSig,
+    B_Logical.A_Signature.A2MonBLatSig,
+    B_Logical.B_Vocabulary.TENS_Vocab,
+    B_Logical.B_Vocabulary.FDATA_Vocab,
+    B_Logical.C_Category.TENS,
+    B_Logical.C_Category.DATA,
+    B_Logical.C_Category.FDATA,
+    B_Logical.C_Category.Tensor,
+    B_Logical.C_Category.TensReal,
+    B_Logical.C_Category.TensRealBeta,
+    B_Logical.C_Category.TensUniform,
+    B_Logical.C_Category.Boolean,
+    B_Logical.C_Category.Real,
+    B_Logical.C_Category.Goedel,
+    B_Logical.C_Category.Lukasiewicz,
+    B_Logical.C_Category.Product,
+    B_Logical.C_Category.SProd,
+    B_Logical.C_Category.LTNp,
+    B_Logical.C_Category.JitCompile,
+    C_NonLogical.A_Signature.BinarySig,
+    C_NonLogical.A_Signature.MNIST_Sig,
+    C_NonLogical.A_Signature.Dice_Sig,
+    C_NonLogical.A_Signature.Crossing_Sig,
+    C_NonLogical.A_Signature.Countable_Sig,
+    C_NonLogical.A_Signature.Weather_Sig,
+    C_NonLogical.B_Vocabulary.DATA_Vocab,
+    C_NonLogical.C_Category.BinaryReal,
+    C_NonLogical.C_Category.BinaryRealMLP,
+    C_NonLogical.C_Category.BinaryUniform,
+    C_NonLogical.C_Category.BinaryUniformMLP,
+    C_NonLogical.C_Category.Countable,
+    C_NonLogical.C_Category.Crossing,
+    C_NonLogical.C_Category.Dice,
+    C_NonLogical.C_Category.MNIST,
+    C_NonLogical.C_Category.MNIST_MLP,
+    C_NonLogical.C_Category.Supremum,
+    C_NonLogical.C_Category.Weather,
+    D_Grammatical.A_Signature.FormulasSig,
+    D_Grammatical.C_Category.BinaryFormulasReal,
+    D_Grammatical.C_Category.BinaryFormulasRealBeta,
+    D_Grammatical.C_Category.BinaryFormulasUniform,
+    E_Inference.B_Logical.BetaTrainingReal,
+    E_Inference.C_NonLogical.MNIST_Training,
+    E_Inference.C_NonLogical.BinaryTrainingUniform,
+    E_Inference.C_NonLogical.BinaryTrainingReal,
+    E_Inference.C_NonLogical.BinaryTrainingUniformJIT,
+    E_Inference.C_NonLogical.BinaryTrainingRealJIT,
+    E_Inference.C_NonLogical.BinaryTrainingRealBeta,
     MNIST_Loader,
-    C_Semantics.A_Categorical.Monads.Expectation,
-    C_Semantics.A_Categorical.Monads.Expectation_TENS,
-    D_Inference.C_NonLogical.MNIST_Training,
-    D_Inference.C_NonLogical.BinaryTrainingUniform,
-    D_Inference.C_NonLogical.BinaryTrainingReal,
-    D_Inference.C_NonLogical.BinaryTrainingUniformJIT,
-    D_Inference.C_NonLogical.BinaryTrainingRealJIT,
-    B_Interpretation.B_Logical.TensRealBeta,
-    B_Interpretation.D_Grammatical.BinaryFormulasRealBeta,
-    D_Inference.B_Logical.BetaTrainingReal,
-    D_Inference.C_NonLogical.BinaryTrainingRealBeta,
-    B_Interpretation.D_Grammatical.BinaryFormulasUniform,
-    B_Interpretation.D_Grammatical.BinaryFormulasReal,
     E_Benchmark.Metrics.Metrics
-  hs-source-dirs: ., B_Interpretation/C_NonLogical/data/mnist
+  hs-source-dirs: ., C_NonLogical/C_Category/data/mnist
   build-depends:
     base >=4.16,
     bytestring,
@@ -78,7 +78,7 @@ library
 
 executable nesycat-hasktorch
   main-is: Main.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   build-depends:
     base,
     nesycat-hasktorch,
@@ -87,7 +87,7 @@ executable nesycat-hasktorch
 
 executable mnist-test
   main-is: MNISTMain.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   build-depends:
     base,
     nesycat-hasktorch,
@@ -98,7 +98,7 @@ executable mnist-test
 
 executable binary-test
   main-is: BinaryMainUniform.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -110,7 +110,7 @@ executable binary-test
 
 executable binary-test-jit
   main-is: BinaryMainUniformJIT.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -123,7 +123,7 @@ executable binary-test-jit
 
 executable binary-test-real
   main-is: BinaryMainReal.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -136,7 +136,7 @@ executable binary-test-real
 
 executable binary-test-jit-real
   main-is: BinaryMainRealJIT.hs
-  hs-source-dirs: B_Interpretation/D_Grammatical
+  hs-source-dirs: D_Grammatical/C_Category
   ghc-options: -rtsopts
   build-depends:
     base,
