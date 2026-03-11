@@ -1,22 +1,41 @@
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE NoStarIsType #-}
 
 module A_Categorical.A_Signature.HaskSig where
 
-import Data.Kind (Type)
-
 -- | Categorical Signature Σ_α for the Hask category.
 --
--- At the α-level, the category is always Hask (implicit).
--- No parameterization by cat needed.
+-- The α-layer defines the ambient category (always Hask, implicit).
+-- Following the 2-categorical view of Cat:
 --
---   Sorts:  Obj = Type (objects of Hask are Haskell types)
---   1-cells: endofunctors, bifunctors, constants (listed in HaskVocab)
---   2-cells: natural transformations (η, μ — declared in Cat2FunS)
+--   0-cells (sorts)         → CatObjS
+--   1-cells (functors)      → CatFunS
+--   2-cells (nat. transf.)  → Cat2FunS
+--
+-- These are abstract NAMES only (pure syntax).
+-- The vocabulary (HaskVocab) provides the real Haskell kinds.
 
 -- ============================================================
---  Sort symbol: Obj
+--  CatObjS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | Obj: the sort of objects in Hask.
---   Abstract name; realized as Data.Kind.Type in HaskRlz.
-type Obj = Type
+-- | Abstract name for the object sort.
+--   Just a name — realized as Data.Kind.Type in HaskVocab.
+class CatObjS (a :: k)
+
+-- ============================================================
+--  CatFunS: Function Symbols (1-cells / endofunctors)
+-- ============================================================
+
+-- | Abstract name for functor symbols.
+--   Just a name — the vocabulary lists the real functors.
+class CatFunS (f :: k)
+
+-- ============================================================
+--  Cat2FunS: Natural Transformation Symbols (2-cells)
+-- ============================================================
+
+-- | Abstract name for 2-cell symbols (natural transformations).
+--   η, μ, etc. — just names at the signature level.
+class Cat2FunS (f :: k)
