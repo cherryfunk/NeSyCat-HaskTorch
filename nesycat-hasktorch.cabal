@@ -9,7 +9,10 @@ maintainer: user@example.com
 
 library
   exposed-modules:
-    A_Categorical.A_Signature.CatSig,
+    A_Categorical.A_Signature.HaskSig,
+    A_Categorical.B_Realization.HaskRlz,
+    A_Categorical.C_Vocabulary.HaskVocab,
+    A_Categorical.D_Interpretation.HaskReal,
     A_Categorical.D_Interpretation.Monads.Dist,
     A_Categorical.D_Interpretation.Monads.Giry,
     A_Categorical.D_Interpretation.Monads.Expectation,

@@ -3,6 +3,7 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module A_Categorical.A_Signature.HaskSig where
 

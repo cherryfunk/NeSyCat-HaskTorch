@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 module A_Categorical.D_Interpretation.HaskReal where
 
 import A_Categorical.A_Signature.HaskSig (CatFunS (..), Cat2FunS (..))
