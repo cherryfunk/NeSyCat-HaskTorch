@@ -20,6 +20,7 @@ import Data.Void (Void)
 -- | The object types at the α-level are tuple-kinds.
 class CatObjT (a :: k)
 
+instance CatObjT ()                  -- = 0-ary objects (for constants)
 instance CatObjT Type               -- = 1-ary objects
 instance CatObjT (Type, Type)       -- = 2-ary objects (for bifunctors)
 
