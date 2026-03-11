@@ -38,13 +38,13 @@ class CatFunT (f :: k)
 instance {-# OVERLAPPABLE #-} (Monad m) => CatFunT m
 
 -- Biendofunctor symbols: (Type, Type) → Type  (curried as Type → Type → Type)
-instance CatFunT (,) -- product ⊗
+instance CatFunT (,) -- product
 
-instance CatFunT Either -- coproduct ⊕
+instance CatFunT Either -- coproduct symbol
 
-instance CatFunT (->) -- exponential / Hom
+instance CatFunT (->) -- exponential / Hom symbol
 
 -- Constant functor symbols (0-ary): Type (curried as simply Type)
-instance CatFunT () -- terminal object ⊤
+instance CatFunT () -- terminal constant symbol
 
-instance CatFunT Void -- initial object ⊥
+instance CatFunT Void -- initial constant symbol
