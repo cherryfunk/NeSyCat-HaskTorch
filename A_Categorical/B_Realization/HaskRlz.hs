@@ -1,14 +1,14 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module A_Categorical.B_Realization.HaskRlz where
 
-import A_Categorical.A_Signature.HaskSig (Obj)
+import A_Categorical.A_Signature.HaskSig (CatObjS (..))
+import Data.Kind (Type)
 
--- | Hask Realization
+-- | Hask Realization: assigns concrete Haskell kinds to the
+--   abstract sort symbols declared in HaskSig.
 --
---   The abstract sort symbol Obj is realized as Data.Kind.Type.
---   This is already the case by definition (Obj = Type in HaskSig),
---   so this module simply re-exports and documents the fact:
---
---   Obj = Type   ⇒   objects of Hask are Haskell types of kind Type.
---
---   (Unlike BinaryDataRlz/BinaryTensRlz which assign different
---   concrete types per category, here there is only one realization.)
+--   The single realization: Obj is realized as the kind Type.
+--   Objects of Hask = Haskell types of kind Type.
+instance CatObjS where
+  type Obj = Type

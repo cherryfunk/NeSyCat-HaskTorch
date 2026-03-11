@@ -1,44 +1,47 @@
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
 
 module A_Categorical.A_Signature.HaskSig where
 
+import Data.Kind (Type)
+
 -- | Higher-Order Categorical Signature Σ_α
 --
 -- This is the signature of the 2-category Cat.
--- It declares abstract NAMES only (pure syntax).
--- No realizations, no implementations.
+-- At the α-level, the ambient category Hask is implicit,
+-- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
 --
 --   CatObjS:  sort symbols      (0-cells)
 --   CatFunS:  function symbols  (1-cells)
 --   Cat2FunS: 2-cell symbols    (natural transformations)
---
--- Realizations: HaskRlz.hs  (Obj → Type, ident → runIdentity, ...)
--- Vocabulary:   HaskVocab.hs (which monads/functors are available)
 
 -- ============================================================
 --  CatObjS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | Obj: abstract name for "object of the category".
---   Realized in HaskRlz as Data.Kind.Type.
-data Obj
+-- | Abstract name for the object sort.
+class CatObjS where
+  type Obj :: Type
 
 -- ============================================================
 --  CatFunS: Function Symbols (1-cells)
 -- ============================================================
 
--- | Ident: abstract name for the identity unwrapping.
---   Realized in HaskRlz as runIdentity :: Identity a → a.
-data Ident
+-- | Abstract name for functor symbols.
+class CatFunS where
+  -- | ident: abstract name for the identity unwrapping.
+  ident :: forall f a. (forall x. f x -> x) -> f a -> a
 
 -- ============================================================
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
 -- ============================================================
 
--- | Eta: abstract name for monadic unit (η).
---   Realized in HaskRlz as return :: a → m a.
-data Eta
-
--- | Mu: abstract name for monadic multiplication (μ).
---   Realized in HaskRlz as join :: m (m a) → m a.
-data Mu
+-- | Abstract name for 2-cell symbols (natural transformations).
+class Cat2FunS where
+  -- | η: abstract name for monadic unit (return).
+  eta :: Monad m => a -> m a
+  -- | μ: abstract name for monadic multiplication (join).
+  mu  :: Monad m => m (m a) -> m a
