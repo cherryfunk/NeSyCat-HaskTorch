@@ -11,7 +11,7 @@ import Data.Kind (Type)
 
 -- | In dependently typed languages, there is an infinite tower of sorts 
 --   (e.g., Type 0 : Type 1 : Type 2...). Haskell does not have this infinite
---   hierarchy. Since GHC 0.8, Haskell uses the "Type in Type" axiom, meaning
+--   hierarchy. Since GHC 8.0, Haskell uses the "Type in Type" axiom, meaning
 --   the type of 'Type' is just 'Type' (Type : Type). We introduce this 'Kind'
 --   synonym to conceptually distinguish the level of our signature's Object sort.
 type Kind = Type
@@ -22,12 +22,12 @@ type Kind = Type
 -- At the α-level, the ambient category Hask is implicit,
 -- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
 --
---   CatObjS:  sort symbols      (0-cells)
---   CatFunS:  function symbols  (1-cells)
---   Cat2FunS: 2-cell symbols    (natural transformations)
+--   CatObjS:  category symbols                  (0-cell symbols)
+--   CatFunS:  functor symbols                   (1-cell symbols)
+--   Cat2FunS: natural transformation symbols    (2-cell symbols)
 
 -- ============================================================
---  CatObjS: Sort Symbols (0-cells)
+--  CatObjS: Category Symbols (0-cells)
 -- ============================================================
 
 -- | Abstract name for the object sort.
@@ -35,13 +35,13 @@ class CatObjS where
   type Obj :: Kind
 
 -- ============================================================
---  CatFunS: Function Symbols (1-cells)
+--  CatFunS: Functor Symbols (1-cells)
 -- ============================================================
 
 -- | Abstract name for functor symbols.
-class CatFunS where
-  -- | Abstract name for the identity function.
-  ident :: a -> a
+class CatObjS => CatFunS where
+  -- | Abstract name for the identity functor.
+  type Ident :: Obj -> Obj
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
 -- ============================================================
 
