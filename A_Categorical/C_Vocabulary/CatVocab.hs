@@ -21,36 +21,36 @@ import Data.Void (Void)
 -- ============================================================
 
 -- | Marker: a is a valid object (type) in Hask.
-class CatObjVocab a
+class CatObjT a
 
-instance CatObjVocab ()       -- terminal object ⊤
-instance CatObjVocab Void     -- initial object ⊥
-instance CatObjVocab Bool
-instance CatObjVocab Float
-instance CatObjVocab Double
-instance (CatObjVocab a, CatObjVocab b) => CatObjVocab (a, b)   -- product
-instance (CatObjVocab a, CatObjVocab b) => CatObjVocab (Either a b)  -- coproduct
+instance CatObjT ()       -- terminal object ⊤
+instance CatObjT Void     -- initial object ⊥
+instance CatObjT Bool
+instance CatObjT Float
+instance CatObjT Double
+instance (CatObjT a, CatObjT b) => CatObjT (a, b)   -- product
+instance (CatObjT a, CatObjT b) => CatObjT (Either a b)  -- coproduct
 
 -- ============================================================
---  CatFunVocab: available functor symbols (1-cells)
+--  CatFunT: available functor symbols (1-cells)
 -- ============================================================
 
 -- | Marker: f is a valid functor symbol C → C.
-class CatFunVocab (f :: Type -> Type)
+class CatFunT (f :: Type -> Type)
 
-instance CatFunVocab Identity   -- id functor
-instance CatFunVocab Maybe      -- partial functor
-instance CatFunVocab []         -- list functor
+instance CatFunT Identity   -- id functor
+instance CatFunT Maybe      -- partial functor
+instance CatFunT []         -- list functor
 
 -- ============================================================
---  CatMonadVocab: available monad symbols (functors with η, μ)
+--  CatMonadT: available monad symbols (functors with η, μ)
 -- ============================================================
 
 -- | Marker: m is a valid monad symbol (an endofunctor with unit + multiplication).
 --   Every monad is also a functor.
-class (CatFunVocab m) => CatMonadVocab (m :: Type -> Type)
+class (CatFunT m) => CatMonadT (m :: Type -> Type)
 
-instance CatMonadVocab Identity  -- trivial monad (Kl(Id) ≅ Hask)
-instance CatMonadVocab Maybe     -- partial monad
-instance CatMonadVocab []        -- list/nondeterminism monad
+instance CatMonadT Identity  -- trivial monad (Kl(Id) ≅ Hask)
+instance CatMonadT Maybe     -- partial monad
+instance CatMonadT []        -- list/nondeterminism monad
 -- Dist is defined in D_Interpretation/Monads/, add here when needed

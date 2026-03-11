@@ -13,7 +13,7 @@ import Data.Kind (Type)
 -- The α-layer defines the ambient category and its structure.
 -- Following the 2-categorical view of Cat:
 --
---   0-cells = categories           → CatSortS
+--   0-cells = categories           → CatObjS
 --   1-cells = functors             → CatFunS
 --   2-cells = natural transforms   → Cat2FunS
 --
@@ -21,13 +21,13 @@ import Data.Kind (Type)
 -- Concrete interpretations live in D_Interpretation/.
 
 -- ============================================================
---  CatSortS: Sort Symbols (0-cells)
+--  CatObjS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | CatSortS: sort symbols for the categorical layer.
+-- | CatObjS: sort symbols for the categorical layer.
 --   Declares the sort Obj (objects of the category).
 --   Instances (B_Realization/) assign concrete types.
-class CatSortS (cat :: Type -> Type) where
+class CatObjS (cat :: Type -> Type) where
   type Obj cat :: Type  -- sort: objects of the category
 
 -- ============================================================
@@ -37,7 +37,7 @@ class CatSortS (cat :: Type -> Type) where
 -- | CatFunS: plain function symbols of the categorical layer.
 --   These are 1-morphisms (endofunctors C → C).
 --   Instances live in D_Interpretation/.
-class (CatSortS cat) => CatFunS (cat :: Type -> Type) where
+class (CatObjS cat) => CatFunS (cat :: Type -> Type) where
   ident :: cat a -> a              -- Id: unwrap (identity functor counit)
 
 -- ============================================================
