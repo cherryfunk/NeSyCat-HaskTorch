@@ -1,45 +1,50 @@
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
+{-# LANGUAGE RankNTypes #-}
 
 module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
--- | Categorical Signature Σ_α for the Hask category.
+-- | Higher-order Categorical Signature Σ_α
 --
--- The α-layer defines the ambient category (always Hask).
--- Following the 2-categorical view of Cat:
+-- This is the signature of the 2-category Cat.
+-- At the α-level, the ambient category Hask is implicit,
+-- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
 --
---   0-cells (sorts)         → CatObjS
---   1-cells (functors)      → CatFunS
---   2-cells (nat. transf.)  → Cat2FunS
+-- We declare abstract NAMES that will be interpreted in D_Interpretation.
 --
--- These are abstract NAMES (pure syntax).
--- The vocabulary (HaskVocab) provides the real Haskell kinds.
+--   CatObjS:  sort symbols      (0-cells)
+--   CatFunS:  function symbols  (1-cells)
+--   Cat2FunS: 2-cell symbols    (natural transformations)
 
 -- ============================================================
 --  CatObjS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | Object sort symbols.
-class CatObjS (cat :: Type -> Type) where
-  type Obj cat :: Type
+-- | Obj: the sort of objects in Hask.
+--   Realized as Data.Kind.Type.
+type Obj = Type
 
 -- ============================================================
 --  CatFunS: Function Symbols (1-cells)
 -- ============================================================
 
--- | Functor function symbols.
-class (CatObjS cat) => CatFunS (cat :: Type -> Type) where
-  ident :: cat a -> a
+-- | ident: unwrapping from Identity.
+--   Signature: Identity a → a
+--   Interpretation (D_Interpretation): ident = runIdentity
+ident :: forall f a. (forall x. f x -> x) -> f a -> a
+ident unwrap = unwrap
 
 -- ============================================================
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
 -- ============================================================
 
--- | 2-cell symbols (natural transformations).
-class (CatFunS m) => Cat2FunS (m :: Type -> Type) where
-  eta :: a -> m a
-  mu  :: m (m a) -> m a
+-- | η: unit of a monad (return).
+--   Signature: ∀a. a → m a
+--   Interpretation: η = return
+type Eta  m = forall a. a -> m a
+
+-- | μ: multiplication of a monad (join).
+--   Signature: ∀a. m (m a) → m a
+--   Interpretation: μ = join
+type Mu   m = forall a. m (m a) -> m a
