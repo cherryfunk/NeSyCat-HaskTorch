@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
 
-module A_Categorical.A_Signature.CatSig where
+module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
