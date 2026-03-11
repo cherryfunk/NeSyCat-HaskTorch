@@ -1,10 +1,8 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RecordWildCards #-}
 
--- | Binary Classification MLP: A simple architecture h_theta : R^2 -> R^1
+-- | Binary Classification MLP (Uniform/[0,1] variant).
+--   Re-uses the same Binary_MLP architecture as BinaryRealMLP.
+--   The only difference: hTheta applies sigmoid (outputs probabilities in [0,1]).
 module C_NonLogical.D_Interpretation.BinaryUniformMLP
   ( Binary_MLP (..),
     Binary_MLPSpec (..),
@@ -13,37 +11,16 @@ module C_NonLogical.D_Interpretation.BinaryUniformMLP
   )
 where
 
-import GHC.Generics
-import Torch
-  ( Linear,
-    LinearSpec (..),
-    Parameterized,
-    Randomizable (..),
-    Tensor,
-    linear,
+import C_NonLogical.D_Interpretation.BinaryRealMLP
+  ( Binary_MLP (..),
+    Binary_MLPSpec (..),
   )
+import Torch (Tensor, linear)
 import qualified Torch
+import Torch.NN (Randomizable (..))
 import qualified Torch.Functional as F
 
-data Binary_MLPSpec = Binary_MLPSpec deriving (Show, Eq)
-
--- | Simple MLP Architecture matching the LTNtorch notebook
-data Binary_MLP = Binary_MLP
-  { fc1 :: Linear,
-    fc2 :: Linear,
-    fc3 :: Linear
-  }
-  deriving (Generic, Show, Parameterized)
-
-instance Randomizable Binary_MLPSpec Binary_MLP where
-  sample :: Binary_MLPSpec -> IO Binary_MLP
-  sample Binary_MLPSpec =
-    Binary_MLP
-      <$> sample (LinearSpec 2 16)
-      <*> sample (LinearSpec 16 16)
-      <*> sample (LinearSpec 16 1)
-
--- | h_theta : [B, 2] -> [B, 1] (probabilities)
+-- | h_theta : [B, 2] -> [B, 1] (probabilities in [0,1] via sigmoid)
 hTheta :: Binary_MLP -> Tensor -> Tensor
 hTheta Binary_MLP {..} input =
   let l1 = F.elu (1.0 :: Float) $ linear fc1 input

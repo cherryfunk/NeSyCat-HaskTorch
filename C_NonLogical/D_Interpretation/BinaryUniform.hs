@@ -47,7 +47,6 @@ setGlobalBinaryMLP = writeIORef globalBinaryMLP
 -- ============================================================
 
 instance BinaryFuns DATA where
-  type Params DATA = ()
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
@@ -67,7 +66,6 @@ instance BinaryFuns DATA where
 -- ============================================================
 
 instance BinaryFuns TENS where
-  type Params TENS = Binary_MLP
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
     let logits = hTheta m (toDynamic ptTensor)
