@@ -6,32 +6,40 @@ module A_Categorical.C_Vocabulary.CatVocab where
 
 import Data.Functor.Identity (Identity)
 import Data.Kind (Type)
+import Data.Void (Void)
 
 -- | Categorical Vocabulary κ
 --
--- The vocabulary at the α-level is minimal:
---   CatObjT — the single object type: Type (the Haskell kind)
---   CatFunT — which type constructors (functors/monads) are available
+-- CatObjT — object types (tuple-kinds): Type, (Type,Type), ...
+-- CatFunT — functor types: map between object types
 
 -- ============================================================
---  CatObjT: the object type is the kind Type
+--  CatObjT: object types (the kinds)
 -- ============================================================
 
--- | At the categorical level, there is exactly one object type: Type.
---   Individual types (Bool, Float, ...) belong at lower-layer vocabularies
---   (DATA_Vocab, TENS_Vocab).
-class CatObjT (a :: Type)
+-- | The object types at the α-level are tuple-kinds.
+class CatObjT (a :: k)
 
-instance CatObjT Type  -- the kind Type is the single object type
+instance CatObjT Type               -- = 1-ary objects
+instance CatObjT (Type, Type)       -- = 2-ary objects (for bifunctors)
 
 -- ============================================================
---  CatFunT: available functor/monad symbols (1-cells)
+--  CatFunT: functor types (1-cells mapping between object types)
 -- ============================================================
 
--- | Marker: f is a valid functor/monad symbol C → C.
-class CatFunT (f :: Type -> Type)
+-- | f is a valid functor symbol.
+class CatFunT (f :: k)
 
-instance CatFunT Identity   -- id functor / trivial monad
-instance CatFunT Maybe      -- partial monad
-instance CatFunT []         -- list / nondeterminism monad
--- Dist is defined in D_Interpretation/Monads/, add here when needed
+-- Endofunctors: Type → Type
+instance CatFunT Identity            -- id functor
+instance CatFunT Maybe               -- partial
+instance CatFunT []                  -- list / nondeterminism
+
+-- Bifunctors: (Type, Type) → Type  (curried as Type → Type → Type)
+instance CatFunT (,)                 -- product ⊗
+instance CatFunT Either              -- coproduct ⊕
+instance CatFunT (->)                -- exponential / Hom
+
+-- Constants (0-ary): Type
+instance CatFunT ()                  -- terminal object ⊤
+instance CatFunT Void                -- initial object ⊥
