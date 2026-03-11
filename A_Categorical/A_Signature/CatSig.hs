@@ -10,7 +10,7 @@ import Data.Kind (Type)
 
 -- | Categorical Signature Σ_α for the NeSyCat framework.
 --
--- The α-layer defines the ambient category Hask and its structure.
+-- The α-layer defines the ambient category and its structure.
 -- Following the 2-categorical view of Cat:
 --
 --   0-cells = categories           → CatSortS
@@ -24,10 +24,11 @@ import Data.Kind (Type)
 --  CatSortS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | CatSortS: the category symbol.
---   'Type' (from Data.Kind) is the category symbol C.
---   Its interpretation is Hask.
-type C = Type
+-- | CatSortS: the category sort symbol.
+--   Declares the sort C whose interpretation is a category.
+--   Instances (B_Realization/) assign a concrete Haskell kind.
+class CatSortS (cat :: k) where
+  type C cat :: Type  -- the category symbol: interpreted as a kind (e.g. Type = Hask)
 
 -- ============================================================
 --  CatFunS: Functor Symbols (1-cells in Cat)
