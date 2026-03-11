@@ -22,30 +22,38 @@ type Kind = Type
 -- At the α-level, the ambient category Hask is implicit,
 -- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
 --
---   CatObjS:  category symbols                  (0-cell symbols)
---   CatFunS:  functor symbols                   (1-cell symbols)
---   Cat2FunS: natural transformation symbols    (2-cell symbols)
+--   CatObjS:  category names                  (0-cell names)
+--   CatFunS:  functor names                   (1-cell names)
+--   Cat2FunS: natural transformation names    (2-cell names)
+
 
 -- ============================================================
---  CatObjS: Category Symbols (0-cells)
+--  CatObjS: Category Names (0-cells)
 -- ============================================================
 
 -- | Abstract name for the object sort.
 class CatObjS where
   type Obj :: Kind
 
--- ============================================================
---  CatFunS: Functor Symbols (1-cells)
--- ============================================================
 
--- | Abstract name for functor symbols.
+-- ============================================================
+--  CatFunS: Functor Names (1-cells)
+-- ============================================================
+-- | Abstract name for functor names.
 class CatObjS => CatFunS where
   -- | Abstract name for the identity functor.
   type Ident :: Obj -> Obj
---  Cat2FunS: Natural Transformation Symbols (2-cells)
+  -- | Abstract name for the discrete distribution functor.
+  type Dist :: Obj -> Obj
+  -- | Abstract name for the continuous (or general) distribution functor.
+  type Giry :: Obj -> Obj
+
+
+-- ============================================================
+--  Cat2FunS: Natural Transformation Names (2-cells)
 -- ============================================================
 
--- | Abstract name for 2-cell symbols (natural transformations).
+-- | Abstract name for natural transformation names.
 class Cat2FunS where
   -- | η: abstract name for monadic unit (return).
   eta :: Monad m => a -> m a
