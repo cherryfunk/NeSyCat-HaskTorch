@@ -36,6 +36,7 @@ class BinarySorts cat => BinaryFuns (cat :: Type -> Type) where
   labelA      :: Point cat -> (M cat) (Omega cat)
 
 -- | Bridge for encoding/decoding between two category interpretations.
-class (BinaryFuns from, BinaryFuns to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
+--   Only requires BinarySorts: encPoint/decOmega use only sort assignments.
+class (BinarySorts from, BinarySorts to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
   encPoint :: Point from -> Point to
   decOmega :: Omega to -> (M from) (Omega from)
