@@ -9,10 +9,11 @@ module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
--- | Conceptually, this signature defines the abstract sort for "Objects"
---   in our NeSyCat \alpha-layer. These abstract sorts will later be realized
---   as Haskell kinds (like 'Type', 'Type -> Type', etc.).
---   We define an explicit synonym for clarity.
+-- | In dependently typed languages, there is an infinite tower of sorts 
+--   (e.g., Type 0 : Type 1 : Type 2...). Haskell does not have this infinite
+--   hierarchy. Since GHC 8.0, Haskell uses the "Type in Type" axiom, meaning
+--   the type of 'Type' is just 'Type' (Type : Type). We introduce this 'Kind'
+--   synonym to conceptually distinguish the level of our signature's Object sort.
 type Kind = Type
 
 -- | Higher-Order Categorical Signature Σ_α
