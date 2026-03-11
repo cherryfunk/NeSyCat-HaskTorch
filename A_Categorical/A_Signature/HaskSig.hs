@@ -9,10 +9,10 @@ module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
--- | Conceptually, the "objects" of the category of all categories (Hask)
---   are kinds (like 'Type', 'Type -> Type', etc.). Since modern Haskell
---   unifies types and kinds ('Type : Type'), we define an explicit synonym
---   for clarity.
+-- | Conceptually, this signature defines the abstract sort for "Objects"
+--   in our NeSyCat \alpha-layer. These abstract sorts will later be realized
+--   as Haskell kinds (like 'Type', 'Type -> Type', etc.).
+--   We define an explicit synonym for clarity.
 type Kind = Type
 
 -- | Higher-Order Categorical Signature Σ_α
