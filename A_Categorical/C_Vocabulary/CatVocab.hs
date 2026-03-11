@@ -20,9 +20,11 @@ import Data.Void (Void)
 -- | The object types at the α-level are tuple-kinds.
 class CatObjT (a :: k)
 
-instance CatObjT ()                  -- = 0-ary objects (for constants)
-instance CatObjT Type               -- = 1-ary objects
-instance CatObjT (Type, Type)       -- = 2-ary objects (for bifunctors)
+instance CatObjT () -- = 0-ary objects
+
+instance CatObjT Type -- = 1-ary objects
+
+instance CatObjT (Type, Type) -- = 2-ary objects (for bifunctor symbols)
 
 -- ============================================================
 --  CatFunT: functor types (1-cells mapping between object types)
@@ -32,15 +34,20 @@ instance CatObjT (Type, Type)       -- = 2-ary objects (for bifunctors)
 class CatFunT (f :: k)
 
 -- Endofunctors: Type → Type
-instance CatFunT Identity            -- id functor
-instance CatFunT Maybe               -- partial
-instance CatFunT []                  -- list / nondeterminism
+instance CatFunT Identity -- id functor
+
+instance CatFunT Maybe -- partial
+
+instance CatFunT [] -- list / nondeterminism
 
 -- Bifunctors: (Type, Type) → Type  (curried as Type → Type → Type)
-instance CatFunT (,)                 -- product ⊗
-instance CatFunT Either              -- coproduct ⊕
-instance CatFunT (->)                -- exponential / Hom
+instance CatFunT (,) -- product ⊗
+
+instance CatFunT Either -- coproduct ⊕
+
+instance CatFunT (->) -- exponential / Hom
 
 -- Constants (0-ary): Type
-instance CatFunT ()                  -- terminal object ⊤
-instance CatFunT Void                -- initial object ⊥
+instance CatFunT () -- terminal object ⊤
+
+instance CatFunT Void -- initial object ⊥
