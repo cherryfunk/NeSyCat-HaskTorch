@@ -9,6 +9,12 @@ module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
+-- | Conceptually, the "objects" of the category of all categories (Hask)
+--   are kinds (like 'Type', 'Type -> Type', etc.). Since modern Haskell
+--   unifies types and kinds ('Type : Type'), we define an explicit synonym
+--   for clarity.
+type Kind = Type
+
 -- | Higher-Order Categorical Signature Σ_α
 --
 -- This is the signature of the 2-category Cat.
@@ -25,7 +31,7 @@ import Data.Kind (Type)
 
 -- | Abstract name for the object sort.
 class CatObjS where
-  type Obj :: Type
+  type Obj :: Kind
 
 -- ============================================================
 --  CatFunS: Function Symbols (1-cells)
