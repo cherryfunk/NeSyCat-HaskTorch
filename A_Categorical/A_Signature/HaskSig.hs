@@ -14,11 +14,21 @@ import Data.Kind (Type)
 -- At the α-level, the ambient category Hask is implicit,
 -- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
 --
+--   CatObjS:  object sort name                  (0-cell name)
 --   CatFunS:  functor names                     (1-cell names)
 --   Cat2FunS: natural transformation names      (2-cell names)
 
 
 -- ============================================================
+--  CatObjS: Object Sort (0-cells)
+-- ============================================================
+
+-- | The abstract name for the object sort is 'Type'.
+--   Since the name coincides with Haskell's built-in kind 'Type',
+--   we cannot (and need not) redeclare it. It is listed here
+--   to preserve the structure of the signature.
+--
+--   type Obj = Type    (implicit; both name and realization coincide)
 --  CatFunS: Functor Names (1-cells)
 -- ============================================================
 
