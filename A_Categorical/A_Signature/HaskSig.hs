@@ -40,13 +40,15 @@ class CatObjS where
 --  CatFunS: Functor Names (1-cells)
 -- ============================================================
 -- | Abstract name for functor names.
-class CatObjS => CatFunS where
-  -- | Abstract name for the identity functor.
-  type Ident :: Obj -> Obj
-  -- | Abstract name for the discrete distribution functor.
-  type Dist :: Obj -> Obj
-  -- | Abstract name for the continuous (or general) distribution functor.
-  type Giry :: Obj -> Obj
+--   We use 'Kind' instead of 'Obj' here because GHC cannot unify an associated
+--   type 'Obj' with '*' inside type instances without complex Type families.
+class CatFunS where
+  -- | Abstract name for the identity monad.
+  type Ident :: Kind -> Kind
+  -- | Abstract name for the distribution monad.
+  type Dist :: Kind -> Kind
+  -- | Abstract name for the continuous (or general) distribution monad.
+  type Giry :: Kind -> Kind
 
 
 -- ============================================================
