@@ -11,7 +11,7 @@ import Data.Kind (Type)
 
 -- | In dependently typed languages, there is an infinite tower of sorts 
 --   (e.g., Type 0 : Type 1 : Type 2...). Haskell does not have this infinite
---   hierarchy. Since GHC 8.0, Haskell uses the "Type in Type" axiom, meaning
+--   hierarchy. Since GHC 0.8, Haskell uses the "Type in Type" axiom, meaning
 --   the type of 'Type' is just 'Type' (Type : Type). We introduce this 'Kind'
 --   synonym to conceptually distinguish the level of our signature's Object sort.
 type Kind = Type
@@ -40,8 +40,10 @@ class CatObjS where
 
 -- | Abstract name for functor symbols.
 class CatFunS where
-  -- | ident: abstract name for the identity unwrapping.
-  ident :: forall f a. (forall x. f x -> x) -> f a -> a
+  -- | Abstract name for the identity functor.
+  type IdFun :: Kind -> Kind
+  -- | ident: abstract name for unwrapping the identity functor.
+  ident :: IdFun a -> a
 
 -- ============================================================
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
