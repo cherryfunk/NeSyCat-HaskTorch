@@ -8,7 +8,7 @@ module E_Inference.C_NonLogical.BinaryTrainingReal
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFuns (..), BinarySorts (..))
+import C_NonLogical.A_Signature.BinarySig (BinaryFunS (..), BinarySorts (..))
 import qualified B_Logical.D_Interpretation.Tensor as TENS
 import C_NonLogical.D_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)

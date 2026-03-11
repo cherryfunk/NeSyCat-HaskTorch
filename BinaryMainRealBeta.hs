@@ -11,7 +11,7 @@ import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import C_NonLogical.D_Interpretation.BinaryReal ()
 import E_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
 import D_Grammatical.D_Interpretation.BinaryFormulasRealBeta (axiomRealBeta)
-import C_NonLogical.A_Signature.BinarySig (BinaryKlFuns (classifierA))
+import C_NonLogical.A_Signature.BinarySig (BinaryKlFunS (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 

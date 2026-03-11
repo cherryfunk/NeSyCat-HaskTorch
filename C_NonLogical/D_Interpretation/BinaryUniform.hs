@@ -14,7 +14,7 @@ module C_NonLogical.D_Interpretation.BinaryUniform
 where
 
 import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), BinaryKlFuns (..), BinarySorts (..))
+import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFunS (..), BinaryKlFunS (..), BinarySorts (..))
 import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
 import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
@@ -43,10 +43,10 @@ setGlobalBinaryMLP :: Binary_MLP -> IO ()
 setGlobalBinaryMLP = writeIORef globalBinaryMLP
 
 -- ============================================================
---  DATA: plain function symbols (BinaryFuns)
+--  DATA: plain function symbols (BinaryFunS)
 -- ============================================================
 
-instance BinaryFuns DATA where
+instance BinaryFunS DATA where
   labelA :: Point DATA -> Omega DATA
   labelA (x1, x2) =
     let dx = x1 - 0.5
@@ -54,10 +54,10 @@ instance BinaryFuns DATA where
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  DATA: Kleisli function symbols (BinaryKlFuns)
+--  DATA: Kleisli function symbols (BinaryKlFunS)
 -- ============================================================
 
-instance BinaryKlFuns DATA where
+instance BinaryKlFunS DATA where
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
@@ -66,10 +66,10 @@ instance BinaryKlFuns DATA where
     return (decOmega @DATA @TENS logits)
 
 -- ============================================================
---  TENS: plain function symbols (BinaryFuns)
+--  TENS: plain function symbols (BinaryFunS)
 -- ============================================================
 
-instance BinaryFuns TENS where
+instance BinaryFunS TENS where
   labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -82,10 +82,10 @@ instance BinaryFuns TENS where
      in UnsafeMkTensor val
 
 -- ============================================================
---  TENS: Kleisli function symbols (BinaryKlFuns)
+--  TENS: Kleisli function symbols (BinaryKlFunS)
 -- ============================================================
 
-instance BinaryKlFuns TENS where
+instance BinaryKlFunS TENS where
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
     let logits = hTheta m (toDynamic ptTensor)

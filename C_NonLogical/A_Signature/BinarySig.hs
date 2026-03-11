@@ -26,16 +26,16 @@ class BinarySorts (cat :: Type -> Type) where
   type M cat :: Type -> Type     -- monad M defining the Kleisli category Kl(M)
   type Params cat :: Type        -- Θ: parameter space of I_θ
 
--- | BinaryFuns: plain (deterministic) function symbols.
+-- | BinaryFunS: plain (deterministic) function symbols.
 --   Interpreted as morphisms in C (not Kl(M)).
 --   Instances live in D_Interpretation/.
-class (BinarySorts cat) => BinaryFuns (cat :: Type -> Type) where
+class (BinarySorts cat) => BinaryFunS (cat :: Type -> Type) where
   labelA :: Point cat -> Omega cat
 
--- | BinaryKlFuns: Kleisli function symbols.
+-- | BinaryKlFunS: Kleisli function symbols.
 --   Interpreted as morphisms in Kl(M), i.e. A → M(B) in Haskell.
 --   Instances live in D_Interpretation/.
-class (BinaryFuns cat) => BinaryKlFuns (cat :: Type -> Type) where
+class (BinaryFunS cat) => BinaryKlFunS (cat :: Type -> Type) where
   classifierA :: Params cat -> Point cat -> (M cat) (Omega cat)
 
 -- | Bridge for encoding/decoding between two category interpretations.

@@ -6,7 +6,7 @@ module D_Grammatical.D_Interpretation.BinaryFormulasUniform
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFuns (labelA), BinaryKlFuns (classifierA))
+import C_NonLogical.A_Signature.BinarySig (BinaryFunS (labelA), BinaryKlFunS (classifierA))
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensUniform (Omega, bigWedgeU, negU, wedge)

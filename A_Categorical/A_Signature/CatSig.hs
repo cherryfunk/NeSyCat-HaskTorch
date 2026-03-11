@@ -16,7 +16,7 @@ import Data.Void (Void)
 --
 -- The categorical vocabulary kappa (Def. categorical-vocabulary)
 -- consists of purely SYNTACTIC symbols. Their semantic
--- interpretation belongs to B_Interpretation / C_Semantics.
+-- interpretation belongs to D_Interpretation.
 
 -- | CATEGORY SYMBOL: Type
 --
