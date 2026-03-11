@@ -9,9 +9,9 @@ module E_Inference.C_NonLogical.BinaryTrainingUniformJIT
   )
 where
 
-import C_NonLogical.C_Category.BinaryUniformMLP (Binary_MLP, binarySpec)
-import C_NonLogical.C_Category.BinaryUniform (setGlobalBinaryMLP)
-import qualified B_Logical.C_Category.TensUniform as TENS
+import C_NonLogical.D_Interpretation.BinaryUniformMLP (Binary_MLP, binarySpec)
+import C_NonLogical.D_Interpretation.BinaryUniform (setGlobalBinaryMLP)
+import qualified B_Logical.D_Interpretation.TensUniform as TENS
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..), replaceParameters, sample)

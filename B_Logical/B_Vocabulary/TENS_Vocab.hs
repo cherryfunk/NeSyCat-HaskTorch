@@ -7,7 +7,7 @@
 
 module B_Logical.B_Vocabulary.TENS_Vocab where
 
-import B_Logical.C_Category.TENS (TENS (..))
+import B_Logical.D_Interpretation.TENS (TENS (..))
 import Numeric.Natural (Natural)
 import qualified Torch.Tensor
 import Torch.Typed.Tensor (Tensor)

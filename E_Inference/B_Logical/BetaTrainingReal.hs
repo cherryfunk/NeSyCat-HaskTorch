@@ -16,8 +16,8 @@ module E_Inference.B_Logical.BetaTrainingReal
   )
 where
 
-import B_Logical.C_Category.TensUniform (Omega)
-import C_NonLogical.C_Category.BinaryRealMLP (Binary_MLP)
+import B_Logical.D_Interpretation.TensUniform (Omega)
+import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
 import Text.Printf (printf)
 import qualified Torch
 import Torch.Autograd (IndependentTensor, makeIndependent, toDependent)

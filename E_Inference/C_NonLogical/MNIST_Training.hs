@@ -11,9 +11,9 @@ module E_Inference.C_NonLogical.MNIST_Training
 where
 
 import C_NonLogical.A_Signature.MNIST_Sig (MNIST_Vocab (..))
-import B_Logical.C_Category.TENS (TENS (..))
-import C_NonLogical.C_Category.MNIST (mnistTableTENS, setGlobalMLP)
-import C_NonLogical.C_Category.MNIST_MLP (MLP, hTheta, mnistSpec)
+import B_Logical.D_Interpretation.TENS (TENS (..))
+import C_NonLogical.D_Interpretation.MNIST (mnistTableTENS, setGlobalMLP)
+import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import Data.List (foldl')
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)

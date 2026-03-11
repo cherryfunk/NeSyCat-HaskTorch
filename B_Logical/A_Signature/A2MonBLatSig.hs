@@ -4,7 +4,7 @@
 
 module B_Logical.A_Signature.A2MonBLatSig where
 
-import A_Categorical.C_Category.Monads.Giry (Giry)
+import A_Categorical.D_Interpretation.Monads.Giry (Giry)
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
 --   Extends 2Mon-BLat with four infinitary guarded quantifiers.
