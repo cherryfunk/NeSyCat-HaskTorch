@@ -56,9 +56,8 @@ instance BinarySig DATA where
     return (decOmega @DATA @TENS logits)
 
   labelA :: Point DATA -> M DATA (Omega DATA)
-  labelA pt =
-    let [x1, x2] = pt
-        dx = x1 - 0.5
+  labelA (x1, x2) =
+    let dx = x1 - 0.5
         dy = x2 - 0.5
         isInside = dx * dx + dy * dy < 0.09
      in Dist [(True, if isInside then 1.0 else 0.0), (False, if isInside then 0.0 else 1.0)]
@@ -91,7 +90,7 @@ instance BinarySig TENS where
 
 instance Binary_Bridge DATA TENS where
   encPoint :: Point DATA -> Point TENS
-  encPoint pt = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor pt))
+  encPoint (x1, x2) = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 
   decOmega :: Omega TENS -> (M DATA) (Omega DATA)
   decOmega probs =

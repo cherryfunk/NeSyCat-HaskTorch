@@ -32,8 +32,8 @@ main = do
     testLabels
 
   putStrLn "\n--- Inference Test using DATA Category ---"
-  let pt1 = [0.5, 0.5] :: [Float]
-  let pt2 = [0.9, 0.9] :: [Float]
+  let pt1 = (0.5, 0.5) :: (Float, Float)
+  let pt2 = (0.9, 0.9) :: (Float, Float)
   let ans1 = classifierA @DATA () pt1
   let ans2 = classifierA @DATA () pt2
   putStrLn $ "Inference for " ++ show pt1 ++ ": " ++ show ans1
