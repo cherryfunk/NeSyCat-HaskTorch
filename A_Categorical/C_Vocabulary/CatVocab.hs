@@ -32,25 +32,13 @@ instance (CatObjT a, CatObjT b) => CatObjT (a, b)   -- product
 instance (CatObjT a, CatObjT b) => CatObjT (Either a b)  -- coproduct
 
 -- ============================================================
---  CatFunT: available functor symbols (1-cells)
+--  CatFunT: available functor/monad symbols (1-cells)
 -- ============================================================
 
--- | Marker: f is a valid functor symbol C → C.
+-- | Marker: f is a valid functor/monad symbol C → C.
 class CatFunT (f :: Type -> Type)
 
-instance CatFunT Identity   -- id functor
-instance CatFunT Maybe      -- partial functor
-instance CatFunT []         -- list functor
-
--- ============================================================
---  CatMonadT: available monad symbols (functors with η, μ)
--- ============================================================
-
--- | Marker: m is a valid monad symbol (an endofunctor with unit + multiplication).
---   Every monad is also a functor.
-class (CatFunT m) => CatMonadT (m :: Type -> Type)
-
-instance CatMonadT Identity  -- trivial monad (Kl(Id) ≅ Hask)
-instance CatMonadT Maybe     -- partial monad
-instance CatMonadT []        -- list/nondeterminism monad
+instance CatFunT Identity   -- id functor / trivial monad
+instance CatFunT Maybe      -- partial monad
+instance CatFunT []         -- list / nondeterminism monad
 -- Dist is defined in D_Interpretation/Monads/, add here when needed
