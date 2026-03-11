@@ -22,7 +22,7 @@ where
 
 import B_Logical.C_Vocabulary.TENS_Vocab ()
 import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..), MNIST_Bridge (..), MNIST_Vocab (..))
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.Tensor hiding (Omega, TENS)
 import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)

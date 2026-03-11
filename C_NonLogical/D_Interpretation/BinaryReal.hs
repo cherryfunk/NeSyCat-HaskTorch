@@ -29,7 +29,7 @@ import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), 
 import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
 import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import qualified B_Logical.D_Interpretation.Boolean as BoolLogic
 import B_Logical.D_Interpretation.TensReal hiding (Omega, TENS)

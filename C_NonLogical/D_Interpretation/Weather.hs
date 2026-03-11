@@ -2,7 +2,7 @@
 module C_NonLogical.D_Interpretation.Weather where
 
 import C_NonLogical.A_Signature.Weather_Sig (Worlds, WorldsRow (..))
-import B_Logical.D_Interpretation.DATA (tableLookup)
+import C_NonLogical.D_Interpretation.DATA (tableLookup)
 import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
 
 ------------------------------------------------------

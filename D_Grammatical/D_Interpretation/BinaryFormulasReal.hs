@@ -7,7 +7,7 @@ module D_Grammatical.D_Interpretation.BinaryFormulasReal
 where
 
 import C_NonLogical.A_Signature.BinarySig (BinaryFuns (classifierA, labelA))
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensReal (bigWedgeR, negR, wedgeR)
 import B_Logical.D_Interpretation.TensUniform (Omega)

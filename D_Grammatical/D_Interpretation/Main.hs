@@ -9,7 +9,7 @@ module Main where
 
 import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..), MNIST_Vocab (Digit, Image, M, add, digit, digitEq, digitPlus))
 import D_Grammatical.A_Signature.FormulasSig (loadFormulas)
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.Boolean
 import C_NonLogical.D_Interpretation.Countable
 import C_NonLogical.D_Interpretation.Crossing

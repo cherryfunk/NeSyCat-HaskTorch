@@ -19,7 +19,7 @@ library
     B_Logical.C_Vocabulary.TENS_Vocab,
     B_Logical.C_Vocabulary.FDATA_Vocab,
     B_Logical.D_Interpretation.TENS,
-    B_Logical.D_Interpretation.DATA,
+    C_NonLogical.D_Interpretation.DATA,
     B_Logical.D_Interpretation.FDATA,
     B_Logical.D_Interpretation.Tensor,
     B_Logical.D_Interpretation.TensReal,

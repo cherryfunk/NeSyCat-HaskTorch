@@ -4,7 +4,7 @@
 -- | Binary Classification evaluation (TensUniform, eager only).
 module Main where
 
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.BinaryUniformMLP (hTheta)
 import C_NonLogical.D_Interpretation.BinaryUniform ()
 import E_Inference.C_NonLogical.BinaryTrainingUniform (trainBinaryUniform)

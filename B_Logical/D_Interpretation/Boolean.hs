@@ -4,7 +4,7 @@
 -- | Logical interpretation: Classical Boolean Logic ($\Omega = \{\text{True}, \text{False}\}$)
 module B_Logical.D_Interpretation.Boolean where
 
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.Supremum (enumAll)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=

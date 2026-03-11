@@ -10,7 +10,7 @@ module B_Logical.D_Interpretation.Real where
 import B_Logical.A_Signature.A2MonBLatSig (A2MonBLat_Sig (..))
 import B_Logical.A_Signature.TwoMonBLatSig (TwoMonBLat_Sig (..))
 import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.Supremum (enumAll, inf, sup)
 import A_Categorical.D_Interpretation.Monads.Expectation (HasExpectation (..))
 import Numeric.Natural (Natural)

@@ -6,7 +6,7 @@
 --   Joint optimization of β (LogSumExp sharpness) and θ (MLP weights).
 module Main where
 
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import C_NonLogical.D_Interpretation.BinaryReal ()
 import E_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)

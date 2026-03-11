@@ -2,7 +2,7 @@
 
 module B_Logical.D_Interpretation.FDATA where
 
-import B_Logical.D_Interpretation.DATA (DATA)
+import C_NonLogical.D_Interpretation.DATA (DATA)
 
 -- | The category FDATA (cartesian closed extension of DATA)
 -- FDATA = DATA + exponentials (function objects) + monadic objects.

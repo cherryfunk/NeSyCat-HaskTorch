@@ -16,7 +16,7 @@ module C_NonLogical.D_Interpretation.Supremum
   )
 where
 
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import Numeric.Natural (Natural)
 
 ------------------------------------------------------

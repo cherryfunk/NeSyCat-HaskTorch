@@ -4,7 +4,7 @@
 -- | Logical interpretation: Logic Tensor Networks with p-mean approximation (LTNp, $\$\Omega = [0,1]$ \subset \mathbb{R}$)
 module B_Logical.D_Interpretation.LTNp where
 
-import B_Logical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import A_Categorical.D_Interpretation.Monads.Expectation (HasExpectation (..))
 import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
 import C_NonLogical.D_Interpretation.Supremum (enumAll, inf, sup)
