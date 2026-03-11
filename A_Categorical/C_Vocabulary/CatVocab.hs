@@ -9,19 +9,20 @@ import Data.Kind (Type)
 
 -- | Categorical Vocabulary κ
 --
--- Enumerates the available categorical symbols.
--- At the α-level, every Haskell type (kind Type) is an object of Hask,
--- so CatObjT is trivial. The interesting vocabulary is CatFunT:
--- which type constructors (functors/monads) are available.
+-- The vocabulary at the α-level is minimal:
+--   CatObjT — the single object type: Type (the Haskell kind)
+--   CatFunT — which type constructors (functors/monads) are available
 
 -- ============================================================
---  CatObjT: the object type of Hask is just Type (the kind)
+--  CatObjT: the object type is the kind Type
 -- ============================================================
 
--- | Every Haskell type is an object of Hask.
---   This is trivially universal — no enumeration needed.
---   Specific sublayers (DATA_Vocab, TENS_Vocab) restrict further.
+-- | At the categorical level, there is exactly one object type: Type.
+--   Individual types (Bool, Float, ...) belong at lower-layer vocabularies
+--   (DATA_Vocab, TENS_Vocab).
 class CatObjT (a :: Type)
+
+instance CatObjT Type  -- the kind Type is the single object type
 
 -- ============================================================
 --  CatFunT: available functor/monad symbols (1-cells)
