@@ -16,29 +16,25 @@ import Data.Kind (Type)
 -- Funs   = {classifierA : Params × Point → M Omega,
 --           labelA      : Point → M Omega}
 
--- | Layer 1 — BinarySorts: assigns abstract sort names to Haskell types.
+-- | Layer B_Realization — BinarySorts: assigns abstract sort names to concrete Haskell types.
 --   Instances live in B_Realization/.
---   Params is NOT a sort; it is interpretation-specific and lives in BinarySig.
 class BinarySorts (cat :: Type -> Type) where
-  -- | The sort of a single data example
-  type Point cat :: Type
-  -- | The sort of truth values
-  type Omega cat :: Type
-  -- | The computational context (effect monad)
-  type M     cat :: Type -> Type
+  type Point cat :: Type          -- sort: input data point (e.g. ℝ²)
+  type Omega cat :: Type          -- sort: truth value (e.g. Bool, [0,1])
+  type M     cat :: Type -> Type  -- sort: computational context (monad)
 
--- | Layer 2 — BinarySig: function interpretation + Params type.
---   Requires BinarySorts. Instances live in D_Interpretation/.
-class BinarySorts cat => BinarySig (cat :: Type -> Type) where
-  -- | Parameter type for classifierA (e.g., neural network weights).
-  --   Interpretation-specific: Real uses BinaryRealMLP, Uniform uses BinaryUniformMLP.
+-- | Layer D_Interpretation — BinaryFuns: interprets the function symbols classifierA and labelA.
+--   Requires BinarySorts (sort assignment must be given first).
+--   Instances live in D_Interpretation/.
+--
+--   Note: `Params` is not a sort or function symbol from the abstract signature;
+--   it is an implementation parameter needed to express the type of classifierA in Haskell.
+class BinarySorts cat => BinaryFuns (cat :: Type -> Type) where
   type Params cat :: Type
-  -- | Predicate A: trainable classifier
   classifierA :: Params cat -> Point cat -> (M cat) (Omega cat)
-  -- | Ground truth label: computable predicate
-  labelA :: Point cat -> (M cat) (Omega cat)
+  labelA      :: Point cat -> (M cat) (Omega cat)
 
--- | Bridge for encoding/decoding between categories.
-class (BinarySig from, BinarySig to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
+-- | Bridge for encoding/decoding between two category interpretations.
+class (BinaryFuns from, BinaryFuns to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
   encPoint :: Point from -> Point to
   decOmega :: Omega to -> (M from) (Omega from)

@@ -9,7 +9,7 @@ module D_Grammatical.D_Interpretation.BinaryFormulasRealBeta
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinarySig (classifierA, labelA))
+import C_NonLogical.A_Signature.BinarySig (BinaryFuns (classifierA, labelA))
 import B_Logical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensRealBeta (bigWedgeRBeta, negR, wedgeRBeta)

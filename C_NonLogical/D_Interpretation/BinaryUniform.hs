@@ -14,7 +14,7 @@ module C_NonLogical.D_Interpretation.BinaryUniform
 where
 
 import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinarySig (..), BinarySorts (..))
+import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), BinarySorts (..))
 import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
 import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
@@ -46,7 +46,7 @@ setGlobalBinaryMLP = writeIORef globalBinaryMLP
 --  DATA: classifierA + labelA
 -- ============================================================
 
-instance BinarySig DATA where
+instance BinaryFuns DATA where
   type Params DATA = ()
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
@@ -66,7 +66,7 @@ instance BinarySig DATA where
 --  TENS: classifierA + labelA
 -- ============================================================
 
-instance BinarySig TENS where
+instance BinaryFuns TENS where
   type Params TENS = Binary_MLP
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do

@@ -11,10 +11,10 @@
 -- | D_Interpretation: function implementations for Binary Classification.
 --
 --   Sort assignments are in B_Realization (BinaryDataRlz, BinaryTensRlz).
---   This module only provides:
---     1. BinarySort — GADT witnessing which sorts belong to this interpretation
---     2. BinarySig DATA — classifierA + labelA for the DATA category
---     3. BinarySig TENS — classifierA + labelA for the TENS category
+--   This module provides:
+--     1. BinarySort — GADT sort descriptor (carries sort membership at the term level)
+--     2. BinaryFuns DATA — classifierA + labelA for the DATA category
+--     3. BinaryFuns TENS — classifierA + labelA for the TENS category
 --     4. Binary_Bridge DATA TENS — encPoint + decOmega
 module C_NonLogical.D_Interpretation.BinaryReal
   ( BinarySort (..),
@@ -25,7 +25,7 @@ module C_NonLogical.D_Interpretation.BinaryReal
 where
 
 import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinarySig (..), BinarySorts (..))
+import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFuns (..), BinarySorts (..))
 import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
 import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
 import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
@@ -50,8 +50,9 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 --  Analogous to TENS a witnessing valid tensor sorts.
 -- ============================================================
 
--- | Witness that type `a` is a valid sort in the binary classification
---   interpretation of category `cat`.
+-- | GADT sort descriptor for the BinaryReal interpretation.
+--   Each constructor carries the sort membership to the term level,
+--   analogous to how TENS a stores which type a is a tensor sort.
 data BinarySort (cat :: Type -> Type) a where
   DataPoint :: BinarySort DATA (Point DATA)  -- = (Float, Float) = ℝ²
   DataOmega :: BinarySort DATA (Omega DATA)  -- = Bool
@@ -75,7 +76,7 @@ setGlobalBinaryMLP = writeIORef globalBinaryMLP
 --  DATA: classifierA + labelA
 -- ============================================================
 
-instance BinarySig DATA where
+instance BinaryFuns DATA where
   type Params DATA = ()
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
@@ -95,7 +96,7 @@ instance BinarySig DATA where
 --  TENS: classifierA + labelA
 -- ============================================================
 
-instance BinarySig TENS where
+instance BinaryFuns TENS where
   type Params TENS = Binary_MLP
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
