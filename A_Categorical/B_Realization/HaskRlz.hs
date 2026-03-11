@@ -1,21 +1,14 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeFamilies #-}
-
 module A_Categorical.B_Realization.HaskRlz where
 
-import A_Categorical.A_Signature.HaskSig (CatObjS (..))
-import Data.Kind (Type)
+import A_Categorical.A_Signature.HaskSig (Obj)
 
--- | Hask Realization: assigns concrete Haskell kinds to the
---   abstract sort symbols declared in HaskSig.
+-- | Hask Realization
 --
---   The single realization: Obj is realized as the kind Type.
---   Objects of Hask = Haskell types of kind Type.
-
--- | A dummy wrapper to serve as the category parameter for Hask.
---   (Hask itself is not a Haskell type constructor, so we use
---   a newtype tag to parameterize the signature classes.)
-newtype Hask a = Hask a
-
-instance CatObjS Hask where
-  type Obj Hask = Type  -- objects of Hask are Haskell types
+--   The abstract sort symbol Obj is realized as Data.Kind.Type.
+--   This is already the case by definition (Obj = Type in HaskSig),
+--   so this module simply re-exports and documents the fact:
+--
+--   Obj = Type   ⇒   objects of Hask are Haskell types of kind Type.
+--
+--   (Unlike BinaryDataRlz/BinaryTensRlz which assign different
+--   concrete types per category, here there is only one realization.)

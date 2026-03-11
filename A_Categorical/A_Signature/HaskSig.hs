@@ -1,55 +1,22 @@
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
 
 module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
--- | Categorical Signature Σ_α for the NeSyCat framework.
+-- | Categorical Signature Σ_α for the Hask category.
 --
--- The α-layer defines the ambient category and its structure.
--- Following the 2-categorical view of Cat:
+-- At the α-level, the category is always Hask (implicit).
+-- No parameterization by cat needed.
 --
---   0-cells = categories           → CatObjS
---   1-cells = functors             → CatFunS
---   2-cells = natural transforms   → Cat2FunS
---
--- This module declares abstract SYMBOLS only.
--- Concrete interpretations live in D_Interpretation/.
+--   Sorts:  Obj = Type (objects of Hask are Haskell types)
+--   1-cells: endofunctors, bifunctors, constants (listed in HaskVocab)
+--   2-cells: natural transformations (η, μ — declared in Cat2FunS)
 
 -- ============================================================
---  CatObjS: Sort Symbols (0-cells)
+--  Sort symbol: Obj
 -- ============================================================
 
--- | CatObjS: sort symbols for the categorical layer.
---   Declares the sort Obj (objects of the category).
---   Instances (B_Realization/) assign concrete types.
-class CatObjS (cat :: Type -> Type) where
-  type Obj cat :: Type  -- sort: objects of the category
-
--- ============================================================
---  CatFunS: Function Symbols (1-cells / endofunctors)
--- ============================================================
-
--- | CatFunS: plain function symbols of the categorical layer.
---   These are 1-morphisms (endofunctors C → C).
---   Instances live in D_Interpretation/.
-class (CatObjS cat) => CatFunS (cat :: Type -> Type) where
-  ident :: cat a -> a              -- Id: unwrap (identity functor counit)
-
--- ============================================================
---  Cat2FunS: Natural Transformation Symbols (2-cells in Cat)
--- ============================================================
-
--- | Cat2FunS: 2-cell symbols — natural transformations.
---   For each monad M, the 2-cells are:
---     η : Id ⇒ M    (unit / return)
---     μ : M∘M ⇒ M   (multiplication / join)
---
---   Abstract declarations only; implementations in D_Interpretation/.
-class (CatFunS m) => Cat2FunS (m :: Type -> Type) where
-  eta :: a -> m a                  -- η: unit of the monad
-  mu  :: m (m a) -> m a           -- μ: multiplication of the monad
+-- | Obj: the sort of objects in Hask.
+--   Abstract name; realized as Data.Kind.Type in HaskRlz.
+type Obj = Type
