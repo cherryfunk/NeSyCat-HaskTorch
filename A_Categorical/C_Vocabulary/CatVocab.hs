@@ -1,16 +1,16 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module A_Categorical.C_Vocabulary.CatVocab where
 
-import Data.Functor.Identity (Identity)
 import Data.Kind (Type)
 import Data.Void (Void)
 
 -- | Categorical Vocabulary κ
 --
--- CatObjT — object types (tuple-kinds): Type, (Type,Type), ...
+-- CatObjT — object types (tuple-kinds): (), Type, (Type,Type), ...
 -- CatFunT — functor types: map between object types
 
 -- ============================================================
@@ -33,21 +33,18 @@ instance CatObjT (Type, Type) -- = 2-ary objects (for bifunctor symbols)
 -- | f is a valid functor symbol.
 class CatFunT (f :: k)
 
--- Endofunctors: Type → Type
-instance CatFunT Identity -- id functor
+-- Endofunctor/Monad symbols: Type → Type
+-- All Monads are automatically functor symbols.
+instance {-# OVERLAPPABLE #-} (Monad m) => CatFunT m
 
-instance CatFunT Maybe -- partial
-
-instance CatFunT [] -- list / nondeterminism
-
--- Bifunctors: (Type, Type) → Type  (curried as Type → Type → Type)
+-- Biendofunctor symbols: (Type, Type) → Type  (curried as Type → Type → Type)
 instance CatFunT (,) -- product ⊗
 
 instance CatFunT Either -- coproduct ⊕
 
 instance CatFunT (->) -- exponential / Hom
 
--- Constants (0-ary): Type
+-- Constant functor symbols (0-ary): Type (curried as simply Type)
 instance CatFunT () -- terminal object ⊤
 
 instance CatFunT Void -- initial object ⊥
