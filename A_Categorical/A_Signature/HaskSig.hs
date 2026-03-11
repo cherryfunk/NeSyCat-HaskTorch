@@ -1,50 +1,44 @@
 {-# LANGUAGE NoStarIsType #-}
-{-# LANGUAGE RankNTypes #-}
 
 module A_Categorical.A_Signature.HaskSig where
 
-import Data.Kind (Type)
-
--- | Higher-order Categorical Signature Σ_α
+-- | Higher-Order Categorical Signature Σ_α
 --
 -- This is the signature of the 2-category Cat.
--- At the α-level, the ambient category Hask is implicit,
--- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
---
--- We declare abstract NAMES that will be interpreted in D_Interpretation.
+-- It declares abstract NAMES only (pure syntax).
+-- No realizations, no implementations.
 --
 --   CatObjS:  sort symbols      (0-cells)
 --   CatFunS:  function symbols  (1-cells)
 --   Cat2FunS: 2-cell symbols    (natural transformations)
+--
+-- Realizations: HaskRlz.hs  (Obj → Type, ident → runIdentity, ...)
+-- Vocabulary:   HaskVocab.hs (which monads/functors are available)
 
 -- ============================================================
 --  CatObjS: Sort Symbols (0-cells)
 -- ============================================================
 
--- | Obj: the sort of objects in Hask.
---   Realized as Data.Kind.Type.
-type Obj = Type
+-- | Obj: abstract name for "object of the category".
+--   Realized in HaskRlz as Data.Kind.Type.
+data Obj
 
 -- ============================================================
 --  CatFunS: Function Symbols (1-cells)
 -- ============================================================
 
--- | ident: unwrapping from Identity.
---   Signature: Identity a → a
---   Interpretation (D_Interpretation): ident = runIdentity
-ident :: forall f a. (forall x. f x -> x) -> f a -> a
-ident unwrap = unwrap
+-- | Ident: abstract name for the identity unwrapping.
+--   Realized in HaskRlz as runIdentity :: Identity a → a.
+data Ident
 
 -- ============================================================
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
 -- ============================================================
 
--- | η: unit of a monad (return).
---   Signature: ∀a. a → m a
---   Interpretation: η = return
-type Eta  m = forall a. a -> m a
+-- | Eta: abstract name for monadic unit (η).
+--   Realized in HaskRlz as return :: a → m a.
+data Eta
 
--- | μ: multiplication of a monad (join).
---   Signature: ∀a. m (m a) → m a
---   Interpretation: μ = join
-type Mu   m = forall a. m (m a) -> m a
+-- | Mu: abstract name for monadic multiplication (μ).
+--   Realized in HaskRlz as join :: m (m a) → m a.
+data Mu
