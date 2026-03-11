@@ -1,33 +1,36 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module A_Syntax.B_Logical.TENS_Vocab where
 
+import B_Interpretation.B_Typological.TENS (TENS (..))
 import Numeric.Natural (Natural)
 import qualified Torch.Tensor
 import Torch.Typed.Tensor (Tensor)
 
 -- | Vocabulary for the tensor category TENS.
---   Objects are exactly the types that can appear as domains/codomains
---   in the TENS category: tensor spaces R^shape, finite sets (Natural indices),
---   products, and the unit.
-class TensVocab a
+--   Every sort must provide its canonical TENS witness.
+--   This locks TensVocab and TENS together:
+--   you cannot add a sort without a TENS constructor.
+class TensVocab a where
+  tensWitness :: TENS a
 
--- | Typed tensor spaces R^shape (the core objects)
-instance TensVocab (Tensor device dtype shape)
+instance TensVocab (Tensor d dt s) where
+  tensWitness :: TENS (Tensor d dt s)
+  tensWitness = TensorSpace
 
--- | Untyped dynamic tensor (for interop)
-instance TensVocab Torch.Tensor.Tensor
+instance TensVocab Natural where
+  tensWitness :: TENS Natural
+  tensWitness = TensFin
 
--- | Finite sets {0,...,n-1}: dataset index domain (n :: Natural)
-instance TensVocab Natural
+instance (TensVocab a, TensVocab b) => TensVocab (a, b) where
+  tensWitness :: (TensVocab a, TensVocab b) => TENS (a, b)
+  tensWitness = TensProd tensWitness tensWitness
 
--- | Finite products (pairs)
-instance (TensVocab a, TensVocab b) => TensVocab (a, b)
-
--- | Terminal object (unit)
-instance TensVocab ()
+instance TensVocab () where
+  tensWitness :: TENS ()
+  tensWitness = TensUnit
