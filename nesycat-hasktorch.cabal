@@ -34,6 +34,8 @@ library
     B_Logical.D_Interpretation.LTNp,
     B_Logical.D_Interpretation.JitCompile,
     C_NonLogical.A_Signature.BinarySig,
+    C_NonLogical.B_Realization.BinaryDataRlz,
+    C_NonLogical.B_Realization.BinaryTensRlz,
     C_NonLogical.A_Signature.MNIST_Sig,
     C_NonLogical.A_Signature.Dice_Sig,
     C_NonLogical.A_Signature.Crossing_Sig,

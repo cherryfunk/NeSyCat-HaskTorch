@@ -9,7 +9,7 @@ import C_NonLogical.D_Interpretation.BinaryUniformMLP (hTheta)
 import C_NonLogical.D_Interpretation.BinaryUniform ()
 import E_Inference.C_NonLogical.BinaryTrainingUniform (trainBinaryUniform)
 import D_Grammatical.D_Interpretation.BinaryFormulasUniform (axiomUniform)
-import C_NonLogical.A_Signature.BinarySig (Binary_Sig (classifierA))
+import C_NonLogical.A_Signature.BinarySig (BinarySig (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 
 main :: IO ()

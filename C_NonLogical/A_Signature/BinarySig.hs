@@ -10,32 +10,35 @@ module C_NonLogical.A_Signature.BinarySig where
 
 import Data.Kind (Type)
 
--- | Non-Logical Vocabulary Σ for the Binary Classification domain.
+-- | Non-Logical Signature Σ for the Binary Classification domain.
 --
--- Sor = {Point}
--- Fun = {A : Point → Truth}
-class Binary_Sig (cat :: Type -> Type) where
-  -- | The sort representing a single data example (e.g., a 2D coordinate)
+-- Sorts  = {Point, Omega, M}
+-- Funs   = {classifierA : Params × Point → M Omega,
+--           labelA      : Point → M Omega}
+
+-- | Layer 1 — BinarySorts: assigns abstract sort names to Haskell types.
+--   Instances live in B_Realization/.
+--   Params is NOT a sort; it is interpretation-specific and lives in BinarySig.
+class BinarySorts (cat :: Type -> Type) where
+  -- | The sort of a single data example
   type Point cat :: Type
-
-  -- | The sort representing the truth value -- should be always instantiated with the respective Omega from the logical vocabulary
+  -- | The sort of truth values
   type Omega cat :: Type
-
   -- | The computational context (effect monad)
-  type M cat :: Type -> Type
+  type M     cat :: Type -> Type
 
-  -- | The parameters required to evaluate predicates (e.g., neural network weights)
+-- | Layer 2 — BinarySig: function interpretation + Params type.
+--   Requires BinarySorts. Instances live in D_Interpretation/.
+class BinarySorts cat => BinarySig (cat :: Type -> Type) where
+  -- | Parameter type for classifierA (e.g., neural network weights).
+  --   Interpretation-specific: Real uses BinaryRealMLP, Uniform uses BinaryUniformMLP.
   type Params cat :: Type
-
-  -- | Predicate A: The trainable classifier mapping a point to its truth value
+  -- | Predicate A: trainable classifier
   classifierA :: Params cat -> Point cat -> (M cat) (Omega cat)
-
-  -- | Ground truth label: a computable predicate (NOT empirical data)
+  -- | Ground truth label: computable predicate
   labelA :: Point cat -> (M cat) (Omega cat)
 
--- | Bridge for mapping domains between categories (e.g., DATA -> TENS)
-class (Binary_Sig from, Binary_Sig to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
+-- | Bridge for encoding/decoding between categories.
+class (BinarySig from, BinarySig to) => Binary_Bridge (from :: Type -> Type) (to :: Type -> Type) where
   encPoint :: Point from -> Point to
-
-  -- | Decode the Truth Value tensor probabilities back into the mathematical distribution model
   decOmega :: Omega to -> (M from) (Omega from)
