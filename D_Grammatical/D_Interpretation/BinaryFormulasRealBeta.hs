@@ -17,9 +17,12 @@ import B_Logical.D_Interpretation.TensUniform (Omega)
 import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
 -- Instance import (needed for @TENS type family resolution)
 import C_NonLogical.D_Interpretation.BinaryReal ()
-import Data.Functor.Identity (runIdentity)
+import Data.Functor.Identity (Identity, runIdentity)
 import qualified Torch
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
+
+ident :: Identity a -> a
+ident = runIdentity
 
 -- | The pure logical axiom for TensReal (Binary_MLP), parameterized by β.
 --
@@ -27,7 +30,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 axiomRealBeta :: Torch.Tensor -> Torch.Tensor -> Binary_MLP -> Omega
 axiomRealBeta betaT dataTensor m =
   let pt = UnsafeMkTensor dataTensor
-      preds = toDynamic (runIdentity (classifierA @TENS m pt))
+      preds = toDynamic . ident $ classifierA @TENS m pt
       labels = toDynamic (labelA @TENS pt)
       negLabels = Torch.onesLike labels - labels
       forallPos = bigWedgeRBeta betaT labels preds

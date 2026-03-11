@@ -13,15 +13,18 @@ import B_Logical.D_Interpretation.TensUniform (Omega, bigWedgeU, negU, wedge)
 import C_NonLogical.D_Interpretation.BinaryUniformMLP (Binary_MLP)
 -- Instance import (needed for @TENS type family resolution)
 import C_NonLogical.D_Interpretation.BinaryUniform ()
-import Data.Functor.Identity (runIdentity)
+import Data.Functor.Identity (Identity, runIdentity)
 import qualified Torch
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
+
+ident :: Identity a -> a
+ident = runIdentity
 
 -- | The pure logical axiom for TensUniform (Binary_MLP with sigmoid).
 axiomUniform :: Torch.Tensor -> Binary_MLP -> Omega
 axiomUniform dataTensor m =
   let pt = UnsafeMkTensor dataTensor
-      preds = toDynamic (runIdentity (classifierA @TENS m pt))
+      preds = toDynamic . ident $ classifierA @TENS m pt
       labels = toDynamic (labelA @TENS pt)
       forallPos = bigWedgeU labels preds
       forallNeg = bigWedgeU (negU labels) (negU preds)
