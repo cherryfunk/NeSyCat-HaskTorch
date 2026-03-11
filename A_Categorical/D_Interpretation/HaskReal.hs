@@ -10,8 +10,7 @@ import Data.Functor.Identity (Identity, runIdentity)
 --   abstract function symbols declared in HaskSig.
 
 instance CatFunS where
-  type IdFun = Identity
-  ident = runIdentity
+  ident = id
 
 instance Cat2FunS where
   eta = return

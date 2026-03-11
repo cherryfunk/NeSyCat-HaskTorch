@@ -40,12 +40,8 @@ class CatObjS where
 
 -- | Abstract name for functor symbols.
 class CatFunS where
-  -- | Abstract name for the identity functor.
-  type IdFun :: Kind -> Kind
-  -- | ident: abstract name for unwrapping the identity functor.
-  ident :: IdFun a -> a
-
--- ============================================================
+  -- | Abstract name for the identity function.
+  ident :: a -> a
 --  Cat2FunS: Natural Transformation Symbols (2-cells)
 -- ============================================================
 
