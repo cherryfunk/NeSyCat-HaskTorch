@@ -1,28 +1,25 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 
 module A_Categorical.B_Realization.HaskRlz where
 
-import A_Categorical.A_Signature.HaskSig (CatObjS (..), CatFunS (..))
-import Data.Kind (Type)
+import A_Categorical.A_Signature.HaskSig (CatFunS (..), Cat2FunS (..))
 import Data.Functor.Identity (Identity)
 import qualified A_Categorical.D_Interpretation.Monads.Dist as M
 import qualified A_Categorical.D_Interpretation.Monads.Giry as M
+import Control.Monad (join)
 
--- | Hask Realization: assigns concrete Haskell kinds to the
---   abstract sort symbols declared in HaskSig.
---
---   The single realization: Obj is realized as the kind Type.
---   Objects of Hask = Haskell types of kind Type.
-instance CatObjS where
-  type Obj = Type
+-- | Hask Realization: assigns concrete Haskell types to the
+--   abstract names declared in HaskSig.
 
--- | Realization of functor names to actual Functors/Monads in Hask.
+-- | Functor names realized as concrete Haskell monads.
 instance CatFunS where
   type Ident = Identity
   type Dist = M.Dist
   type Giry = M.Giry
-  type Dist = M.Dist
-  type Giry = M.Giry
+
+-- | Natural transformation names realized as concrete functions.
+instance Cat2FunS where
+  eta = return
+  mu  = join
