@@ -1,16 +1,16 @@
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
-module A_Categorical.D_Interpretation.Monads.Dist where
+-- | Interpretation of the Dist monad: Functor, Applicative and Monad
+--   instances. The Dist type itself lives in HaskVocab (vocabulary).
+module A_Categorical.D_Interpretation.Monads.Dist
+  ( module A_Categorical.C_Vocabulary.HaskVocab
+  ) where
 
+import A_Categorical.C_Vocabulary.HaskVocab (Dist (..))
 import Control.Monad (ap, liftM)
 
--- | The Distribution Monad.
--- We use newtype to define our custom probability logic for >>=
-newtype Dist a = Dist {runDist :: [(a, Double)]}
-  deriving (Show)
-
--- Standard Haskell Monad Hierarchy
+-- | Standard Haskell Monad Hierarchy for Dist
 instance Functor Dist where
   fmap :: (a -> b) -> Dist a -> Dist b
   fmap = liftM

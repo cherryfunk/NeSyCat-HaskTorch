@@ -48,3 +48,12 @@ instance CatFunT (->) -- exponential / Hom symbol
 instance CatFunT () -- terminal constant symbol
 
 instance CatFunT Void -- initial constant symbol
+
+-- ============================================================
+--  Categorical Types (vocabulary objects)
+-- ============================================================
+
+-- | The Distribution Monad: a discrete probability distribution
+--   represented as a weighted list of outcomes.
+newtype Dist a = Dist { runDist :: [(a, Double)] }
+  deriving (Show)

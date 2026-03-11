@@ -2,18 +2,27 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoStarIsType #-}
 
+-- | Haskell signature realization: assigns concrete Haskell types to the
+--   abstract names declared in HaskSig.
 module A_Categorical.B_Realization.HaskRlz where
 
 import A_Categorical.A_Signature.HaskSig (CatFunS (..))
+import qualified A_Categorical.C_Vocabulary.HaskVocab as V
 import Data.Functor.Identity (Identity)
-import qualified A_Categorical.D_Interpretation.Monads.Dist as M
 import qualified A_Categorical.D_Interpretation.Monads.Giry as M
 
--- | Hask Realization: assigns concrete Haskell types to the
---   abstract names declared in HaskSig.
+-- ============================================================
+--  CatObjS: Object Types (0-cells)
+-- ============================================================
 
--- | Functor names realized as concrete Haskell monads.
+-- instance CatObjS where
+--   type Type = Type
+
+-- ============================================================
+--  CatFunS: Functor Types (1-cells)
+-- ============================================================
+
 instance CatFunS where
   type Ident = Identity
-  type Dist = M.Dist
-  type Giry = M.Giry
+  type Dist  = V.Dist
+  type Giry  = M.Giry
