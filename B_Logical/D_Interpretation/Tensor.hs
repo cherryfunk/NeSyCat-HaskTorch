@@ -37,14 +37,14 @@ instance TwoMonBLat_Sig Omega where
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
 
   -- | p-Mean conjunction (De Morgan dual of vee):
-  --   wedge(a, b) = ¬(vee(¬a, ¬b)) = 1 - ((  (1-a)^p + (1-b)^p  ) / 2)^{1/p}
+  --   wedge(a, b) = not(vee(nota, notb)) = 1 - ((  (1-a)^p + (1-b)^p  ) / 2)^{1/p}
   --   This IS LTN's pMeanError formula aggregation.
   wedge a b = neg (vee (neg a) (neg b))
 
   -- | p-Mean disjunction (primitive):
   --   vee(a, b) = ((a^p + b^p) / 2)^{1/p}
   --   with pi_0 stability: clamp inputs away from 0 to prevent gradient death.
-  --   This makes the De Morgan wedge(a,b) = ¬vee(¬a,¬b) stable at x→1,
+  --   This makes the De Morgan wedge(a,b) = notvee(nota,notb) stable at x->1,
   --   matching LTNtorch's pi_1 clamping inside pMeanError.
   vee a b =
     let a' = toDynamic a; b' = toDynamic b
@@ -67,7 +67,7 @@ instance TwoMonBLat_Sig Omega where
 neg :: Omega -> Omega
 neg a = UnsafeMkTensor (one `Torch.sub` toDynamic a)
 
--- | Fuzzy implication: a → b = max(1-a, b)
+-- | Fuzzy implication: a -> b = max(1-a, b)
 implies :: Omega -> Omega -> Omega
 implies a b = vee (neg a) b
 
@@ -77,11 +77,11 @@ implies a b = vee (neg a) b
 ------------------------------------------------------
 
 instance A2MonBLat_Sig TENS Omega where
-  -- | Guarded ∀ with measure μ:  ∀_{x|g}^μ. φ(x) = ¬ ∃_{x|g}^μ. ¬φ(x)
+  -- | Guarded forall with measure μ:  forall_{x|g}^μ. φ(x) = not exists_{x|g}^μ. notφ(x)
   bigWedge :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
   bigWedge dom mu guard phi = neg (bigVee dom mu guard (neg . phi))
 
-  -- | Guarded ∃ with measure μ: conditional p-Mean.
+  -- | Guarded exists with measure μ: conditional p-Mean.
   --   E_μ[ φ^p · 1_guard ] / E_μ[ 1_guard ]  raised to 1/p
   --
   --   This IS the conditional expectation under measure μ:
@@ -105,7 +105,7 @@ instance A2MonBLat_Sig TENS Omega where
   bigOtimes :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
   bigOtimes = error "bigOtimes over TENS not yet supported"
 
--- | Fused ∀ quantifier operating on pre-computed guard and phi tensors.
+-- | Fused forall quantifier operating on pre-computed guard and phi tensors.
 --   Avoids re-evaluating the MLP and labelA through expectTENS lambdas.
 --   bigWedgeDirect guard phi  =  1 − ( E[guard · (1−φ)^p] / E[guard] )^{1/p}
 bigWedgeDirect :: Omega -> Omega -> Omega
@@ -124,12 +124,12 @@ bigWedgeDirect guardT phiT =
 -- Gradient Stability Projections (matching LTN's stable=True)
 ------------------------------------------------------
 
--- | pi_0: maps [0,1] → (0, 1], prevents gradient death at x=0.
+-- | pi_0: maps [0,1] -> (0, 1], prevents gradient death at x=0.
 --   Matches LTNtorch: pi_0(x) = (1-eps_s)*x + eps_s
 pi0 :: Torch.Tensor -> Torch.Tensor
 pi0 x = (x `Torch.mul` stableScale) `Torch.add` stableEps
 
--- | pi_1: maps [0,1] → [0, 1), prevents gradient death at x=1.
+-- | pi_1: maps [0,1] -> [0, 1), prevents gradient death at x=1.
 --   Matches LTNtorch: pi_1(x) = (1-eps_s)*x
 pi1 :: Torch.Tensor -> Torch.Tensor
 pi1 x = x `Torch.mul` stableScale

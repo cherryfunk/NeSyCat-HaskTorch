@@ -5,16 +5,16 @@
 
 -- | Logic on the REAL LINE (ℝ) for the FINITE UNIFORM EMPIRICAL MEASURE case.
 --
---   Unlike TensUniform (which operates on [0,1] with ¬x = 1−x and sigmoid outputs),
+--   Unlike TensUniform (which operates on [0,1] with notx = 1−x and sigmoid outputs),
 --   TensReal operates on ℝ with:
 --
---     • ¬x = −x            (additive inverse)
+--     • notx = −x            (additive inverse)
 --     • MLP outputs logits  (no sigmoid)
---     • ⊗ = ×,  ⊕ = +      (standard real arithmetic)
---     • ∧ = smooth min,  ∨ = smooth max (LogSumExp)
---     • ⊤ = +∞,  ⊥ = −∞
+--     • `tensor` = ×,  `oplus` = +      (standard real arithmetic)
+--     • /\ = smooth min,  \/ = smooth max (LogSumExp)
+--     • True = +∞,  False = −∞
 --
---   This is just standard model theory over (ℝ, +, ×, ≤).
+--   This is just standard model theory over (ℝ, +, ×, <=).
 --   All operations are on BatchOmega (= Torch.Tensor, pre-evaluated batches).
 module B_Logical.D_Interpretation.TensReal
   ( BatchOmega,
@@ -64,18 +64,18 @@ type BatchOmega = Torch.Tensor
 --  TwoMonBLat-R: pointwise batch operations on ℝ
 -- ============================================================
 
--- | Entailment (lattice ordering ⊑): true iff ∀i. aᵢ ≤ bᵢ
+-- | Entailment (lattice ordering ⊑): true iff foralli. aᵢ <= bᵢ
 vdashR :: BatchOmega -> BatchOmega -> Bool
 vdashR a b =
   let maxDiff = Torch.asValue (Torch.max (Torch.sub a b)) :: Float
    in maxDiff <= 0.0
 
--- | Conjunction (∧ = smooth min):
---   De Morgan dual of smooth max: wedge(a, b) = ¬vee(¬a, ¬b)
+-- | Conjunction (/\ = smooth min):
+--   De Morgan dual of smooth max: wedge(a, b) = notvee(nota, notb)
 wedgeR :: BatchOmega -> BatchOmega -> BatchOmega
 wedgeR a b = negR (veeR (negR a) (negR b))
 
--- | Disjunction (∨ = smooth max):
+-- | Disjunction (\/ = smooth max):
 --   vee(a, b) = (1/p) * logaddexp(p*a, p*b)
 --   Uses native fused logaddexp kernel for two scalars.
 veeR :: BatchOmega -> BatchOmega -> BatchOmega
@@ -113,11 +113,11 @@ v1R = Torch.asTensor [1.0 :: Float]
 --  Derived Operations
 -- ============================================================
 
--- | Pointwise negation: ¬φᵢ = −φᵢ  (additive inverse on ℝ)
+-- | Pointwise negation: notφᵢ = −φᵢ  (additive inverse on ℝ)
 negR :: BatchOmega -> BatchOmega
 negR = negate -- Prelude negate, works on Torch.Tensor via Num instance
 
--- | Implication: (a → b)ᵢ = max(−aᵢ, bᵢ) = vee(¬a, b)
+-- | Implication: (a -> b)ᵢ = max(−aᵢ, bᵢ) = vee(nota, b)
 impliesR :: BatchOmega -> BatchOmega -> BatchOmega
 impliesR a b = veeR (negR a) b
 
@@ -125,20 +125,20 @@ impliesR a b = veeR (negR a) b
 --  A2MonBLat-R: quantifiers (finite uniform measure, ℝ-valued)
 -- ============================================================
 
--- | Guarded ∀ over finite uniform measure (De Morgan dual of ∃):
+-- | Guarded forall over finite uniform measure (De Morgan dual of exists):
 --
---   ∀_{x|g}^unif φ  =  ¬ ∃_{x|g}^unif (¬φ)
+--   forall_{x|g}^unif φ  =  not exists_{x|g}^unif (notφ)
 --
 --   Equivalent to the negative LogSumExp of −φ.
 bigWedgeR :: BatchOmega -> BatchOmega -> Omega
 bigWedgeR g phi =
   let nPhi = negR phi -- −φ
-      nLse = bigVeeR g nPhi -- ∃_{g}(−φ)
+      nLse = bigVeeR g nPhi -- exists_{g}(−φ)
    in UnsafeMkTensor (Torch.reshape [1] (negR (toDynamic nLse)))
 
--- | Guarded ∃ over finite uniform measure:
+-- | Guarded exists over finite uniform measure:
 --
---   ∃_{x|g}^unif φ  =  (1/p) * logsumexp(p*φ + log(g)) - log(Σg)
+--   exists_{x|g}^unif φ  =  (1/p) * logsumexp(p*φ + log(g)) - log(Σg)
 --
 --   Uses native fused logsumexp kernel. Guard masking via log(g):
 --   log(0)=-∞ masks elements, log(1)=0 keeps them.
@@ -156,8 +156,8 @@ bigVeeR g phi =
       res = F.divScalar (lse `Torch.sub` Torch.log sG) betaVal
    in UnsafeMkTensor (Torch.reshape [1] res)
 
--- | Guarded ⊕-aggregation (weighted mean):
---   ⊕_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
+-- | Guarded `oplus`-aggregation (weighted mean):
+--   `oplus`_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
 bigOplusR :: BatchOmega -> BatchOmega -> Omega
 bigOplusR g phi =
   let w = g `Torch.mul` phi
@@ -165,8 +165,8 @@ bigOplusR g phi =
       sG = Torch.sumAll g
    in UnsafeMkTensor (Torch.reshape [1] (sW `Torch.div` (sG `Torch.add` epsLike sG)))
 
--- | Guarded ⊗-aggregation (weighted mean):
---   ⊗_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
+-- | Guarded `tensor`-aggregation (weighted mean):
+--   `tensor`_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
 bigOtimesR :: BatchOmega -> BatchOmega -> Omega
 bigOtimesR g phi =
   let w = g `Torch.mul` phi
@@ -178,12 +178,12 @@ bigOtimesR g phi =
 --  Dynamic JIT-safe Constants
 -- ============================================================
 
--- | The single canonical value for β (LogSumExp smoothing parameter).
+-- | The single canonical value for beta (LogSumExp smoothing parameter).
 --   Change this one constant to retune the entire logic.
 betaVal :: Float
 betaVal = 1.25
 
--- | LogSumExp smoothing parameter β as a tensor (matches shape/device of input).
+-- | LogSumExp smoothing parameter beta as a tensor (matches shape/device of input).
 beta :: Torch.Tensor -> Torch.Tensor
 beta x = F.mulScalar (Torch.onesLike x) betaVal
 

@@ -3,29 +3,29 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
--- | Logic on the REAL LINE (ℝ) — PARAMETERIZED by β.
+-- | Logic on the REAL LINE (ℝ) — PARAMETERIZED by beta.
 --
---   Identical to TensReal, but every smooth connective takes β explicitly
+--   Identical to TensReal, but every smooth connective takes beta explicitly
 --   rather than using a hardcoded constant.  This enables:
 --
---     • Joint optimization of β + θ
---     • β-only optimization (θ frozen)
+--     • Joint optimization of beta + theta
+--     • beta-only optimization (theta frozen)
 --     • Hyperparameter sweeps
---     • Inductive / sampling-based β learning (future)
+--     • Inductive / sampling-based beta learning (future)
 --
---   β controls the LogSumExp sharpness:
---     vee(a, b)  = (1/β) · logaddexp(β·a, β·b)
---     wedge(a,b) = ¬vee(¬a, ¬b)
---     ∃ = logsumexp with β scaling
---     ∀ = De Morgan dual of ∃
+--   beta controls the LogSumExp sharpness:
+--     vee(a, b)  = (1/beta) · logaddexp(beta·a, beta·b)
+--     wedge(a,b) = notvee(nota, notb)
+--     exists = logsumexp with beta scaling
+--     forall = De Morgan dual of exists
 module B_Logical.D_Interpretation.TensRealBeta
   ( BatchOmega,
 
-    -- * TwoMonBLat-R-β: Binary Logical Operations (β-parameterized)
+    -- * TwoMonBLat-R-beta: Binary Logical Operations (beta-parameterized)
     veeRBeta,
     wedgeRBeta,
 
-    -- * A2MonBLat-R-β: Quantifiers (β-parameterized)
+    -- * A2MonBLat-R-beta: Quantifiers (beta-parameterized)
     bigVeeRBeta,
     bigWedgeRBeta,
 
@@ -62,33 +62,33 @@ import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
---  TwoMonBLat-R-β: pointwise batch operations, β-parameterized
+--  TwoMonBLat-R-beta: pointwise batch operations, beta-parameterized
 -- ============================================================
 
--- | Disjunction (∨ = smooth max), parameterized by β:
---   vee_β(a, b) = (1/β) · logaddexp(β·a, β·b)
+-- | Disjunction (\/ = smooth max), parameterized by beta:
+--   vee_beta(a, b) = (1/beta) · logaddexp(beta·a, beta·b)
 veeRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> BatchOmega
 veeRBeta betaT a b =
   let pa = a `Torch.mul` betaT
       pb = b `Torch.mul` betaT
    in F.logaddexp pa pb `Torch.div` betaT
 
--- | Conjunction (∧ = smooth min), parameterized by β:
---   wedge_β(a, b) = ¬vee_β(¬a, ¬b)
+-- | Conjunction (/\ = smooth min), parameterized by beta:
+--   wedge_beta(a, b) = notvee_beta(nota, notb)
 wedgeRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> BatchOmega
 wedgeRBeta betaT a b = negR (veeRBeta betaT (negR a) (negR b))
 
--- | Implication parameterized by β: (a → b) = vee_β(¬a, b)
+-- | Implication parameterized by beta: (a -> b) = vee_beta(nota, b)
 impliesRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> BatchOmega
 impliesRBeta betaT a b = veeRBeta betaT (negR a) b
 
 -- ============================================================
---  A2MonBLat-R-β: quantifiers, β-parameterized
+--  A2MonBLat-R-beta: quantifiers, beta-parameterized
 -- ============================================================
 
--- | Guarded ∃ over finite uniform measure, parameterized by β:
+-- | Guarded exists over finite uniform measure, parameterized by beta:
 --
---   ∃_{x|g}^{unif,β} φ  =  (1/β) · logsumexp(β·φ + log(g)) − log(Σg)
+--   exists_{x|g}^{unif,beta} φ  =  (1/beta) · logsumexp(beta·φ + log(g)) − log(Σg)
 bigVeeRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> Omega
 bigVeeRBeta betaT g phi =
   let eps = epsLikeBeta g
@@ -99,9 +99,9 @@ bigVeeRBeta betaT g phi =
       res = (lse `Torch.sub` Torch.log sG) `Torch.div` betaT
    in UnsafeMkTensor (Torch.reshape [1] res)
 
--- | Guarded ∀ over finite uniform measure, parameterized by β:
+-- | Guarded forall over finite uniform measure, parameterized by beta:
 --
---   ∀_{x|g}^{unif,β} φ  =  ¬ ∃_{x|g}^{unif,β} (¬φ)
+--   forall_{x|g}^{unif,beta} φ  =  not exists_{x|g}^{unif,beta} (notφ)
 bigWedgeRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> Omega
 bigWedgeRBeta betaT g phi =
   let nPhi = negR phi

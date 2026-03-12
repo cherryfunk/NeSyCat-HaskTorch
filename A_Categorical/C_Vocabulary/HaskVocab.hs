@@ -17,7 +17,7 @@ import Data.Void (Void)
 --  CatObjT: object types (the kinds)
 -- ============================================================
 
--- | The object types at the α-level are tuple-kinds.
+-- | The object types at the alpha-level are tuple-kinds.
 class CatObjT (a :: k)
 
 instance CatObjT () -- = 0-ary objects
@@ -33,11 +33,11 @@ instance CatObjT (Type, Type) -- = 2-ary objects (for bifunctor symbols)
 -- | f is a valid functor symbol.
 class CatFunT (f :: k)
 
--- Endofunctor/Monad symbols: Type → Type
+-- Endofunctor/Monad symbols: Type -> Type
 -- All Monads are automatically functor symbols.
 instance {-# OVERLAPPABLE #-} (Monad m) => CatFunT m
 
--- Biendofunctor symbols: (Type, Type) → Type  (curried as Type → Type → Type)
+-- Biendofunctor symbols: (Type, Type) -> Type  (curried as Type -> Type -> Type)
 instance CatFunT (,) -- product
 
 instance CatFunT Either -- coproduct symbol

@@ -2,7 +2,7 @@
 
 -- | MNIST raw data loader
 -- Lives in data/mnist/ alongside the raw IDX files and CSV.
--- Parses IDX binary → CSV, and loads CSV → [ImagePairRow]
+-- Parses IDX binary -> CSV, and loads CSV -> [ImagePairRow]
 module MNIST_Loader
   ( loadTable,
     loadLabels,
@@ -34,7 +34,7 @@ readInt32 [a, b, c, d] =
     .|. fromIntegral d
 readInt32 _ = error "readInt32: need exactly 4 bytes"
 
--- | Load images → Tensor [n, 784], normalized to [0,1]
+-- | Load images -> Tensor [n, 784], normalized to [0,1]
 loadImages :: FilePath -> IO Tensor
 loadImages path = do
   bs <- BS.readFile path
@@ -44,7 +44,7 @@ loadImages path = do
       floats = map (\w -> fromIntegral w / 255.0 :: Float) pixels
   pure $ reshape [nImages, 784] (asTensor floats)
 
--- | Load labels → [Int]
+-- | Load labels -> [Int]
 loadLabels :: FilePath -> IO [Int]
 loadLabels path = do
   bs <- BS.readFile path
@@ -56,7 +56,7 @@ loadLabels path = do
 -- CSV loading
 ------------------------------------------------------
 
--- | Load addition_table.csv → [ImagePairRow]
+-- | Load addition_table.csv -> [ImagePairRow]
 loadTable :: FilePath -> IO [ImagePairRow]
 loadTable path = do
   contents <- readFile path

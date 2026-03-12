@@ -3,20 +3,20 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Joint β + θ training for Binary Classification on TensReal.
+-- | Joint beta + theta training for Binary Classification on TensReal.
 --
 --   This module lives in D_Inference/D_NonLogical and IMPORTS
---   E_Inference.B_Logical.BetaTrainingReal (the β update step).
+--   E_Inference.B_Logical.BetaTrainingReal (the beta update step).
 --
 --   Architecture:
---     B/C_Logical/TensRealBeta  →  E_Grammatical/BinaryFormulasRealBeta
---       →  D/C_Logical/BetaTrainingReal  →  THIS MODULE
+--     B/C_Logical/TensRealBeta  ->  E_Grammatical/BinaryFormulasRealBeta
+--       ->  D/C_Logical/BetaTrainingReal  ->  THIS MODULE
 --
 --   Each epoch:
---     1. Forward: compute sat = axiomRealBeta β data model
+--     1. Forward: compute sat = axiomRealBeta beta data model
 --     2. Loss = −log(σ(sat))
---     3. Update θ (MLP weights) via Adam
---     4. Update β via stepBeta from C_Logical
+--     3. Update theta (MLP weights) via Adam
+--     4. Update beta via stepBeta from C_Logical
 module E_Inference.C_NonLogical.BinaryTrainingRealBeta
   ( trainBinaryRealBeta,
   )
@@ -37,7 +37,7 @@ import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
--- | Joint β + θ training loop for Binary Classification using TensRealBeta.
+-- | Joint beta + theta training loop for Binary Classification using TensRealBeta.
 --
 --   Returns (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels).
 trainBinaryRealBeta ::
@@ -50,7 +50,7 @@ trainBinaryRealBeta numEpochs learningRate initBeta kbSatFormula = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
 
-  -- Initialize β as learnable parameter
+  -- Initialize beta as learnable parameter
   betaInd <- makeIndependent (Torch.asTensor initBeta)
 
   -- Generate 100 random points in [0, 1]^2
@@ -90,10 +90,10 @@ trainBinaryRealBeta numEpochs learningRate initBeta kbSatFormula = do
           kbSatDyn = toDynamic kbSat
           avgLoss = negate (Torch.log (Torch.sigmoid kbSatDyn))
 
-      -- Step 1: Update θ (MLP weights) via Adam
+      -- Step 1: Update theta (MLP weights) via Adam
       (newModel, newOpt) <- runStep model opt avgLoss lrTens
 
-      -- Step 2: Update β via stepBeta from C_Logical
+      -- Step 2: Update beta via stepBeta from C_Logical
       newBInd <- stepBeta bInd avgLoss learningRate
 
       -- Metrics: only every 100 epochs

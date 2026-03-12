@@ -1,9 +1,9 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Binary Classification with learnable β (TensRealBeta, eager).
+-- | Binary Classification with learnable beta (TensRealBeta, eager).
 --
---   Joint optimization of β (LogSumExp sharpness) and θ (MLP weights).
+--   Joint optimization of beta (LogSumExp sharpness) and theta (MLP weights).
 module Main where
 
 import C_NonLogical.D_Interpretation.DATA (DATA (..))

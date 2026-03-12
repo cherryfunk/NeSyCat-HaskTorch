@@ -16,7 +16,7 @@ import qualified Torch
 import Torch.Typed.Tensor (toDynamic, Tensor(UnsafeMkTensor))
 
 ------------------------------------------------------
--- MNIST Formula (DATA): ∀(x,y). digitEq (digitPlus (digit x) (digit y)) (add (x,y))
+-- MNIST Formula (DATA): forall(x,y). digitEq (digitPlus (digit x) (digit y)) (add (x,y))
 ------------------------------------------------------
 
 mnistPredicate :: ImagePairRow -> Dist (Omega DATA)
@@ -46,6 +46,6 @@ main = do
   -- Re-evaluate the exact same logic formula natively substituting the new optimized parameters 
   let finalExp = probDist (mnistSen ())
   let finalAcc = sum (map (probDist . mnistPredicate) mnistTable) / total
-  putStrLn $ "\n[MNIST TRAINED DATA] ∀ P(formula) = " ++ show finalExp
+  putStrLn $ "\n[MNIST TRAINED DATA] forall P(formula) = " ++ show finalExp
   putStrLn $ "[MNIST TRAINED DATA] Accuracy = " ++ show finalAcc
 

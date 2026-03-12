@@ -8,11 +8,11 @@ module A_Categorical.A_Signature.HaskSig where
 
 import Data.Kind (Type)
 
--- | Higher-Order Categorical Signature Σ_α
+-- | Higher-Order Categorical Signature Σ_alpha
 --
 -- This is the signature of the 2-category Hask.
 -- In Haskell, the ambient category Hask is the only choice,
--- so there is no 'cat' parameter (unlike BinarySig at the γ-level).
+-- so there is no 'cat' parameter (unlike BinarySig at the gamma-level).
 --
 --   CatObjS:  category name                     (0-cell name)
 --   CatFunS:  functor names                     (1-cell names)

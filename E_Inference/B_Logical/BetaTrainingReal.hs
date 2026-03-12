@@ -1,15 +1,15 @@
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
--- | β-parameter optimization for TensReal logic.
+-- | beta-parameter optimization for TensReal logic.
 --
---   This module lives in D_Inference/C_Logical because β is a LOGICAL parameter
---   (it controls ∧, ∨, ∀, ∃ sharpness), independent of any non-logical
---   model parameters (θ = MLP weights).
+--   This module lives in D_Inference/C_Logical because beta is a LOGICAL parameter
+--   (it controls /\, \/, forall, exists sharpness), independent of any non-logical
+--   model parameters (theta = MLP weights).
 --
 --   Provides:
---     • stepBeta:     single gradient-based β update
---     • trainBetaOnly: β-only optimization loop (θ frozen)
+--     • stepBeta:     single gradient-based beta update
+--     • trainBetaOnly: beta-only optimization loop (theta frozen)
 module E_Inference.B_Logical.BetaTrainingReal
   ( stepBeta,
     trainBetaOnly,
@@ -23,11 +23,11 @@ import qualified Torch
 import Torch.Autograd (IndependentTensor, makeIndependent, toDependent)
 import Torch.Typed.Tensor (toDynamic)
 
--- | One β-optimization step via manual SGD on the gradient.
+-- | One beta-optimization step via manual SGD on the gradient.
 --
 --   Given a loss tensor (scalar, with grad graph attached),
---   compute ∂loss/∂β and update: β ← β − lr · ∂loss/∂β
---   Then clamp β > ε to keep it positive.
+--   compute ∂loss/∂beta and update: beta <- beta − lr · ∂loss/∂beta
+--   Then clamp beta > ε to keep it positive.
 stepBeta :: IndependentTensor -> Torch.Tensor -> Float -> IO IndependentTensor
 stepBeta betaInd lossTensor lr = do
   let grads = Torch.grad lossTensor [betaInd]
@@ -35,16 +35,16 @@ stepBeta betaInd lossTensor lr = do
       betaDep = toDependent betaInd
       lrT = Torch.asTensor lr
       newBeta = betaDep `Torch.sub` (gradBeta `Torch.mul` lrT)
-      -- Clamp β > 0.01 to stay positive: relu(β − ε) + ε
+      -- Clamp beta > 0.01 to stay positive: relu(beta − ε) + ε
       epsT = Torch.asTensor (0.01 :: Float)
       clamped = Torch.relu (newBeta `Torch.sub` epsT) `Torch.add` epsT
   makeIndependent clamped
 
--- | Train β only (θ frozen).
+-- | Train beta only (theta frozen).
 --
---   Takes a formula  f :: β → data → model → Omega,
---   a frozen model, training data, and optimizes β over numEpochs.
---   Returns the final learned β value.
+--   Takes a formula  f :: beta -> data -> model -> Omega,
+--   a frozen model, training data, and optimizes beta over numEpochs.
+--   Returns the final learned beta value.
 trainBetaOnly ::
   Int ->
   Float ->

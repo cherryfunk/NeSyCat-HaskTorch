@@ -26,7 +26,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 expectTENS :: TENS a -> Giry a -> (a -> Torch.Tensor) -> Torch.Tensor
 
 -- | Empirical measure: DisUniform over tensor sample points.
---   E_μ[φ] where μ = (1/N) Σᵢ δ(x - xᵢ).
+--   E_μ[φ] where μ = (1/N) Σᵢ delta(x - xᵢ).
 --   Stacks all points into a batch tensor and evaluates φ in one pass.
 expectTENS TensorSpace (DisUniform points) phi =
   let stacked = Torch.stack (Torch.Dim 0) (map toDynamic points)

@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeApplications #-}
 
--- | Shared axiom formula for Binary Classification (TensReal), β-parameterized.
+-- | Shared axiom formula for Binary Classification (TensReal), beta-parameterized.
 --
 --   Same structure as BinaryFormulasReal.axiomReal, but uses the
---   β-parameterized connectives from TensRealBeta.
+--   beta-parameterized connectives from TensRealBeta.
 module D_Grammatical.D_Interpretation.BinaryFormulasRealBeta
   ( axiomRealBeta,
   )
@@ -24,9 +24,9 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 ident :: Identity a -> a
 ident = runIdentity
 
--- | The pure logical axiom for TensReal (Binary_MLP), parameterized by β.
+-- | The pure logical axiom for TensReal (Binary_MLP), parameterized by beta.
 --
---   axiomRealBeta β dataTensor model  =  ∀⁺(pos → pred) ∧_β ∀⁻(neg → ¬pred)
+--   axiomRealBeta beta dataTensor model  =  forall⁺(pos -> pred) /\_beta forall⁻(neg -> notpred)
 axiomRealBeta :: Torch.Tensor -> Torch.Tensor -> Binary_MLP -> Omega
 axiomRealBeta betaT dataTensor m =
   let pt = UnsafeMkTensor dataTensor

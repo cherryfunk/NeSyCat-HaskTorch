@@ -7,7 +7,7 @@
 module A_Categorical.B_Realization.HaskRlz where
 
 import A_Categorical.A_Signature.HaskSig (CatFunS (..))
-import qualified A_Categorical.C_Vocabulary.HaskVocab as V
+import qualified A_Categorical.C_Vocabulary.HaskVocab as HaskVocab
 import Data.Functor.Identity (Identity)
 import qualified A_Categorical.D_Interpretation.Monads.Giry as M
 
@@ -24,5 +24,5 @@ import qualified A_Categorical.D_Interpretation.Monads.Giry as M
 
 instance CatFunS where
   type Ident = Identity
-  type Dist  = V.Dist
+  type Dist  = HaskVocab.Dist
   type Giry  = M.Giry

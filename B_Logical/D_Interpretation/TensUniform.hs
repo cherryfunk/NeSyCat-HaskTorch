@@ -6,7 +6,7 @@
 -- | Specialized logic for the FINITE UNIFORM EMPIRICAL MEASURE case.
 --
 --   Mirrors Tensor.hs (TwoMonBLat_Sig + A2MonBLat) exactly, but optimized for:
---     μ = (1/N) Σᵢ δ(x − xᵢ)   (uniform over a finite dataset)
+--     μ = (1/N) Σᵢ delta(x − xᵢ)   (uniform over a finite dataset)
 --
 --   All operations are on BatchOmega (= Torch.Tensor, pre-evaluated batches),
 --   not on individual Omega values with Giry measures.
@@ -61,14 +61,14 @@ type BatchOmega = Torch.Tensor
 --  (mirrors TwoMonBLat_Sig Omega in Tensor.hs)
 -- ============================================================
 
--- | Entailment (lattice ordering ⊑): true iff ∀i. aᵢ ≤ bᵢ
+-- | Entailment (lattice ordering ⊑): true iff foralli. aᵢ <= bᵢ
 vdashU :: BatchOmega -> BatchOmega -> Bool
 vdashU a b =
   let maxDiff = Torch.asValue (Torch.max (Torch.sub a b)) :: Float
    in maxDiff <= 0.0
 
 -- | p-Mean conjunction (De Morgan dual):
---   wedgeU(a, b)ᵢ = ¬(veeU(¬a, ¬b))ᵢ
+--   wedgeU(a, b)ᵢ = not(veeU(nota, notb))ᵢ
 wedgeU :: BatchOmega -> BatchOmega -> BatchOmega
 wedgeU a b = negU (veeU (negU a) (negU b))
 
@@ -109,11 +109,11 @@ v1U = Torch.asTensor [1.0 :: Float]
 --  Derived Operations
 -- ============================================================
 
--- | Pointwise negation: ¬φᵢ = 1 − φᵢ
+-- | Pointwise negation: notφᵢ = 1 − φᵢ
 negU :: BatchOmega -> BatchOmega
 negU t = F.sub (Torch.onesLike t) t 1.0
 
--- | Fuzzy implication: (a → b)ᵢ = veeU(¬aᵢ, bᵢ)
+-- | Fuzzy implication: (a -> b)ᵢ = veeU(notaᵢ, bᵢ)
 impliesU :: BatchOmega -> BatchOmega -> BatchOmega
 impliesU a b = veeU (negU a) b
 
@@ -122,9 +122,9 @@ impliesU a b = veeU (negU a) b
 --  (mirrors A2MonBLat_Sig TENS Omega in Tensor.hs)
 -- ============================================================
 
--- | Guarded ∀ over finite uniform measure (De Morgan dual of ∃):
+-- | Guarded forall over finite uniform measure (De Morgan dual of exists):
 --
---   ∀_{x|g}^unif φ  =  1 − ( Σᵢ gᵢ · (1 − π₁(φᵢ))^p  /  Σᵢ gᵢ )^{1/p}
+--   forall_{x|g}^unif φ  =  1 − ( Σᵢ gᵢ · (1 − π₁(φᵢ))^p  /  Σᵢ gᵢ )^{1/p}
 bigWedgeU :: BatchOmega -> BatchOmega -> Omega
 bigWedgeU g phi =
   let e = pi1U phi -- π₁ stability
@@ -137,9 +137,9 @@ bigWedgeU g phi =
       res = F.sub (Torch.onesLike m) (powInvPU m) 1.0
    in UnsafeMkTensor (Torch.reshape [1] res)
 
--- | Guarded ∃ over finite uniform measure:
+-- | Guarded exists over finite uniform measure:
 --
---   ∃_{x|g}^unif φ  =  ( Σᵢ gᵢ · π₀(φᵢ)^p  /  Σᵢ gᵢ )^{1/p}
+--   exists_{x|g}^unif φ  =  ( Σᵢ gᵢ · π₀(φᵢ)^p  /  Σᵢ gᵢ )^{1/p}
 bigVeeU :: BatchOmega -> BatchOmega -> Omega
 bigVeeU g phi =
   let ep = powPU (pi0U phi) -- π₀ stability
@@ -149,7 +149,7 @@ bigVeeU g phi =
       m = sW `Torch.div` F.addScalar sG 1.0e-8 1.0
    in UnsafeMkTensor (Torch.reshape [1] (powInvPU m))
 
--- | Guarded ⊕-aggregation over finite uniform measure
+-- | Guarded `oplus`-aggregation over finite uniform measure
 bigOplusU :: BatchOmega -> BatchOmega -> Omega
 bigOplusU g phi =
   let w = g `Torch.mul` phi
@@ -157,7 +157,7 @@ bigOplusU g phi =
       sG = Torch.sumAll g
    in UnsafeMkTensor (Torch.reshape [1] (sW `Torch.div` F.addScalar sG 1.0e-8 1.0))
 
--- | Guarded ⊗-aggregation over finite uniform measure
+-- | Guarded `tensor`-aggregation over finite uniform measure
 bigOtimesU :: BatchOmega -> BatchOmega -> Omega
 bigOtimesU g phi =
   let w = g `Torch.mul` phi
@@ -193,11 +193,11 @@ stableEpsU = Torch.toDevice (Torch.Device CPU 0) $ Torch.asTensor (1.0e-4 :: Flo
 stableScaleU :: Torch.Tensor
 stableScaleU = Torch.toDevice (Torch.Device CPU 0) $ Torch.asTensor (0.9999 :: Float)
 
--- | π₀: maps [0,1] → (0, 1]
+-- | π₀: maps [0,1] -> (0, 1]
 pi0U :: Torch.Tensor -> Torch.Tensor
 pi0U x = F.addScalar (F.mulScalar x 0.9999) 1.0e-4 1.0
 
--- | π₁: maps [0,1] → [0, 1)
+-- | π₁: maps [0,1] -> [0, 1)
 pi1U :: Torch.Tensor -> Torch.Tensor
 pi1U x = F.mulScalar x 0.9999
 

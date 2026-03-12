@@ -13,7 +13,7 @@ import Data.Kind (Type)
 -- | Non-Logical Vocabulary Σ for the MNIST Addition domain.
 --
 -- Sor = {Image, Digit}
--- Fun = {digit : Image → Digit, add : Image² → Digit}
+-- Fun = {digit : Image -> Digit, add : Image² -> Digit}
 data ImagePairRow = ImagePairRow
   { im1 :: Int,
     im2 :: Int,
@@ -41,8 +41,8 @@ class MNIST_Vocab (cat :: Type -> Type) where
   digitEq :: Digit cat -> Digit cat -> Omega cat
 
 -- | Bridge: encoding/decoding functor between two categories.
---   For every sort S: enc_S maps I_from(S) → I_to(S)
---   dec maps I_to(S) → (M from)(I_from(S))
+--   For every sort S: enc_S maps I_from(S) -> I_to(S)
+--   dec maps I_to(S) -> (M from)(I_from(S))
 class (MNIST_Vocab from, MNIST_Vocab to) => MNIST_Bridge (from :: Type -> Type) (to :: Type -> Type) where
   encImage :: Image from -> Image to
   encDigit :: Digit from -> Digit to

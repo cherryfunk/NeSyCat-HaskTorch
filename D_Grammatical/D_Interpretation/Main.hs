@@ -129,7 +129,7 @@ countableExpHeavy = probGiry countableSenHeavy
 
 ------------------------------------------------------
 -- 5. MNIST Addition (DATA, Dist)
---    ∀(x,y) ∈ table. digitEq (digitPlus (digit x) (digit y)) (add (x,y))
+--    forall(x,y) `elem` table. digitEq (digitPlus (digit x) (digit y)) (add (x,y))
 ------------------------------------------------------
 mnistSen :: Dist Omega
 mnistSen = bigWedgeM (Finite mnistTable) $ \r -> do
