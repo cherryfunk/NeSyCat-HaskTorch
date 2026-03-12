@@ -6,7 +6,7 @@ module Main where
 
 import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import D_Grammatical.D_Interpretation.BinaryFormulasReal (axiomReal)
-import E_Inference.C_NonLogical.BinaryTrainingRealJIT (trainBinaryRealJIT)
+import C_NonLogical.E_Parameters.BinaryTrainingRealJIT (trainBinaryRealJIT)
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 

@@ -5,7 +5,6 @@
 
 -- | Logic on the REAL LINE (ℝ) for the FINITE UNIFORM EMPIRICAL MEASURE case.
 --
---   Unlike TensUniform (which operates on [0,1] with notx = 1−x and sigmoid outputs),
 --   TensReal operates on ℝ with:
 --
 --     • notx = −x            (additive inverse)

@@ -10,7 +10,7 @@ import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.Boolean hiding (Omega)
 import C_NonLogical.D_Interpretation.MNIST (mnistTable)
 import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta)
-import E_Inference.C_NonLogical.MNIST_Training (trainMNIST)
+import C_NonLogical.E_Parameters.MNIST_Training (trainMNIST)
 import A_Categorical.D_Interpretation.Monads.Expectation (probDist)
 import qualified Torch
 import Torch.Typed.Tensor (toDynamic, Tensor(UnsafeMkTensor))

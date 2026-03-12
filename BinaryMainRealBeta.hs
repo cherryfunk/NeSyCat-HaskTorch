@@ -2,24 +2,30 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Binary Classification with learnable beta (TensRealBeta, eager).
---
---   Joint optimization of beta (LogSumExp sharpness) and theta (MLP weights).
+--   Usage: binary-test-real-beta [lambda]
+--   lambda=0 (default): pure axiom-driven
+--   lambda=1: pure data-driven
 module Main where
 
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import C_NonLogical.D_Interpretation.BinaryReal ()
-import E_Inference.C_NonLogical.BinaryTrainingRealBeta (trainBinaryRealBeta)
+import C_NonLogical.E_Parameters.BinaryTrainingRealBeta (trainBinaryRealBeta)
 import D_Grammatical.D_Interpretation.BinaryFormulasRealBeta (axiomRealBeta)
 import C_NonLogical.A_Signature.BinarySig (BinaryKlFunS (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-  putStrLn "Starting Binary Classification with Learnable Beta"
+  args <- getArgs
+  let lambda = case args of
+        (x:_) -> read x :: Float
+        _     -> 0.0
+  putStrLn $ "Starting Binary Classification with Learnable Beta (lambda=" ++ show lambda ++ ")"
   (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryRealBeta 1000 0.001 1.25 axiomRealBeta
+    trainBinaryRealBeta 1000 0.001 1.25 lambda axiomRealBeta
 
   let betaVal = Torch.asValue learnedBeta :: Float
   putStrLn $ "\n=== Learned Beta: " ++ show betaVal ++ " ==="

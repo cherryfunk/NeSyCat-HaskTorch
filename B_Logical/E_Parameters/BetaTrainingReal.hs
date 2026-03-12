@@ -3,20 +3,20 @@
 
 -- | beta-parameter optimization for TensReal logic.
 --
---   This module lives in D_Inference/C_Logical because beta is a LOGICAL parameter
+--   Lives in B_Logical/E_Parameters because beta is a LOGICAL parameter
 --   (it controls /\, \/, forall, exists sharpness), independent of any non-logical
 --   model parameters (theta = MLP weights).
 --
 --   Provides:
 --     • stepBeta:     single gradient-based beta update
 --     • trainBetaOnly: beta-only optimization loop (theta frozen)
-module E_Inference.B_Logical.BetaTrainingReal
+module B_Logical.E_Parameters.BetaTrainingReal
   ( stepBeta,
     trainBetaOnly,
   )
 where
 
-import B_Logical.D_Interpretation.TensUniform (Omega)
+import B_Logical.D_Interpretation.TensReal (Omega)
 import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
 import Text.Printf (printf)
 import qualified Torch

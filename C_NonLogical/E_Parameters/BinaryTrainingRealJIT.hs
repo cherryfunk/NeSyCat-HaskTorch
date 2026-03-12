@@ -4,7 +4,7 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | JIT Training loop for Binary Classification using TensReal logic.
-module E_Inference.C_NonLogical.BinaryTrainingRealJIT
+module C_NonLogical.E_Parameters.BinaryTrainingRealJIT
   ( trainBinaryRealJIT,
   )
 where
@@ -91,7 +91,6 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
     let paramTensors = map toDependent params
         packedParams = packParams paramTensors
         tempModel = replaceParameters initModel params
-        -- Execute compiled graph
         result = forward scriptMod [IVTensor trainData, IVTensor packedParams]
     case result of
       IVTensor jitLoss -> do

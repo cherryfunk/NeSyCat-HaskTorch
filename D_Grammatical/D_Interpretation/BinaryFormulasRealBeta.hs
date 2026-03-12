@@ -13,7 +13,7 @@ import C_NonLogical.A_Signature.BinarySig (BinaryFunS (labelA), BinaryKlFunS (cl
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import B_Logical.D_Interpretation.TENS (TENS (..))
 import B_Logical.D_Interpretation.TensRealBeta (bigWedgeRBeta, negR, wedgeRBeta)
-import B_Logical.D_Interpretation.TensUniform (Omega)
+import B_Logical.D_Interpretation.TensReal (Omega)
 import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
 -- Instance import (needed for @TENS type family resolution)
 import C_NonLogical.D_Interpretation.BinaryReal ()

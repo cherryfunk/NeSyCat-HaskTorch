@@ -2,21 +2,30 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Binary Classification evaluation (TensReal, eager only).
+--   Usage: binary-test-real [lambda]
+--   lambda=0 (default): pure axiom-driven (paper setting)
+--   lambda=1: pure data-driven (cross-entropy)
+--   lambda=0.5: convex combination
 module Main where
 
 import C_NonLogical.D_Interpretation.DATA (DATA (..))
 import C_NonLogical.D_Interpretation.BinaryRealMLP (hThetaReal)
 import C_NonLogical.D_Interpretation.BinaryReal ()
-import E_Inference.C_NonLogical.BinaryTrainingReal (trainBinaryReal)
+import C_NonLogical.E_Parameters.BinaryTrainingReal (trainBinaryReal)
 import D_Grammatical.D_Interpretation.BinaryFormulasReal (axiomReal)
 import C_NonLogical.A_Signature.BinarySig (BinaryKlFunS (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-  putStrLn "Starting Binary Classification TensReal Evaluation"
-  (finalModel, trainData, trainLabels, testData, testLabels) <- trainBinaryReal 1000 0.001 axiomReal
+  args <- getArgs
+  let lambda = case args of
+        (x:_) -> read x :: Float
+        _     -> 0.0  -- default: pure axiom-driven (paper setting)
+  putStrLn $ "Starting Binary Classification TensReal Evaluation (lambda=" ++ show lambda ++ ")"
+  (finalModel, trainData, trainLabels, testData, testLabels) <- trainBinaryReal 1000 0.001 lambda axiomReal
 
   putStrLn "\n=== Evaluation ==="
   evaluateMetrics (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels (Torch.sigmoid (hThetaReal finalModel testData)) testLabels

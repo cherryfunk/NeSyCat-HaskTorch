@@ -27,7 +27,7 @@ library
     B_Logical.D_Interpretation.Tensor,
     B_Logical.D_Interpretation.TensReal,
     B_Logical.D_Interpretation.TensRealBeta,
-    B_Logical.D_Interpretation.TensUniform,
+
     B_Logical.D_Interpretation.Boolean,
     B_Logical.D_Interpretation.Real,
     B_Logical.D_Interpretation.Goedel,
@@ -47,8 +47,7 @@ library
     C_NonLogical.C_Vocabulary.DATA_Vocab,
     C_NonLogical.D_Interpretation.BinaryReal,
     C_NonLogical.D_Interpretation.BinaryRealMLP,
-    C_NonLogical.D_Interpretation.BinaryUniform,
-    C_NonLogical.D_Interpretation.BinaryUniformMLP,
+
     C_NonLogical.D_Interpretation.Countable,
     C_NonLogical.D_Interpretation.Crossing,
     C_NonLogical.D_Interpretation.Dice,
@@ -59,14 +58,17 @@ library
     D_Grammatical.A_Signature.FormulasSig,
     D_Grammatical.D_Interpretation.BinaryFormulasReal,
     D_Grammatical.D_Interpretation.BinaryFormulasRealBeta,
-    D_Grammatical.D_Interpretation.BinaryFormulasUniform,
-    E_Inference.B_Logical.BetaTrainingReal,
-    E_Inference.C_NonLogical.MNIST_Training,
-    E_Inference.C_NonLogical.BinaryTrainingUniform,
-    E_Inference.C_NonLogical.BinaryTrainingReal,
-    E_Inference.C_NonLogical.BinaryTrainingUniformJIT,
-    E_Inference.C_NonLogical.BinaryTrainingRealJIT,
-    E_Inference.C_NonLogical.BinaryTrainingRealBeta,
+
+    E_Inference.A_Objective.Softplus,
+    E_Inference.A_Objective.OneMinus,
+    E_Inference.A_Objective.NegLog,
+    E_Inference.A_Objective.CrossEntropy,
+    E_Inference.A_Objective.Combined,
+    B_Logical.E_Parameters.BetaTrainingReal,
+    C_NonLogical.E_Parameters.MNIST_Training,
+    C_NonLogical.E_Parameters.BinaryTrainingReal,
+    C_NonLogical.E_Parameters.BinaryTrainingRealJIT,
+    C_NonLogical.E_Parameters.BinaryTrainingRealBeta,
     MNIST_Loader,
     E_Benchmark.Metrics.Metrics
   hs-source-dirs: ., C_NonLogical/D_Interpretation/data/mnist
@@ -101,30 +103,7 @@ executable mnist-test
     hasktorch
   default-language: Haskell2010
 
-executable binary-test
-  main-is: BinaryMainUniform.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
-  ghc-options: -rtsopts
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    mtl,
-    containers,
-    hasktorch
-  default-language: Haskell2010
 
-executable binary-test-jit
-  main-is: BinaryMainUniformJIT.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
-  ghc-options: -rtsopts
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    mtl,
-    containers,
-    hasktorch,
-    time
-  default-language: Haskell2010
 
 executable binary-test-real
   main-is: BinaryMainReal.hs
