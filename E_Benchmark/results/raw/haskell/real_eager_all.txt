@@ -1,260 +1,250 @@
-=== real_eager run 1 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01047 Sat=-0.558 | 13.83ms
-[Epoch 100/1000] Loss=0.99729 Sat=-0.537 | 44.93ms
-[Epoch 200/1000] Loss=0.91480 Sat=-0.403 | 74.74ms
-[Epoch 300/1000] Loss=0.65796 Sat=0.072 | 104.34ms
-[Epoch 400/1000] Loss=0.43128 Sat=0.618 | 134.34ms
-[Epoch 500/1000] Loss=0.28613 Sat=1.105 | 164.08ms
-[Epoch 600/1000] Loss=0.20109 Sat=1.502 | 193.86ms
-[Epoch 700/1000] Loss=0.14740 Sat=1.840 | 225.11ms
-[Epoch 800/1000] Loss=0.12338 Sat=2.030 | 254.72ms
-[Epoch 900/1000] Loss=0.11123 Sat=2.140 | 284.91ms
-[Epoch 1000/1000] Loss=0.10274 Sat=2.224 | 314.98ms
-[Training complete] Total Time:  0.32s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.01774 J=1.01774 | 22.62ms
+[Epoch 100/1000] J_data=0.00000 J_know=1.00354 J=1.00354 | 54.48ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.97772 J=0.97772 | 87.07ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.84894 J=0.84894 | 120.21ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.63556 J=0.63556 | 152.51ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.37756 J=0.37756 | 185.32ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.21146 J=0.21146 | 219.22ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.13764 J=0.13764 | 252.47ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.10998 J=0.10998 | 285.07ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.09355 J=0.09355 | 316.65ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.07977 J=0.07977 | 348.12ms
+[Training complete] Total Time:  0.35s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.92
+  Mean Confidence: P+=0.9325095, P-=5.9237234e-2
+  F1 Score: 0.9354838
+
+--- Inference Test using DATA Category (Encoder + Decoder) ---
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9995508790016174),(False,4.4912099838256836e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,7.458377513103187e-4),(False,0.9992541622486897)]}
+Finished.
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.02432 J=1.02432 | 0.98ms
+[Epoch 100/1000] J_data=0.00000 J_know=1.00096 J=1.00096 | 32.13ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.99165 J=0.99165 | 63.44ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.93389 J=0.93389 | 95.29ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.65775 J=0.65775 | 128.83ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.37399 J=0.37399 | 161.36ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.23557 J=0.23557 | 194.48ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.16990 J=0.16990 | 226.77ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.13764 J=0.13764 | 259.52ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.12981 J=0.12981 | 292.58ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.12688 J=0.12688 | 325.04ms
+[Training complete] Total Time:  0.33s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=0.98, Test=0.82
+  Mean Confidence: P+=0.898711, P-=0.10396078
+  F1 Score: 0.8529412
+
+--- Inference Test using DATA Category (Encoder + Decoder) ---
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9996020197868347),(False,3.979802131652832e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,3.0116253765299916e-4),(False,0.999698837462347)]}
+Finished.
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.01142 J=1.01142 | 1.00ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99683 J=0.99683 | 32.72ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.97744 J=0.97744 | 64.23ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.85920 J=0.85920 | 95.37ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.58760 J=0.58760 | 126.93ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.35966 J=0.35966 | 158.09ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.22694 J=0.22694 | 188.80ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.18486 J=0.18486 | 219.83ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.15994 J=0.15994 | 251.44ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.14192 J=0.14192 | 282.11ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.12644 J=0.12644 | 312.24ms
+[Training complete] Total Time:  0.31s
+
+=== Evaluation ===
+Final Evaluation Metrics:
+  Accuracy: Train=1.0, Test=0.98
+  Mean Confidence: P+=0.9587438, P-=5.779917e-2
+  F1 Score: 0.9787234
+
+--- Inference Test using DATA Category (Encoder + Decoder) ---
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9998877048492432),(False,1.1229515075683594e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,4.266874384484254e-5),(False,0.9999573312561552)]}
+Finished.
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.00844 J=1.00844 | 1.15ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99036 J=0.99036 | 35.56ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.87262 J=0.87262 | 79.39ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.66999 J=0.66999 | 119.05ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.48180 J=0.48180 | 152.10ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.29625 J=0.29625 | 183.38ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.19069 J=0.19069 | 214.62ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.14111 J=0.14111 | 245.92ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.12457 J=0.12457 | 276.53ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.11374 J=0.11374 | 306.95ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.10322 J=0.10322 | 337.64ms
+[Training complete] Total Time:  0.34s
 
 === Evaluation ===
 Final Evaluation Metrics:
   Accuracy: Train=1.0, Test=0.94
-  Mean Confidence: P+=0.91612285, P-=6.409347e-2
-  F1 Score: 0.94545454
+  Mean Confidence: P+=0.89122504, P-=3.367031e-2
+  F1 Score: 0.9523809
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9999808073043823),(False,1.919269561767578e-5)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,1.0566488344920799e-4),(False,0.9998943351165508)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.999794065952301),(False,2.059340476989746e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,1.1476252984721214e-4),(False,0.9998852374701528)]}
 Finished.
-=== real_eager run 2 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.02050 Sat=-0.574 | 0.91ms
-[Epoch 100/1000] Loss=0.98856 Sat=-0.523 | 30.95ms
-[Epoch 200/1000] Loss=0.97818 Sat=-0.507 | 60.87ms
-[Epoch 300/1000] Loss=0.94648 Sat=-0.455 | 90.51ms
-[Epoch 400/1000] Loss=0.84294 Sat=-0.280 | 120.14ms
-[Epoch 500/1000] Loss=0.70016 Sat=-0.014 | 149.83ms
-[Epoch 600/1000] Loss=0.44128 Sat=0.589 | 179.46ms
-[Epoch 700/1000] Loss=0.29249 Sat=1.080 | 209.50ms
-[Epoch 800/1000] Loss=0.22366 Sat=1.384 | 239.85ms
-[Epoch 900/1000] Loss=0.19518 Sat=1.535 | 270.38ms
-[Epoch 1000/1000] Loss=0.17946 Sat=1.627 | 301.43ms
-[Training complete] Total Time:  0.30s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.04827 J=1.04827 | 0.99ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99786 J=0.99786 | 31.73ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.98651 J=0.98651 | 61.78ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.94097 J=0.94097 | 92.88ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.81457 J=0.81457 | 123.37ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.67395 J=0.67395 | 153.88ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.43791 J=0.43791 | 184.18ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.24125 J=0.24125 | 214.98ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.15165 J=0.15165 | 245.33ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.11162 J=0.11162 | 276.58ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.09254 J=0.09254 | 307.30ms
+[Training complete] Total Time:  0.31s
 
 === Evaluation ===
 Final Evaluation Metrics:
-  Accuracy: Train=0.98, Test=0.98
-  Mean Confidence: P+=0.8983914, P-=4.185247e-2
-  F1 Score: 0.9583333
+  Accuracy: Train=1.0, Test=0.9
+  Mean Confidence: P+=0.9439087, P-=0.10186291
+  F1 Score: 0.91525424
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9991129040718079),(False,8.870959281921387e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,3.6110292421653867e-4),(False,0.9996388970757835)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9996795654296875),(False,3.204345703125e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,4.728403655462898e-5),(False,0.9999527159634454)]}
 Finished.
-=== real_eager run 3 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.03618 Sat=-0.598 | 0.92ms
-[Epoch 100/1000] Loss=0.99547 Sat=-0.534 | 30.49ms
-[Epoch 200/1000] Loss=0.98425 Sat=-0.516 | 60.62ms
-[Epoch 300/1000] Loss=0.94969 Sat=-0.461 | 91.01ms
-[Epoch 400/1000] Loss=0.81760 Sat=-0.235 | 120.73ms
-[Epoch 500/1000] Loss=0.55558 Sat=0.297 | 150.79ms
-[Epoch 600/1000] Loss=0.35388 Sat=0.857 | 180.62ms
-[Epoch 700/1000] Loss=0.24578 Sat=1.278 | 210.44ms
-[Epoch 800/1000] Loss=0.18665 Sat=1.584 | 240.44ms
-[Epoch 900/1000] Loss=0.15558 Sat=1.782 | 270.71ms
-[Epoch 1000/1000] Loss=0.13080 Sat=1.968 | 300.25ms
-[Training complete] Total Time:  0.30s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.03757 J=1.03757 | 0.99ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99815 J=0.99815 | 31.45ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.95920 J=0.95920 | 61.49ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.85242 J=0.85242 | 91.91ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.77062 J=0.77062 | 122.60ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.57310 J=0.57310 | 153.39ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.30532 J=0.30532 | 183.69ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.16311 J=0.16311 | 213.79ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.10162 J=0.10162 | 243.91ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.07909 J=0.07909 | 274.22ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.06861 J=0.06861 | 305.19ms
+[Training complete] Total Time:  0.31s
 
 === Evaluation ===
 Final Evaluation Metrics:
-  Accuracy: Train=1.0, Test=0.98
-  Mean Confidence: P+=0.9386532, P-=5.765674e-2
-  F1 Score: 0.98039216
+  Accuracy: Train=1.0, Test=0.94
+  Mean Confidence: P+=0.93881154, P-=3.7654124e-2
+  F1 Score: 0.9523809
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9999432563781738),(False,5.6743621826171875e-5)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,1.0262335854349658e-4),(False,0.9998973766414565)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9996812343597412),(False,3.1876564025878906e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,1.5827357856323943e-5),(False,0.9999841726421437)]}
 Finished.
-=== real_eager run 4 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01640 Sat=-0.567 | 0.96ms
-[Epoch 100/1000] Loss=0.99648 Sat=-0.536 | 30.68ms
-[Epoch 200/1000] Loss=0.97623 Sat=-0.503 | 61.05ms
-[Epoch 300/1000] Loss=0.86897 Sat=-0.325 | 91.03ms
-[Epoch 400/1000] Loss=0.64054 Sat=0.108 | 121.22ms
-[Epoch 500/1000] Loss=0.38223 Sat=0.765 | 152.20ms
-[Epoch 600/1000] Loss=0.23448 Sat=1.331 | 183.28ms
-[Epoch 700/1000] Loss=0.15979 Sat=1.753 | 213.99ms
-[Epoch 800/1000] Loss=0.12595 Sat=2.008 | 244.46ms
-[Epoch 900/1000] Loss=0.11047 Sat=2.147 | 274.80ms
-[Epoch 1000/1000] Loss=0.10175 Sat=2.234 | 304.94ms
-[Training complete] Total Time:  0.30s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.04265 J=1.04265 | 0.97ms
+[Epoch 100/1000] J_data=0.00000 J_know=1.00342 J=1.00342 | 31.75ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.99630 J=0.99630 | 61.70ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.95864 J=0.95864 | 92.63ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.82925 J=0.82925 | 123.48ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.55929 J=0.55929 | 154.78ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.32388 J=0.32388 | 185.24ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.21245 J=0.21245 | 215.36ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.16314 J=0.16314 | 246.05ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.14675 J=0.14675 | 276.33ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.13588 J=0.13588 | 306.50ms
+[Training complete] Total Time:  0.31s
 
 === Evaluation ===
 Final Evaluation Metrics:
   Accuracy: Train=1.0, Test=0.96
-  Mean Confidence: P+=0.9293744, P-=4.1301876e-2
-  F1 Score: 0.969697
+  Mean Confidence: P+=0.9720071, P-=7.582064e-2
+  F1 Score: 0.97222215
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9997480511665344),(False,2.5194883346557617e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,3.370628837728873e-5),(False,0.9999662937116227)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9999494552612305),(False,5.054473876953125e-5)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,9.83225072559435e-6),(False,0.9999901677492744)]}
 Finished.
-=== real_eager run 5 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01141 Sat=-0.559 | 1.03ms
-[Epoch 100/1000] Loss=0.99128 Sat=-0.527 | 31.72ms
-[Epoch 200/1000] Loss=0.90154 Sat=-0.381 | 63.25ms
-[Epoch 300/1000] Loss=0.68087 Sat=0.025 | 94.65ms
-[Epoch 400/1000] Loss=0.43092 Sat=0.619 | 125.36ms
-[Epoch 500/1000] Loss=0.21973 Sat=1.403 | 155.92ms
-[Epoch 600/1000] Loss=0.13672 Sat=1.921 | 186.29ms
-[Epoch 700/1000] Loss=0.12229 Sat=2.040 | 216.37ms
-[Epoch 800/1000] Loss=0.11560 Sat=2.099 | 247.22ms
-[Epoch 900/1000] Loss=0.11078 Sat=2.144 | 277.35ms
-[Epoch 1000/1000] Loss=0.10688 Sat=2.182 | 307.32ms
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.13221 J=1.13221 | 1.00ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99424 J=0.99424 | 31.98ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.98713 J=0.98713 | 62.76ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.98293 J=0.98293 | 93.11ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.96981 J=0.96981 | 123.61ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.90960 J=0.90960 | 153.85ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.77916 J=0.77916 | 184.62ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.66174 J=0.66174 | 214.86ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.52272 J=0.52272 | 245.09ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.39475 J=0.39475 | 275.22ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.31948 J=0.31948 | 306.01ms
 [Training complete] Total Time:  0.31s
 
 === Evaluation ===
 Final Evaluation Metrics:
-  Accuracy: Train=1.0, Test=0.98
-  Mean Confidence: P+=0.92518353, P-=6.0586326e-2
-  F1 Score: 0.972973
+  Accuracy: Train=0.96, Test=0.92
+  Mean Confidence: P+=0.8608944, P-=0.12816258
+  F1 Score: 0.90909094
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9989336133003235),(False,1.0663866996765137e-3)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,3.2822671346366405e-4),(False,0.9996717732865363)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.992060661315918),(False,7.939338684082031e-3)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,1.430890872143209e-3),(False,0.9985691091278568)]}
 Finished.
-=== real_eager run 6 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.02584 Sat=-0.582 | 0.98ms
-[Epoch 100/1000] Loss=0.99361 Sat=-0.531 | 32.82ms
-[Epoch 200/1000] Loss=0.97925 Sat=-0.508 | 63.86ms
-[Epoch 300/1000] Loss=0.91609 Sat=-0.405 | 93.88ms
-[Epoch 400/1000] Loss=0.80551 Sat=-0.213 | 124.09ms
-[Epoch 500/1000] Loss=0.64025 Sat=0.109 | 154.23ms
-[Epoch 600/1000] Loss=0.41346 Sat=0.669 | 184.32ms
-[Epoch 700/1000] Loss=0.27309 Sat=1.158 | 215.22ms
-[Epoch 800/1000] Loss=0.20452 Sat=1.483 | 246.86ms
-[Epoch 900/1000] Loss=0.17277 Sat=1.668 | 277.01ms
-[Epoch 1000/1000] Loss=0.15182 Sat=1.808 | 307.95ms
-[Training complete] Total Time:  0.31s
-
-=== Evaluation ===
-Final Evaluation Metrics:
-  Accuracy: Train=1.0, Test=1.0
-  Mean Confidence: P+=0.93903184, P-=6.2741816e-2
-  F1 Score: 1.0
-
---- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998424053192139),(False,1.575946807861328e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,1.0131902672583237e-4),(False,0.9998986809732742)]}
-Finished.
-=== real_eager run 7 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01122 Sat=-0.559 | 1.19ms
-[Epoch 100/1000] Loss=0.99874 Sat=-0.539 | 32.73ms
-[Epoch 200/1000] Loss=0.92427 Sat=-0.419 | 64.64ms
-[Epoch 300/1000] Loss=0.67867 Sat=0.029 | 96.29ms
-[Epoch 400/1000] Loss=0.42254 Sat=0.643 | 127.39ms
-[Epoch 500/1000] Loss=0.28073 Sat=1.127 | 157.84ms
-[Epoch 600/1000] Loss=0.21962 Sat=1.404 | 188.25ms
-[Epoch 700/1000] Loss=0.19926 Sat=1.512 | 218.42ms
-[Epoch 800/1000] Loss=0.18482 Sat=1.595 | 249.00ms
-[Epoch 900/1000] Loss=0.17664 Sat=1.644 | 279.20ms
-[Epoch 1000/1000] Loss=0.17041 Sat=1.683 | 309.22ms
-[Training complete] Total Time:  0.31s
-
-=== Evaluation ===
-Final Evaluation Metrics:
-  Accuracy: Train=0.98, Test=0.96
-  Mean Confidence: P+=0.89169246, P-=6.4522915e-2
-  F1 Score: 0.9491525
-
---- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9991627931594849),(False,8.372068405151367e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,2.652155853866134e-5),(False,0.9999734784414613)]}
-Finished.
-=== real_eager run 8 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01186 Sat=-0.560 | 0.93ms
-[Epoch 100/1000] Loss=0.99228 Sat=-0.529 | 30.88ms
-[Epoch 200/1000] Loss=0.96141 Sat=-0.480 | 60.72ms
-[Epoch 300/1000] Loss=0.81320 Sat=-0.227 | 90.54ms
-[Epoch 400/1000] Loss=0.58572 Sat=0.228 | 120.22ms
-[Epoch 500/1000] Loss=0.43287 Sat=0.613 | 150.30ms
-[Epoch 600/1000] Loss=0.33862 Sat=0.909 | 180.44ms
-[Epoch 700/1000] Loss=0.26727 Sat=1.183 | 210.44ms
-[Epoch 800/1000] Loss=0.20998 Sat=1.454 | 240.40ms
-[Epoch 900/1000] Loss=0.18343 Sat=1.603 | 270.59ms
-[Epoch 1000/1000] Loss=0.17060 Sat=1.682 | 301.16ms
-[Training complete] Total Time:  0.30s
-
-=== Evaluation ===
-Final Evaluation Metrics:
-  Accuracy: Train=1.0, Test=0.98
-  Mean Confidence: P+=0.9281476, P-=7.100617e-2
-  F1 Score: 0.9795918
-
---- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.999319314956665),(False,6.806850433349609e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,1.957184031198267e-5),(False,0.999980428159688)]}
-Finished.
-=== real_eager run 9 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.00811 Sat=-0.554 | 0.95ms
-[Epoch 100/1000] Loss=0.99563 Sat=-0.534 | 31.06ms
-[Epoch 200/1000] Loss=0.91082 Sat=-0.396 | 61.34ms
-[Epoch 300/1000] Loss=0.67799 Sat=0.031 | 91.32ms
-[Epoch 400/1000] Loss=0.42387 Sat=0.639 | 121.22ms
-[Epoch 500/1000] Loss=0.27340 Sat=1.157 | 150.98ms
-[Epoch 600/1000] Loss=0.19374 Sat=1.543 | 181.13ms
-[Epoch 700/1000] Loss=0.16205 Sat=1.738 | 210.95ms
-[Epoch 800/1000] Loss=0.14581 Sat=1.852 | 240.69ms
-[Epoch 900/1000] Loss=0.13207 Sat=1.958 | 270.60ms
-[Epoch 1000/1000] Loss=0.11860 Sat=2.072 | 300.79ms
-[Training complete] Total Time:  0.30s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.02244 J=1.02244 | 0.99ms
+[Epoch 100/1000] J_data=0.00000 J_know=0.99827 J=0.99827 | 31.78ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.99101 J=0.99101 | 62.96ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.95728 J=0.95728 | 93.95ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.82564 J=0.82564 | 124.38ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.63043 J=0.63043 | 154.71ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.45143 J=0.45143 | 184.92ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.31407 J=0.31407 | 215.95ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.23351 J=0.23351 | 246.51ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.19584 J=0.19584 | 285.02ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.17025 J=0.17025 | 315.34ms
+[Training complete] Total Time:  0.32s
 
 === Evaluation ===
 Final Evaluation Metrics:
   Accuracy: Train=1.0, Test=0.96
-  Mean Confidence: P+=0.94278735, P-=6.5812804e-2
-  F1 Score: 0.96000004
+  Mean Confidence: P+=0.92365086, P-=5.9786335e-2
+  F1 Score: 0.9655172
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998924732208252),(False,1.0752677917480469e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,1.335879205726087e-4),(False,0.9998664120794274)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.999908447265625),(False,9.1552734375e-5)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,6.068727088859305e-5),(False,0.9999393127291114)]}
 Finished.
-=== real_eager run 10 ===
-Starting Binary Classification TensReal Evaluation
-[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3
-[Epoch   1/1000] Loss=1.01719 Sat=-0.568 | 0.94ms
-[Epoch 100/1000] Loss=1.00323 Sat=-0.546 | 31.53ms
-[Epoch 200/1000] Loss=0.97311 Sat=-0.498 | 61.21ms
-[Epoch 300/1000] Loss=0.82443 Sat=-0.247 | 90.70ms
-[Epoch 400/1000] Loss=0.71163 Sat=-0.037 | 120.06ms
-[Epoch 500/1000] Loss=0.46236 Sat=0.531 | 149.39ms
-[Epoch 600/1000] Loss=0.22846 Sat=1.360 | 179.28ms
-[Epoch 700/1000] Loss=0.12581 Sat=2.009 | 209.16ms
-[Epoch 800/1000] Loss=0.09300 Sat=2.328 | 238.92ms
-[Epoch 900/1000] Loss=0.07915 Sat=2.497 | 268.68ms
-[Epoch 1000/1000] Loss=0.07176 Sat=2.598 | 298.77ms
-[Training complete] Total Time:  0.30s
+Starting Binary Classification TensReal Evaluation (lambda=0.0)
+[Training] 1000 epochs, empirical measure (50 pts), Adam lr=1.0e-3, lambda=0.0
+[Epoch   1/1000] J_data=0.00000 J_know=1.02043 J=1.02043 | 0.97ms
+[Epoch 100/1000] J_data=0.00000 J_know=1.00256 J=1.00256 | 31.36ms
+[Epoch 200/1000] J_data=0.00000 J_know=0.99104 J=0.99104 | 61.81ms
+[Epoch 300/1000] J_data=0.00000 J_know=0.92266 J=0.92266 | 92.42ms
+[Epoch 400/1000] J_data=0.00000 J_know=0.77150 J=0.77150 | 123.20ms
+[Epoch 500/1000] J_data=0.00000 J_know=0.54603 J=0.54603 | 153.86ms
+[Epoch 600/1000] J_data=0.00000 J_know=0.36986 J=0.36986 | 184.56ms
+[Epoch 700/1000] J_data=0.00000 J_know=0.25729 J=0.25729 | 214.91ms
+[Epoch 800/1000] J_data=0.00000 J_know=0.20675 J=0.20675 | 245.14ms
+[Epoch 900/1000] J_data=0.00000 J_know=0.18481 J=0.18481 | 275.27ms
+[Epoch 1000/1000] J_data=0.00000 J_know=0.17499 J=0.17499 | 305.13ms
+[Training complete] Total Time:  0.31s
 
 === Evaluation ===
 Final Evaluation Metrics:
-  Accuracy: Train=1.0, Test=0.98
-  Mean Confidence: P+=0.97443193, P-=4.6864282e-2
-  F1 Score: 0.98039216
+  Accuracy: Train=1.0, Test=0.92
+  Mean Confidence: P+=0.8890868, P-=9.0048075e-2
+  F1 Score: 0.9375
 
 --- Inference Test using DATA Category (Encoder + Decoder) ---
-Inference for [0.5,0.5]: Dist {runDist = [(True,0.9998639822006226),(False,1.360177993774414e-4)]}
-Inference for [0.9,0.9]: Dist {runDist = [(True,7.698796252952889e-6),(False,0.999992301203747)]}
+Inference for (0.5,0.5): Dist {runDist = [(True,0.9996211528778076),(False,3.788471221923828e-4)]}
+Inference for (0.9,0.9): Dist {runDist = [(True,3.6586751230061054e-4),(False,0.9996341324876994)]}
 Finished.
