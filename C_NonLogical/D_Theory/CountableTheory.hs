@@ -1,11 +1,11 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module C_NonLogical.A_Signature.Countable_Sig where
+module C_NonLogical.D_Theory.CountableTheory where
 
 -- | Non-Logical Vocabulary for the Countable sets domain.
 
 -- | Signature:
-class Countable_Vocab m where
+class CountableTheory m where
   -- mFun (Kleisli):
   drawInt :: m Int
   drawStr :: m String

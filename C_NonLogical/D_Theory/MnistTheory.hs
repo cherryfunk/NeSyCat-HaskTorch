@@ -4,13 +4,12 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 
-{- HLINT ignore "Use camelCase" -}
 
-module C_NonLogical.A_Signature.MNIST_Sig where
+module C_NonLogical.D_Theory.MnistTheory where
 
 import Data.Kind (Type)
 
--- | Non-Logical Vocabulary Σ for the MNIST Addition domain.
+-- | Non-Logical Theory for the MNIST Addition domain.
 --
 -- Sor = {Image, Digit}
 -- Fun = {digit : Image -> Digit, add : Image² -> Digit}
@@ -22,7 +21,7 @@ data ImagePairRow = ImagePairRow
   deriving (Eq, Show)
 
 -- | Signature, parameterized by the interpreting category (DATA or TENS):
-class MNIST_Vocab (cat :: Type -> Type) where
+class MnistTheory (cat :: Type -> Type) where
   type Image cat :: Type
   type Digit cat :: Type
   type Omega cat :: Type
@@ -43,7 +42,7 @@ class MNIST_Vocab (cat :: Type -> Type) where
 -- | Bridge: encoding/decoding functor between two categories.
 --   For every sort S: enc_S maps I_from(S) -> I_to(S)
 --   dec maps I_to(S) -> (M from)(I_from(S))
-class (MNIST_Vocab from, MNIST_Vocab to) => MNIST_Bridge (from :: Type -> Type) (to :: Type -> Type) where
+class (MnistTheory from, MnistTheory to) => MnistBridge (from :: Type -> Type) (to :: Type -> Type) where
   encImage :: Image from -> Image to
   encDigit :: Digit from -> Digit to
   decDigit :: Digit to -> (M from) (Digit from)

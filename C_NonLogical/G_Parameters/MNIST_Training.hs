@@ -5,15 +5,15 @@
 
 -- | MNIST Training: inductive learning via the formula
 --   forall (x,y). digitEq (digitPlus (digit x) (digit y)) (add (x,y))
-module C_NonLogical.E_Parameters.MNIST_Training
+module C_NonLogical.G_Parameters.MNIST_Training
   ( trainMNIST,
   )
 where
 
-import C_NonLogical.A_Signature.MNIST_Sig (MNIST_Vocab (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import C_NonLogical.D_Interpretation.MNIST (mnistTableTENS, setGlobalMLP)
-import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
+import C_NonLogical.D_Theory.MnistTheory (MnistTheory (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import C_NonLogical.F_Interpretation.MNIST (mnistTableTENS, setGlobalMLP)
+import C_NonLogical.F_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import Data.List (foldl')
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)

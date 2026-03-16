@@ -1,4 +1,4 @@
-module D_Grammatical.A_Signature.FormulasSig (loadFormulas) where
+module D_Grammatical.D_Theory.FormulasTheory (loadFormulas) where
 
 import Data.List (isPrefixOf, stripPrefix)
 import qualified Data.Map as Map

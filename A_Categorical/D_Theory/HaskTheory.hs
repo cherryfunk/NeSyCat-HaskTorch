@@ -4,19 +4,19 @@
 {-# LANGUAGE NoStarIsType #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module A_Categorical.A_Signature.HaskSig where
+module A_Categorical.D_Theory.HaskTheory where
 
 import Data.Kind (Type)
 
--- | Higher-Order Categorical Signature Σ_alpha
+-- | Higher-Order Categorical Theory Σ_alpha
 --
--- This is the signature of the 2-category Hask.
+-- This is the theory of the 2-category Hask.
 -- In Haskell, the ambient category Hask is the only choice,
--- so there is no 'cat' parameter (unlike BinarySig at the gamma-level).
+-- so there is no 'cat' parameter (unlike BinaryTheory at the gamma-level).
 --
 --   CatObjS:  category name                     (0-cell name)
---   CatFunS:  functor names                     (1-cell names)
---   Cat2FunS: natural transformation names      (2-cell names)
+--   CatFunTheory:  functor names                     (1-cell names)
+--   Cat2FunTheory: natural transformation names      (2-cell names)
 
 -- ============================================================
 --  CatObjS: Object Sort (0-cells)
@@ -32,10 +32,10 @@ import Data.Kind (Type)
 --     type Type :: Kind
 
 -- ============================================================
---  CatFunS: Functor Names (1-cells)
+--  CatFunTheory: Functor Names (1-cells)
 -- ============================================================
 
-class CatFunS where
+class CatFunTheory where
   -- | Abstract name for the identity monad.
   type Ident :: Type -> Type
   -- | Abstract name for the distribution monad.
@@ -44,12 +44,12 @@ class CatFunS where
   type Giry :: Type -> Type
 
 -- ============================================================
---  Cat2FunS: Natural Transformation Names (2-cells)
+--  Cat2FunTheory: Natural Transformation Names (2-cells)
 -- ============================================================
 
 -- | Abstract natural transformation names, parameterized by an
---   endofunctor declared in CatFunS (e.g. Ident, Dist, Giry).
-class Cat2FunS (m :: Type -> Type) where
+--   endofunctor declared in CatFunTheory (e.g. Ident, Dist, Giry).
+class Cat2FunTheory (m :: Type -> Type) where
   -- | η: abstract name for monadic unit (return).
   eta :: a -> m a
   -- | μ: abstract name for monadic multiplication (join).

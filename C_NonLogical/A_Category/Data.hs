@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module C_NonLogical.D_Interpretation.DATA where
+module C_NonLogical.A_Category.Data where
 
 import Data.Typeable (Typeable)
 import Numeric.Natural (Natural)

@@ -7,7 +7,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module B_Logical.D_Interpretation.TENS where
+module B_Logical.A_Category.Tens where
 
 import Numeric.Natural (Natural)
 import Torch.Typed.Tensor (Tensor, toDynamic)

@@ -2,9 +2,9 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 
-module B_Logical.A_Signature.A2MonBLatSig where
+module B_Logical.D_Theory.A2MonBLatTheory where
 
-import A_Categorical.D_Interpretation.Monads.Giry (Giry)
+import A_Categorical.F_Interpretation.Monads.Giry (Giry)
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
 --   Extends 2Mon-BLat with four infinitary guarded quantifiers.
@@ -13,7 +13,7 @@ import A_Categorical.D_Interpretation.Monads.Giry (Giry)
 --     2. Giry a  — the probability measure on the domain
 --     3. guard   — subobject classifier (conditioning predicate)
 --     4. phi     — the formula to quantify over
-class A2MonBLat_Sig dom tau | tau -> dom where
+class A2MonBLatTheory dom tau | tau -> dom where
   -- Infinitary Lattice (guarded, measure-parameterized):
   bigVee    :: forall a. dom a -> Giry a -> (a -> tau) -> (a -> tau) -> tau
   bigWedge  :: forall a. dom a -> Giry a -> (a -> tau) -> (a -> tau) -> tau

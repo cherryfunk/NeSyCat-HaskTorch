@@ -4,14 +4,14 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | JIT Training loop for Binary Classification using TensReal logic.
-module C_NonLogical.E_Parameters.BinaryTrainingRealJIT
+module C_NonLogical.G_Parameters.BinaryTrainingRealJIT
   ( trainBinaryRealJIT,
   )
 where
 
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal)
-import C_NonLogical.D_Interpretation.BinaryReal (setGlobalBinaryMLP)
-import qualified B_Logical.D_Interpretation.Tensor as TENS
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal)
+import C_NonLogical.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
+import qualified B_Logical.F_Interpretation.Tensor as TENS
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..), replaceParameters, sample)

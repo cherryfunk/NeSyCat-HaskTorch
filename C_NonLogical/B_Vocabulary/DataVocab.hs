@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module C_NonLogical.C_Vocabulary.DATA_Vocab where
+module C_NonLogical.B_Vocabulary.DataVocab where
 
 import Numeric.Natural (Natural)
 

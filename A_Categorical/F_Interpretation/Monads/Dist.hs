@@ -3,11 +3,11 @@
 
 -- | Interpretation of the Dist monad: Functor, Applicative and Monad
 --   instances. The Dist type itself lives in HaskVocab (vocabulary).
-module A_Categorical.D_Interpretation.Monads.Dist
-  ( module A_Categorical.C_Vocabulary.HaskVocab
+module A_Categorical.F_Interpretation.Monads.Dist
+  ( module A_Categorical.B_Vocabulary.HaskVocab
   ) where
 
-import A_Categorical.C_Vocabulary.HaskVocab (Dist (..))
+import A_Categorical.B_Vocabulary.HaskVocab (Dist (..))
 import Control.Monad (ap, liftM)
 
 -- | Standard Haskell Monad Hierarchy for Dist

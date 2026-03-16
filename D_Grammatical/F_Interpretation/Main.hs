@@ -7,18 +7,18 @@ module Main where
 
 -- \$\mathcal{I}_\Sigma$: Domain-specific interpretations
 
-import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..), MNIST_Vocab (Digit, Image, M, add, digit, digitEq, digitPlus))
-import D_Grammatical.A_Signature.FormulasSig (loadFormulas)
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import B_Logical.D_Interpretation.Boolean
-import C_NonLogical.D_Interpretation.Countable
-import C_NonLogical.D_Interpretation.Crossing
-import C_NonLogical.D_Interpretation.Dice
-import C_NonLogical.D_Interpretation.MNIST (mnistTable)
-import C_NonLogical.D_Interpretation.Weather
-import A_Categorical.D_Interpretation.Monads.Dist (Dist)
-import A_Categorical.D_Interpretation.Monads.Expectation (HasExpectation (..), probDist, probGiry)
-import A_Categorical.D_Interpretation.Monads.Giry (Giry)
+import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (Digit, Image, M, add, digit, digitEq, digitPlus))
+import D_Grammatical.D_Theory.FormulasTheory (loadFormulas)
+import C_NonLogical.A_Category.Data (DATA (..))
+import B_Logical.F_Interpretation.Boolean
+import C_NonLogical.F_Interpretation.Countable
+import C_NonLogical.F_Interpretation.Crossing
+import C_NonLogical.F_Interpretation.Dice
+import C_NonLogical.F_Interpretation.MNIST (mnistTable)
+import C_NonLogical.F_Interpretation.Weather
+import A_Categorical.F_Interpretation.Monads.Dist (Dist)
+import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..), probDist, probGiry)
+import A_Categorical.F_Interpretation.Monads.Giry (Giry)
 import Data.List (isPrefixOf)
 import qualified Data.Map as Map
 import Numeric.Natural (Natural)

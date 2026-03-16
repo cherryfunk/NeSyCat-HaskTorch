@@ -4,9 +4,9 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module A_Categorical.D_Interpretation.Monads.Giry where
+module A_Categorical.F_Interpretation.Monads.Giry where
 
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
+import C_NonLogical.A_Category.Data (DATA (..))
 import Control.Monad (ap)
 import Statistics.Distribution (ContDistr, Mean, Variance)
 

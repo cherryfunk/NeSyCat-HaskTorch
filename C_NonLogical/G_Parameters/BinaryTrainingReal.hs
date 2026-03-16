@@ -8,15 +8,15 @@
 --   Objective: J(θ) = λ · J_data(θ) + (1-λ) · J_know(θ)
 --     • J_data = cross-entropy between σ(h_θ(x)) and labels
 --     • J_know = softplus penalty on axiom satisfaction
-module C_NonLogical.E_Parameters.BinaryTrainingReal
+module C_NonLogical.G_Parameters.BinaryTrainingReal
   ( trainBinaryReal,
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFunS (..), BinarySorts (..))
-import qualified B_Logical.D_Interpretation.Tensor as TENS
-import C_NonLogical.D_Interpretation.BinaryReal (setGlobalBinaryMLP)
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_NonLogical.D_Theory.BinaryTheory (BinaryFun (..), BinarySorts (..))
+import qualified B_Logical.F_Interpretation.Tensor as TENS
+import C_NonLogical.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
 import E_Inference.A_Objective.Combined (combinedObjective)
 import E_Inference.A_Objective.CrossEntropy (crossEntropyLoss)
 import E_Inference.A_Objective.Softplus (softplusLoss)

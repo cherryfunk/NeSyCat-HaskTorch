@@ -13,7 +13,7 @@ module MNIST_Loader
   )
 where
 
-import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..))
+import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..))
 import Data.Bits (shiftL, (.|.))
 import qualified Data.ByteString as BS
 import Data.Word (Word8)

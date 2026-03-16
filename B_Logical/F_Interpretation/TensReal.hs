@@ -15,7 +15,7 @@
 --
 --   This is just standard model theory over (ℝ, +, ×, <=).
 --   All operations are on BatchOmega (= Torch.Tensor, pre-evaluated batches).
-module B_Logical.D_Interpretation.TensReal
+module B_Logical.F_Interpretation.TensReal
   ( BatchOmega,
 
     -- * TwoMonBLat-R: Binary Logical Operations on BatchOmega
@@ -40,11 +40,11 @@ module B_Logical.D_Interpretation.TensReal
     bigOtimesR,
 
     -- * Re-exports from Tensor.hs (for scalar Omega operations)
-    module B_Logical.D_Interpretation.Tensor,
+    module B_Logical.F_Interpretation.Tensor,
   )
 where
 
-import B_Logical.D_Interpretation.Tensor
+import B_Logical.F_Interpretation.Tensor
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))

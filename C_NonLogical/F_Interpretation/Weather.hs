@@ -1,9 +1,9 @@
 -- | Weather domain -- Signature + Interpretation
-module C_NonLogical.D_Interpretation.Weather where
+module C_NonLogical.F_Interpretation.Weather where
 
-import C_NonLogical.A_Signature.Weather_Sig (Worlds, WorldsRow (..))
-import C_NonLogical.D_Interpretation.DATA (tableLookup)
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
+import C_NonLogical.D_Theory.WeatherTheory (Worlds, WorldsRow (..))
+import C_NonLogical.A_Category.Data (tableLookup)
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
 
 ------------------------------------------------------
 -- I: Interpretation (Schema Instance + Function Definitions)

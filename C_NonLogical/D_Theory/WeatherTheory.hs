@@ -1,6 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module C_NonLogical.A_Signature.Weather_Sig where
+module C_NonLogical.D_Theory.WeatherTheory where
 
 -- | Non-Logical Vocabulary for the Weather domain.
 
@@ -16,7 +16,7 @@ data WorldsRow = WorldsRow
   }
 
 -- | Signature:
-class Weather_Vocab m where
+class WeatherTheory m where
   -- Con:
   data1 :: Worlds
   data2 :: Worlds

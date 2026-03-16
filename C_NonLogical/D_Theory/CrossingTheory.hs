@@ -1,6 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module C_NonLogical.A_Signature.Crossing_Sig where
+module C_NonLogical.D_Theory.CrossingTheory where
 
 -- | Non-Logical Vocabulary for the Crossing domain.
 
@@ -10,7 +10,7 @@ type LightColor = String
 type Decision = Int
 
 -- | Signature:
-class Crossing_Vocab m where
+class CrossingTheory m where
   -- mFun (Kleisli):
   lightDetector :: m LightColor
   drivingDecision :: LightColor -> m Decision

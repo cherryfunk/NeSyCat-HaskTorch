@@ -1,19 +1,19 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Shared axiom formula for Binary Classification (TensReal).
-module D_Grammatical.D_Interpretation.BinaryFormulasReal
+module D_Grammatical.F_Interpretation.BinaryFormulasReal
   ( axiomReal,
   )
 where
 
-import C_NonLogical.A_Signature.BinarySig (BinaryFunS (labelA), BinaryKlFunS (classifierA))
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import B_Logical.D_Interpretation.TensReal (bigWedgeR, negR, wedgeR)
-import B_Logical.D_Interpretation.TensReal (Omega)
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
+import C_NonLogical.D_Theory.BinaryTheory (BinaryFun (labelA), BinaryKlFun (classifierA))
+import C_NonLogical.A_Category.Data (DATA (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import B_Logical.F_Interpretation.TensReal (bigWedgeR, negR, wedgeR)
+import B_Logical.F_Interpretation.TensReal (Omega)
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP)
 -- Instance import (needed for @TENS type family resolution)
-import C_NonLogical.D_Interpretation.BinaryReal ()
+import C_NonLogical.F_Interpretation.BinaryReal ()
 import Data.Functor.Identity (Identity, runIdentity)
 import qualified Torch
 import Torch.Typed.Tensor (Tensor (..), toDynamic)

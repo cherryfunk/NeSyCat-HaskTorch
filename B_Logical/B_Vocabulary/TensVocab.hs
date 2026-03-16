@@ -5,9 +5,9 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module B_Logical.C_Vocabulary.TENS_Vocab where
+module B_Logical.B_Vocabulary.TensVocab where
 
-import B_Logical.D_Interpretation.TENS (TENS (..))
+import B_Logical.A_Category.Tens (TENS (..))
 import Numeric.Natural (Natural)
 import qualified Torch.Tensor
 import Torch.Typed.Tensor (Tensor)

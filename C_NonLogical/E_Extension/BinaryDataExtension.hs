@@ -1,12 +1,12 @@
 {-# LANGUAGE TypeFamilies #-}
 
 -- | B_Realization: sort assignment (Point, Omega, M) for DATA category.
-module C_NonLogical.B_Realization.BinaryDataRlz where
+module C_NonLogical.E_Extension.BinaryDataExtension where
 
-import C_NonLogical.A_Signature.BinarySig (BinarySorts (..))
-import A_Categorical.D_Interpretation.Monads.Dist (Dist)
-import C_NonLogical.D_Interpretation.DATA (DATA)
-import qualified B_Logical.D_Interpretation.Boolean as BoolLogic
+import C_NonLogical.D_Theory.BinaryTheory (BinarySorts (..))
+import A_Categorical.F_Interpretation.Monads.Dist (Dist)
+import C_NonLogical.A_Category.Data (DATA)
+import qualified B_Logical.F_Interpretation.Boolean as BoolLogic
 
 instance BinarySorts DATA where
   type Point  DATA = (Float, Float)  -- ℝ² as a Cartesian product

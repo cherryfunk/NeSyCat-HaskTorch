@@ -9,69 +9,69 @@ maintainer: user@example.com
 
 library
   exposed-modules:
-    A_Categorical.A_Signature.HaskSig,
-    A_Categorical.B_Realization.HaskRlz,
-    A_Categorical.C_Vocabulary.HaskVocab,
-    A_Categorical.D_Interpretation.HaskInt,
-    A_Categorical.D_Interpretation.Monads.Dist,
-    A_Categorical.D_Interpretation.Monads.Giry,
-    A_Categorical.D_Interpretation.Monads.Expectation,
-    A_Categorical.D_Interpretation.Monads.Expectation_TENS,
-    B_Logical.A_Signature.TwoMonBLatSig,
-    B_Logical.A_Signature.A2MonBLatSig,
-    B_Logical.C_Vocabulary.TENS_Vocab,
-    B_Logical.C_Vocabulary.FDATA_Vocab,
-    B_Logical.D_Interpretation.TENS,
-    C_NonLogical.D_Interpretation.DATA,
-    B_Logical.D_Interpretation.FDATA,
-    B_Logical.D_Interpretation.Tensor,
-    B_Logical.D_Interpretation.TensReal,
-    B_Logical.D_Interpretation.TensRealBeta,
+    A_Categorical.D_Theory.HaskTheory,
+    A_Categorical.E_Extension.HaskExtension,
+    A_Categorical.B_Vocabulary.HaskVocab,
+    A_Categorical.F_Interpretation.HaskInt,
+    A_Categorical.F_Interpretation.Monads.Dist,
+    A_Categorical.F_Interpretation.Monads.Giry,
+    A_Categorical.F_Interpretation.Monads.Expectation,
+    A_Categorical.F_Interpretation.Monads.Expectation_TENS,
+    B_Logical.D_Theory.TwoMonBLatTheory,
+    B_Logical.D_Theory.A2MonBLatTheory,
+    B_Logical.B_Vocabulary.TensVocab,
+    B_Logical.B_Vocabulary.FdataVocab,
+    B_Logical.A_Category.Tens,
+    C_NonLogical.A_Category.Data,
+    B_Logical.F_Interpretation.FDATA,
+    B_Logical.F_Interpretation.Tensor,
+    B_Logical.F_Interpretation.TensReal,
+    B_Logical.F_Interpretation.TensRealBeta,
 
-    B_Logical.D_Interpretation.Boolean,
-    B_Logical.D_Interpretation.Real,
-    B_Logical.D_Interpretation.Goedel,
-    B_Logical.D_Interpretation.Lukasiewicz,
-    B_Logical.D_Interpretation.Product,
-    B_Logical.D_Interpretation.SProd,
-    B_Logical.D_Interpretation.LTNp,
-    B_Logical.D_Interpretation.JitCompile,
-    C_NonLogical.A_Signature.BinarySig,
-    C_NonLogical.B_Realization.BinaryDataRlz,
-    C_NonLogical.B_Realization.BinaryTensRlz,
-    C_NonLogical.A_Signature.MNIST_Sig,
-    C_NonLogical.A_Signature.Dice_Sig,
-    C_NonLogical.A_Signature.Crossing_Sig,
-    C_NonLogical.A_Signature.Countable_Sig,
-    C_NonLogical.A_Signature.Weather_Sig,
-    C_NonLogical.C_Vocabulary.DATA_Vocab,
-    C_NonLogical.D_Interpretation.BinaryReal,
-    C_NonLogical.D_Interpretation.BinaryRealMLP,
+    B_Logical.F_Interpretation.Boolean,
+    B_Logical.F_Interpretation.Real,
+    B_Logical.F_Interpretation.Goedel,
+    B_Logical.F_Interpretation.Lukasiewicz,
+    B_Logical.F_Interpretation.Product,
+    B_Logical.F_Interpretation.SProd,
+    B_Logical.F_Interpretation.LTNp,
+    B_Logical.F_Interpretation.JitCompile,
+    C_NonLogical.D_Theory.BinaryTheory,
+    C_NonLogical.E_Extension.BinaryDataExtension,
+    C_NonLogical.E_Extension.BinaryTensExtension,
+    C_NonLogical.D_Theory.MnistTheory,
+    C_NonLogical.D_Theory.DiceTheory,
+    C_NonLogical.D_Theory.CrossingTheory,
+    C_NonLogical.D_Theory.CountableTheory,
+    C_NonLogical.D_Theory.WeatherTheory,
+    C_NonLogical.B_Vocabulary.DataVocab,
+    C_NonLogical.F_Interpretation.BinaryReal,
+    C_NonLogical.F_Interpretation.BinaryRealMLP,
 
-    C_NonLogical.D_Interpretation.Countable,
-    C_NonLogical.D_Interpretation.Crossing,
-    C_NonLogical.D_Interpretation.Dice,
-    C_NonLogical.D_Interpretation.MNIST,
-    C_NonLogical.D_Interpretation.MNIST_MLP,
-    C_NonLogical.D_Interpretation.Supremum,
-    C_NonLogical.D_Interpretation.Weather,
-    D_Grammatical.A_Signature.FormulasSig,
-    D_Grammatical.D_Interpretation.BinaryFormulasReal,
-    D_Grammatical.D_Interpretation.BinaryFormulasRealBeta,
+    C_NonLogical.F_Interpretation.Countable,
+    C_NonLogical.F_Interpretation.Crossing,
+    C_NonLogical.F_Interpretation.Dice,
+    C_NonLogical.F_Interpretation.MNIST,
+    C_NonLogical.F_Interpretation.MNIST_MLP,
+    C_NonLogical.F_Interpretation.Supremum,
+    C_NonLogical.F_Interpretation.Weather,
+    D_Grammatical.D_Theory.FormulasTheory,
+    D_Grammatical.F_Interpretation.BinaryFormulasReal,
+    D_Grammatical.F_Interpretation.BinaryFormulasRealBeta,
 
     E_Inference.A_Objective.Softplus,
     E_Inference.A_Objective.OneMinus,
     E_Inference.A_Objective.NegLog,
     E_Inference.A_Objective.CrossEntropy,
     E_Inference.A_Objective.Combined,
-    B_Logical.E_Parameters.BetaTrainingReal,
-    C_NonLogical.E_Parameters.MNIST_Training,
-    C_NonLogical.E_Parameters.BinaryTrainingReal,
-    C_NonLogical.E_Parameters.BinaryTrainingRealJIT,
-    C_NonLogical.E_Parameters.BinaryTrainingRealBeta,
+    B_Logical.G_Parameters.BetaTrainingReal,
+    C_NonLogical.G_Parameters.MNIST_Training,
+    C_NonLogical.G_Parameters.BinaryTrainingReal,
+    C_NonLogical.G_Parameters.BinaryTrainingRealJIT,
+    C_NonLogical.G_Parameters.BinaryTrainingRealBeta,
     MNIST_Loader,
     E_Benchmark.Metrics.Metrics
-  hs-source-dirs: ., C_NonLogical/D_Interpretation/data/mnist
+  hs-source-dirs: ., C_NonLogical/F_Interpretation/data/mnist
   build-depends:
     base >=4.16,
     bytestring,
@@ -85,7 +85,7 @@ library
 
 executable nesycat-hasktorch
   main-is: Main.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
+  hs-source-dirs: D_Grammatical/F_Interpretation
   build-depends:
     base,
     nesycat-hasktorch,
@@ -94,7 +94,7 @@ executable nesycat-hasktorch
 
 executable mnist-test
   main-is: MNISTMain.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
+  hs-source-dirs: D_Grammatical/F_Interpretation
   build-depends:
     base,
     nesycat-hasktorch,
@@ -107,7 +107,7 @@ executable mnist-test
 
 executable binary-test-real
   main-is: BinaryMainReal.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
+  hs-source-dirs: D_Grammatical/F_Interpretation
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -120,7 +120,7 @@ executable binary-test-real
 
 executable binary-test-jit-real
   main-is: BinaryMainRealJIT.hs
-  hs-source-dirs: D_Grammatical/D_Interpretation
+  hs-source-dirs: D_Grammatical/F_Interpretation
   ghc-options: -rtsopts
   build-depends:
     base,

@@ -13,28 +13,28 @@
 --   Sort assignments are in B_Realization (BinaryDataRlz, BinaryTensRlz).
 --   This module provides:
 --     1. BinarySort — GADT sort descriptor (carries sort membership at the term level)
---     2. BinaryFunS DATA — classifierA + labelA for the DATA category
---     3. BinaryFunS TENS — classifierA + labelA for the TENS category
---     4. Binary_Bridge DATA TENS — encPoint + decOmega
-module C_NonLogical.D_Interpretation.BinaryReal
+--     2. BinaryFun DATA — classifierA + labelA for the DATA category
+--     3. BinaryFun TENS — classifierA + labelA for the TENS category
+--     4. BinaryBridge DATA TENS — encPoint + decOmega
+module C_NonLogical.F_Interpretation.BinaryReal
   ( BinarySort (..),
     setGlobalBinaryMLP,
-    module C_NonLogical.A_Signature.BinarySig,
-    module C_NonLogical.D_Interpretation.BinaryRealMLP,
+    module C_NonLogical.D_Theory.BinaryTheory,
+    module C_NonLogical.F_Interpretation.BinaryRealMLP,
   )
 where
 
-import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.BinarySig (Binary_Bridge (..), BinaryFunS (..), BinaryKlFunS (..), BinarySorts (..))
-import C_NonLogical.B_Realization.BinaryDataRlz ()   -- instance BinarySorts DATA
-import C_NonLogical.B_Realization.BinaryTensRlz ()   -- instance BinarySorts TENS
-import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import qualified B_Logical.D_Interpretation.Boolean as BoolLogic
-import B_Logical.D_Interpretation.TensReal hiding (Omega, TENS)
-import qualified B_Logical.D_Interpretation.TensReal as TensLogic
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import B_Logical.B_Vocabulary.TensVocab ()
+import C_NonLogical.D_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
+import C_NonLogical.E_Extension.BinaryDataExtension ()   -- instance BinarySorts DATA
+import C_NonLogical.E_Extension.BinaryTensExtension ()   -- instance BinarySorts TENS
+import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
+import C_NonLogical.A_Category.Data (DATA (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import qualified B_Logical.F_Interpretation.Boolean as BoolLogic
+import B_Logical.F_Interpretation.TensReal hiding (Omega, TENS)
+import qualified B_Logical.F_Interpretation.TensReal as TensLogic
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
 import Data.Functor.Identity (Identity (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.Kind (Type)
@@ -73,10 +73,10 @@ setGlobalBinaryMLP :: Binary_MLP -> IO ()
 setGlobalBinaryMLP = writeIORef globalBinaryMLP
 
 -- ============================================================
---  DATA: plain function symbols (BinaryFunS)
+--  DATA: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFunS DATA where
+instance BinaryFun DATA where
   labelA :: Point DATA -> Omega DATA
   labelA (x1, x2) =
     let dx = x1 - 0.5
@@ -84,10 +84,10 @@ instance BinaryFunS DATA where
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  DATA: Kleisli function symbols (BinaryKlFunS)
+--  DATA: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFunS DATA where
+instance BinaryKlFun DATA where
   classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
@@ -96,10 +96,10 @@ instance BinaryKlFunS DATA where
     return (decOmega @DATA @TENS logits)
 
 -- ============================================================
---  TENS: plain function symbols (BinaryFunS)
+--  TENS: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFunS TENS where
+instance BinaryFun TENS where
   labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -112,10 +112,10 @@ instance BinaryFunS TENS where
      in UnsafeMkTensor val
 
 -- ============================================================
---  TENS: Kleisli function symbols (BinaryKlFunS)
+--  TENS: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFunS TENS where
+instance BinaryKlFun TENS where
   classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
     let logits = hThetaReal m (toDynamic ptTensor)
@@ -125,7 +125,7 @@ instance BinaryKlFunS TENS where
 --  BRIDGE: DATA <-> TENS encoding/decoding
 -- ============================================================
 
-instance Binary_Bridge DATA TENS where
+instance BinaryBridge DATA TENS where
   encPoint :: Point DATA -> Point TENS
   encPoint (x1, x2) = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 

@@ -2,12 +2,12 @@
 {-# LANGUAGE RankNTypes #-}
 
 -- | Logical interpretation: Product Logic ($\$\Omega = [0,1]$ \subset \mathbb{R}$)
-module B_Logical.D_Interpretation.Product where
+module B_Logical.F_Interpretation.Product where
 
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import A_Categorical.D_Interpretation.Monads.Expectation (HasExpectation (..))
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
-import C_NonLogical.D_Interpretation.Supremum (enumAll, inf, sup)
+import C_NonLogical.A_Category.Data (DATA (..))
+import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..))
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
+import C_NonLogical.F_Interpretation.Supremum (enumAll, inf, sup)
 
 -- Fixity: comparisons (.==, .<, .>) bind tighter than connectives (wedge, vee)
 infix 4 .==, ./=, .<, .>, .<=, .>=

@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module B_Logical.C_Vocabulary.FDATA_Vocab where
+module B_Logical.B_Vocabulary.FdataVocab where
 
-import C_NonLogical.C_Vocabulary.DATA_Vocab (DataVocab)
+import C_NonLogical.B_Vocabulary.DataVocab (DataVocab)
 
 -- | The cartesian closed, monad-closed extension of DATA.
 --   FDATA = DATA + exponentials (function types) + monadic types.

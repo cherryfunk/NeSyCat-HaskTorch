@@ -16,7 +16,7 @@
 --   This is completely abstract — it does not know or care about
 --   the formula structure. It compiles whatever operations happen
 --   to execute during the trace, just like @@tf.function@.
-module B_Logical.D_Interpretation.JitCompile
+module B_Logical.F_Interpretation.JitCompile
   ( jitTrace,
     jitTraceAxiom,
   )

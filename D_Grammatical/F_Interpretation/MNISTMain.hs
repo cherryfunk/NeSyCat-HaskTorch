@@ -3,15 +3,15 @@
 
 module Main where
 
-import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..), MNIST_Vocab (..), MNIST_Bridge (..))
-import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import B_Logical.D_Interpretation.Boolean hiding (Omega)
-import C_NonLogical.D_Interpretation.MNIST (mnistTable)
-import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta)
-import C_NonLogical.E_Parameters.MNIST_Training (trainMNIST)
-import A_Categorical.D_Interpretation.Monads.Expectation (probDist)
+import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..), MnistBridge (..))
+import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
+import C_NonLogical.A_Category.Data (DATA (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import B_Logical.F_Interpretation.Boolean hiding (Omega)
+import C_NonLogical.F_Interpretation.MNIST (mnistTable)
+import C_NonLogical.F_Interpretation.MNIST_MLP (MLP, hTheta)
+import C_NonLogical.G_Parameters.MNIST_Training (trainMNIST)
+import A_Categorical.F_Interpretation.Monads.Expectation (probDist)
 import qualified Torch
 import Torch.Typed.Tensor (toDynamic, Tensor(UnsafeMkTensor))
 

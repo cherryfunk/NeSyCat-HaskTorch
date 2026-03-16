@@ -4,10 +4,10 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module A_Categorical.D_Interpretation.Monads.Expectation_TENS (expectTENS) where
+module A_Categorical.F_Interpretation.Monads.Expectation_TENS (expectTENS) where
 
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
+import B_Logical.A_Category.Tens (TENS (..))
 import qualified Torch
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 

@@ -2,10 +2,10 @@
 --
 -- "For every crossing, only continue driving if there is a green light."
 --  $\forall x \in X(l := \text{traffic\_light}(x),\; d := \text{car}(x, l))\;(\neg\text{true}(d) \vee l = \text{green})$
-module C_NonLogical.D_Interpretation.Crossing where
+module C_NonLogical.F_Interpretation.Crossing where
 
-import C_NonLogical.A_Signature.Crossing_Sig (Decision, LightColor)
-import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
+import C_NonLogical.D_Theory.CrossingTheory (Decision, LightColor)
+import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
 
 ------------------------------------------------------
 -- I: Interpretation (Schema Instance + Function Definitions)

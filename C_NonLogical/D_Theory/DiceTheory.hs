@@ -1,6 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
-module C_NonLogical.A_Signature.Dice_Sig where
+module C_NonLogical.D_Theory.DiceTheory where
 
 -- | Non-Logical Vocabulary for the Dice domain.
 
@@ -8,6 +8,6 @@ module C_NonLogical.A_Signature.Dice_Sig where
 type DieResult = Int
 
 -- | Signature:
-class Dice_Vocab m where
+class DiceTheory m where
   -- mFun (Kleisli):
   die :: m DieResult

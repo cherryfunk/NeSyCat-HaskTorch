@@ -10,14 +10,14 @@
 --   Provides:
 --     • stepBeta:     single gradient-based beta update
 --     • trainBetaOnly: beta-only optimization loop (theta frozen)
-module B_Logical.E_Parameters.BetaTrainingReal
+module B_Logical.G_Parameters.BetaTrainingReal
   ( stepBeta,
     trainBetaOnly,
   )
 where
 
-import B_Logical.D_Interpretation.TensReal (Omega)
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
+import B_Logical.F_Interpretation.TensReal (Omega)
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP)
 import Text.Printf (printf)
 import qualified Torch
 import Torch.Autograd (IndependentTensor, makeIndependent, toDependent)

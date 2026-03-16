@@ -2,14 +2,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NoStarIsType #-}
 
--- | Haskell signature realization: assigns concrete Haskell types to the
---   abstract names declared in HaskSig.
-module A_Categorical.B_Realization.HaskRlz where
+-- | Haskell theory extension: assigns concrete Haskell types to the
+--   abstract names declared in HaskTheory.
+module A_Categorical.E_Extension.HaskExtension where
 
-import A_Categorical.A_Signature.HaskSig (CatFunS (..))
-import qualified A_Categorical.C_Vocabulary.HaskVocab as HaskVocab
+import A_Categorical.D_Theory.HaskTheory (CatFunTheory (..))
+import qualified A_Categorical.B_Vocabulary.HaskVocab as HaskVocab
 import Data.Functor.Identity (Identity)
-import qualified A_Categorical.D_Interpretation.Monads.Giry as M
+import qualified A_Categorical.F_Interpretation.Monads.Giry as M
 
 -- ============================================================
 --  CatObjS: Object Types (0-cells)
@@ -19,10 +19,10 @@ import qualified A_Categorical.D_Interpretation.Monads.Giry as M
 --   type Type = Type
 
 -- ============================================================
---  CatFunS: Functor Types (1-cells)
+--  CatFunTheory: Functor Types (1-cells)
 -- ============================================================
 
-instance CatFunS where
+instance CatFunTheory where
   type Ident = Identity
   type Dist  = HaskVocab.Dist
   type Giry  = M.Giry

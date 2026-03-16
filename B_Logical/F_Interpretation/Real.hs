@@ -5,14 +5,14 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Logical interpretation: Real-valued Logic ($\Omega = \mathbb{R}$)
-module B_Logical.D_Interpretation.Real where
+module B_Logical.F_Interpretation.Real where
 
-import B_Logical.A_Signature.A2MonBLatSig (A2MonBLat_Sig (..))
-import B_Logical.A_Signature.TwoMonBLatSig (TwoMonBLat_Sig (..))
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import C_NonLogical.D_Interpretation.Supremum (enumAll, inf, sup)
-import A_Categorical.D_Interpretation.Monads.Expectation (HasExpectation (..))
+import B_Logical.D_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
+import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
+import C_NonLogical.A_Category.Data (DATA (..))
+import C_NonLogical.F_Interpretation.Supremum (enumAll, inf, sup)
+import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..))
 import Numeric.Natural (Natural)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
@@ -20,7 +20,7 @@ infix 4 .==, ./=, .<, .>, .<=, .>=
 -- | \$\Omega := \mathcal{I}(\tau) = \mathbb{R}$ (approximated by IEEE 754 Double)
 type Omega = Double
 
-instance TwoMonBLat_Sig Omega where
+instance TwoMonBLatTheory Omega where
   -- \| \$\mathcal{I}(\vdash)$ : Comparison
   vdash = (<=)
 
@@ -56,7 +56,7 @@ neg x = -x
 -- Quantifiers ($Q_a :: (a \to \Omega) \to \Omega$)
 ------------------------------------------------------
 
-instance A2MonBLat_Sig DATA Omega where
+instance A2MonBLatTheory DATA Omega where
   -- \| \$\mathcal{I}(\bigvee)$ : Supremum
   bigVee d _mu _guard = sup d
 

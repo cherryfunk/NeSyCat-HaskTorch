@@ -1,7 +1,7 @@
-module B_Logical.A_Signature.TwoMonBLatSig where
+module B_Logical.D_Theory.TwoMonBLatTheory where
 
 -- | Theory of a double monoid bounded lattice (2Mon-BLat), still without axioms.
-class TwoMonBLat_Sig tau where
+class TwoMonBLatTheory tau where
   -- Comparison:
   vdash :: tau -> tau -> Bool
 

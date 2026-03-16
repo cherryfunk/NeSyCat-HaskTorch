@@ -5,7 +5,7 @@
 {-# LANGUAGE RecordWildCards #-}
 
 -- | MNIST CNN: A LeNet-5 style architecture h_theta : R^(1x28x28) -> R^10
-module C_NonLogical.D_Interpretation.MNIST_MLP
+module C_NonLogical.F_Interpretation.MNIST_MLP
   ( MLP (..),
     MLPSpec (..),
     hTheta,

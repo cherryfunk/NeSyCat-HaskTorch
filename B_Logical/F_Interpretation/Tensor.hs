@@ -8,19 +8,19 @@
 
 -- | Logical interpretation: Tensor-valued Logic (Ω = R^1, a tensor space)
 --   Analogous to Real.hs, but all operations are on typed tensors.
-module B_Logical.D_Interpretation.Tensor
-  ( module B_Logical.D_Interpretation.Tensor,
-    module B_Logical.A_Signature.A2MonBLatSig,
-    module B_Logical.A_Signature.TwoMonBLatSig,
-    module B_Logical.D_Interpretation.TENS,
+module B_Logical.F_Interpretation.Tensor
+  ( module B_Logical.F_Interpretation.Tensor,
+    module B_Logical.D_Theory.A2MonBLatTheory,
+    module B_Logical.D_Theory.TwoMonBLatTheory,
+    module B_Logical.A_Category.Tens,
   )
 where
 
-import B_Logical.A_Signature.A2MonBLatSig
-import B_Logical.A_Signature.TwoMonBLatSig
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import A_Categorical.D_Interpretation.Monads.Expectation_TENS (expectTENS)
+import B_Logical.D_Theory.A2MonBLatTheory
+import B_Logical.D_Theory.TwoMonBLatTheory
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import A_Categorical.F_Interpretation.Monads.Expectation_TENS (expectTENS)
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))
@@ -33,7 +33,7 @@ type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 --  TwoMonBLat: Binary Logical Operations on Omega
 -- ============================================================
 
-instance TwoMonBLat_Sig Omega where
+instance TwoMonBLatTheory Omega where
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
 
   -- | p-Mean conjunction (De Morgan dual of vee):
@@ -76,7 +76,7 @@ implies a b = vee (neg a) b
 -- Guarded Quantifiers with explicit measure (A2MonBLat)
 ------------------------------------------------------
 
-instance A2MonBLat_Sig TENS Omega where
+instance A2MonBLatTheory TENS Omega where
   -- | Guarded forall with measure μ:  forall_{x|g}^μ. φ(x) = not exists_{x|g}^μ. notφ(x)
   bigWedge :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
   bigWedge dom mu guard phi = neg (bigVee dom mu guard (neg . phi))

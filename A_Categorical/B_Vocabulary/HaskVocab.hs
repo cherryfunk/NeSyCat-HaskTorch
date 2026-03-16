@@ -3,7 +3,7 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module A_Categorical.C_Vocabulary.HaskVocab where
+module A_Categorical.B_Vocabulary.HaskVocab where
 
 import Data.Kind (Type)
 import Data.Void (Void)

@@ -7,26 +7,26 @@
 {-# LANGUAGE TypeFamilies #-}
 
 -- | MNIST — All three instances in one module:
---   1. MNIST_Vocab DATA   (data category, Dist monad)
---   2. MNIST_Vocab TENS   (tensor spaces, Identity monad)
---   3. MNIST_Bridge DATA TENS (encoding/decoding between the two)
-module C_NonLogical.D_Interpretation.MNIST
+--   1. MnistTheory DATA   (data category, Dist monad)
+--   2. MnistTheory TENS   (tensor spaces, Identity monad)
+--   3. MnistBridge DATA TENS (encoding/decoding between the two)
+module C_NonLogical.F_Interpretation.MNIST
   ( mnistTable,
     mnistMapDATA,
     mnistTableTENS,
     setGlobalMLP,
-    module C_NonLogical.A_Signature.MNIST_Sig,
-    module C_NonLogical.D_Interpretation.MNIST_MLP,
+    module C_NonLogical.D_Theory.MnistTheory,
+    module C_NonLogical.F_Interpretation.MNIST_MLP,
   )
 where
 
-import B_Logical.C_Vocabulary.TENS_Vocab ()
-import C_NonLogical.A_Signature.MNIST_Sig (ImagePairRow (..), MNIST_Bridge (..), MNIST_Vocab (..))
-import C_NonLogical.D_Interpretation.DATA (DATA (..))
-import B_Logical.D_Interpretation.TENS (TENS (..))
-import B_Logical.D_Interpretation.Tensor hiding (Omega, TENS)
-import C_NonLogical.D_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
-import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
+import B_Logical.B_Vocabulary.TensVocab ()
+import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..), MnistBridge (..), MnistTheory (..))
+import C_NonLogical.A_Category.Data (DATA (..))
+import B_Logical.A_Category.Tens (TENS (..))
+import B_Logical.F_Interpretation.Tensor hiding (Omega, TENS)
+import C_NonLogical.F_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
+import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
 import Data.Functor.Identity (Identity (..))
 import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.List (find)
@@ -44,7 +44,7 @@ import Torch.Typed.Tensor (Tensor (UnsafeMkTensor), toDynamic)
 
 -- | Global IORef to store the active neural network parameters.
 -- This allows the pure `DATA` typeclass to dynamically evaluate the neural perception
--- function without altering the mathematical formulas or `MNIST_Vocab` signatures.
+-- function without altering the mathematical formulas or `MnistTheory` signatures.
 {-# NOINLINE globalMLP #-}
 globalMLP :: IORef MLP
 globalMLP = unsafePerformIO $ do
@@ -62,7 +62,7 @@ setGlobalMLP = writeIORef globalMLP
 mnistMapDATA :: Map.Map (Int, Int) Int
 mnistMapDATA = Map.fromList [((im1 r, im2 r), sumLabel r) | r <- mnistTable]
 
-instance MNIST_Vocab DATA where
+instance MnistTheory DATA where
   type Image DATA = Int
   type Digit DATA = Int
   type Omega DATA = Bool
@@ -105,7 +105,7 @@ digitPlusMaskTENS = unsafePerformIO $ do
 mnistTableTENS :: [(Image TENS, Image TENS, Digit TENS)]
 mnistTableTENS = [(encImage @DATA @TENS k1, encImage @DATA @TENS k2, encDigit @DATA @TENS v) | ((k1, k2), v) <- Map.toList mnistMapDATA]
 
-instance MNIST_Vocab TENS where
+instance MnistTheory TENS where
   type Image TENS = Tensor '( 'CPU, 0) 'Float '[784]
   type Digit TENS = Torch.Tensor
   type Omega TENS = Tensor '( 'CPU, 0) 'Float '[1]
@@ -155,7 +155,7 @@ instance MNIST_Vocab TENS where
 --  BRIDGE: Encoding/Decoding between DATA and TENS
 -- ============================================================
 
-instance MNIST_Bridge DATA TENS where
+instance MnistBridge DATA TENS where
   encImage :: Image DATA -> Image TENS
   encImage idx = UnsafeMkTensor (Torch.select 0 (fromIntegral idx) mnistImages)
   encDigit :: Digit DATA -> Digit TENS

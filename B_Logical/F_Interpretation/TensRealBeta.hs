@@ -18,7 +18,7 @@
 --     wedge(a,b) = notvee(nota, notb)
 --     exists = logsumexp with beta scaling
 --     forall = De Morgan dual of exists
-module B_Logical.D_Interpretation.TensRealBeta
+module B_Logical.F_Interpretation.TensRealBeta
   ( BatchOmega,
 
     -- * TwoMonBLat-R-beta: Binary Logical Operations (beta-parameterized)
@@ -41,12 +41,12 @@ module B_Logical.D_Interpretation.TensRealBeta
     impliesRBeta,
 
     -- * Re-exports from Tensor.hs (for scalar Omega operations)
-    module B_Logical.D_Interpretation.Tensor,
+    module B_Logical.F_Interpretation.Tensor,
   )
 where
 
-import B_Logical.D_Interpretation.Tensor
-import B_Logical.D_Interpretation.TensReal
+import B_Logical.F_Interpretation.Tensor
+import B_Logical.F_Interpretation.TensReal
   ( BatchOmega,
     botR,
     negR,

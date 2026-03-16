@@ -2,12 +2,12 @@
 {-# LANGUAGE TypeFamilies #-}
 
 -- | B_Realization: sort assignment (Point, Omega, M, Params) for TENS category.
-module C_NonLogical.B_Realization.BinaryTensRlz where
+module C_NonLogical.E_Extension.BinaryTensExtension where
 
-import C_NonLogical.A_Signature.BinarySig (BinarySorts (..))
-import C_NonLogical.D_Interpretation.BinaryRealMLP (Binary_MLP)
-import B_Logical.D_Interpretation.TENS (TENS)
-import qualified B_Logical.D_Interpretation.TensReal as TensLogic
+import C_NonLogical.D_Theory.BinaryTheory (BinarySorts (..))
+import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP)
+import B_Logical.A_Category.Tens (TENS)
+import qualified B_Logical.F_Interpretation.TensReal as TensLogic
 import Data.Functor.Identity (Identity)
 import Torch.Typed.Tensor (Tensor)
 import Torch.DType (DType (..))

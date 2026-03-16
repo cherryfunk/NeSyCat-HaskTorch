@@ -1,8 +1,8 @@
 -- | Dice domain -- Signature + Interpretation
-module C_NonLogical.D_Interpretation.Dice where
+module C_NonLogical.F_Interpretation.Dice where
 
-import C_NonLogical.A_Signature.Dice_Sig (DieResult)
-import A_Categorical.D_Interpretation.Monads.Dist (Dist (..))
+import C_NonLogical.D_Theory.DiceTheory (DieResult)
+import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
 
 ------------------------------------------------------
 -- I: Interpretation (Schema Instance + Function Definitions)

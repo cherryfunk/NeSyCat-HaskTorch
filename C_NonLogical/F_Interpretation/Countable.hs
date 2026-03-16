@@ -1,7 +1,7 @@
 -- | Countable sets domain -- Signature + Interpretation
-module C_NonLogical.D_Interpretation.Countable where
+module C_NonLogical.F_Interpretation.Countable where
 
-import A_Categorical.D_Interpretation.Monads.Giry (Giry (..))
+import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
 
 ------------------------------------------------------
 -- I: Interpretation (Schema Instance + Function Definitions)
