@@ -8,7 +8,7 @@ module A_Categorical.B_Vocabulary.HaskVocab where
 import Data.Kind (Type)
 import Data.Void (Void)
 
--- | Categorical Vocabulary κ
+-- | Categorical Vocabulary
 --
 -- CatObjT — object types (tuple-kinds): (), Type, (Type,Type), ...
 -- CatFunT — functor types: map between object types
@@ -37,7 +37,7 @@ class CatFunT (f :: k)
 -- All Monads are automatically functor symbols.
 instance {-# OVERLAPPABLE #-} (Monad m) => CatFunT m
 
--- Biendofunctor symbols: (Type, Type) -> Type  (curried as Type -> Type -> Type)
+-- Bi-endofunctor symbols: (Type, Type) -> Type  (curried as Type -> Type -> Type)
 instance CatFunT (,) -- product
 
 instance CatFunT Either -- coproduct symbol
@@ -55,5 +55,5 @@ instance CatFunT Void -- initial constant symbol
 
 -- | The Distribution Monad: a discrete probability distribution
 --   represented as a weighted list of outcomes.
-newtype Dist a = Dist { runDist :: [(a, Double)] }
+newtype Dist a = Dist {runDist :: [(a, Double)]}
   deriving (Show)

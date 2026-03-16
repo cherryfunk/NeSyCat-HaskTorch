@@ -50,7 +50,7 @@ class CatFunTheory where
 -- | Abstract natural transformation names, parameterized by an
 --   endofunctor declared in CatFunTheory (e.g. Ident, Dist, Giry).
 class Cat2FunTheory (m :: Type -> Type) where
-  -- | η: abstract name for monadic unit (return).
+  -- | eta: abstract name for monadic unit (return).
   eta :: a -> m a
-  -- | μ: abstract name for monadic multiplication (join).
+  -- | mu: abstract name for monadic multiplication (join).
   mu  :: m (m a) -> m a

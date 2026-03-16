@@ -9,6 +9,7 @@ maintainer: user@example.com
 
 library
   exposed-modules:
+    A_Categorical.A_Category.Hask,
     A_Categorical.D_Theory.HaskTheory,
     A_Categorical.E_Extension.HaskExtension,
     A_Categorical.B_Vocabulary.HaskVocab,
