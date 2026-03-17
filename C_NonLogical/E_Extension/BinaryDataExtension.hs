@@ -9,7 +9,7 @@ import C_NonLogical.A_Category.Data (DATA)
 import qualified B_Logical.F_Interpretation.Boolean as BoolLogic
 
 instance BinarySorts DATA where
-  type Point  DATA = (Float, Float)  -- ℝ² as a Cartesian product
+  type Point  DATA = (Float, Float)  -- R^2 as a Cartesian product
   type Omega  DATA = BoolLogic.Omega  -- = Bool
   type M      DATA = Dist
-  type Params DATA = ()              -- Θ_DATA: no learnable parameters
+  type Params DATA = ()              -- Theta_DATA: no learnable parameters

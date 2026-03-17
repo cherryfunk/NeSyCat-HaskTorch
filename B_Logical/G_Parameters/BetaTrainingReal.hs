@@ -26,8 +26,8 @@ import Torch.Typed.Tensor (toDynamic)
 -- | One beta-optimization step via manual SGD on the gradient.
 --
 --   Given a loss tensor (scalar, with grad graph attached),
---   compute ∂loss/∂beta and update: beta <- beta − lr · ∂loss/∂beta
---   Then clamp beta > ε to keep it positive.
+--   compute d(loss)/d(beta) and update: beta <- beta - lr * d(loss)/d(beta)
+--   Then clamp beta > eps to keep it positive.
 stepBeta :: IndependentTensor -> Torch.Tensor -> Float -> IO IndependentTensor
 stepBeta betaInd lossTensor lr = do
   let grads = Torch.grad lossTensor [betaInd]
@@ -35,7 +35,7 @@ stepBeta betaInd lossTensor lr = do
       betaDep = toDependent betaInd
       lrT = Torch.asTensor lr
       newBeta = betaDep `Torch.sub` (gradBeta `Torch.mul` lrT)
-      -- Clamp beta > 0.01 to stay positive: relu(beta − ε) + ε
+      -- Clamp beta > 0.01 to stay positive: relu(beta - eps) + eps
       epsT = Torch.asTensor (0.01 :: Float)
       clamped = Torch.relu (newBeta `Torch.sub` epsT) `Torch.add` epsT
   makeIndependent clamped

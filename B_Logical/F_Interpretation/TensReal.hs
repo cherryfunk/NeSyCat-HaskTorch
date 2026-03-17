@@ -63,7 +63,7 @@ type BatchOmega = Torch.Tensor
 --  TwoMonBLat-R: pointwise batch operations on ℝ
 -- ============================================================
 
--- | Entailment (lattice ordering ⊑): true iff foralli. aᵢ <= bᵢ
+-- | Entailment (lattice ordering <=): true iff forall i. a_i <= b_i
 vdashR :: BatchOmega -> BatchOmega -> Bool
 vdashR a b =
   let maxDiff = Torch.asValue (Torch.max (Torch.sub a b)) :: Float
@@ -84,11 +84,11 @@ veeR a b =
       pb = b `Torch.mul` p
    in F.logaddexp pa pb `Torch.div` p
 
--- | Bottom: −∞
+-- | Bottom: -inf
 botR :: BatchOmega
 botR = Torch.asTensor [(-1.0 / 0.0) :: Float]
 
--- | Top: +∞
+-- | Top: +inf
 topR :: BatchOmega
 topR = Torch.asTensor [(1.0 / 0.0) :: Float]
 

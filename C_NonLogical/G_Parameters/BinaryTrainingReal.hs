@@ -84,16 +84,16 @@ trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
       lambdaTens = Torch.asTensor lambda
 
   (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
-    -- ── J_data: pointwise cross-entropy (skipped when λ=0) ───────────
+    -- -- J_data: pointwise cross-entropy (skipped when lambda=0) -------
     let dataLoss = if lambda == 0.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (crossEntropyLoss preds trainLabels) `Torch.div` nTens
 
-    -- ── J_know: axiom satisfaction penalty (skipped when λ=1) ────────
+    -- -- J_know: axiom satisfaction penalty (skipped when lambda=1) ----
     let knowLoss = if lambda == 1.0 then zeroTens
                    else softplusLoss (toDynamic (kbSatFormula trainData model))
 
-    -- ── J = λ · J_data + (1-λ) · J_know ─────────────────────────────
+    -- -- J = lambda * J_data + (1-lambda) * J_know --------------------
     let totalLoss = combinedObjective dataLoss knowLoss lambdaTens
 
     (newModel, newOpt) <- runStep model opt totalLoss lrTens
