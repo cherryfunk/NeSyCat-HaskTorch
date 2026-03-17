@@ -7,15 +7,15 @@ module Main where
 
 -- \$\mathcal{I}_\Sigma$: Domain-specific interpretations
 
-import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (Digit, Image, M, add, digit, digitEq, digitPlus))
+import C_Domain.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (Digit, Image, M, add, digit, digitEq, digitPlus))
 import D_Grammatical.D_Theory.FormulasTheory (loadFormulas)
-import C_NonLogical.A_Category.Data (DATA (..))
+import C_Domain.A_Category.Data (DATA (..))
 import B_Logical.F_Interpretation.Boolean
-import C_NonLogical.F_Interpretation.Countable
-import C_NonLogical.F_Interpretation.Crossing
-import C_NonLogical.F_Interpretation.Dice
-import C_NonLogical.F_Interpretation.MNIST (mnistTable)
-import C_NonLogical.F_Interpretation.Weather
+import C_Domain.F_Interpretation.Countable
+import C_Domain.F_Interpretation.Crossing
+import C_Domain.F_Interpretation.Dice
+import C_Domain.F_Interpretation.MNIST (mnistTable)
+import C_Domain.F_Interpretation.Weather
 import A_Categorical.F_Interpretation.Monads.Dist (Dist)
 import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..), probDist, probGiry)
 import A_Categorical.F_Interpretation.Monads.Giry (Giry)

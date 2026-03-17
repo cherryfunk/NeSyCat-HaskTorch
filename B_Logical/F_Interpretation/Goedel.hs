@@ -4,8 +4,8 @@
 -- | Logical interpretation: G\"odel Logic ($\Omega = [0,1]$)
 module B_Logical.F_Interpretation.Goedel where
 
-import C_NonLogical.A_Category.Data (DATA (..))
-import C_NonLogical.F_Interpretation.Supremum (inf, sup)
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.F_Interpretation.Supremum (inf, sup)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 

@@ -10,8 +10,8 @@ module B_Logical.F_Interpretation.Real where
 import B_Logical.D_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
-import C_NonLogical.A_Category.Data (DATA (..))
-import C_NonLogical.F_Interpretation.Supremum (enumAll, inf, sup)
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.F_Interpretation.Supremum (enumAll, inf, sup)
 import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..))
 import Numeric.Natural (Natural)
 

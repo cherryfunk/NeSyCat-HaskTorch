@@ -3,14 +3,14 @@
 
 module Main where
 
-import C_NonLogical.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..), MnistBridge (..))
+import C_Domain.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..), MnistBridge (..))
 import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
-import C_NonLogical.A_Category.Data (DATA (..))
+import C_Domain.A_Category.Data (DATA (..))
 import B_Logical.A_Category.Tens (TENS (..))
 import B_Logical.F_Interpretation.Boolean hiding (Omega)
-import C_NonLogical.F_Interpretation.MNIST (mnistTable)
-import C_NonLogical.F_Interpretation.MNIST_MLP (MLP, hTheta)
-import C_NonLogical.G_Parameters.MNIST_Training (trainMNIST)
+import C_Domain.F_Interpretation.MNIST (mnistTable)
+import C_Domain.F_Interpretation.MNIST_MLP (MLP, hTheta)
+import C_Domain.G_Parameters.MNIST_Training (trainMNIST)
 import A_Categorical.F_Interpretation.Monads.Expectation (probDist)
 import qualified Torch
 import Torch.Typed.Tensor (toDynamic, Tensor(UnsafeMkTensor))

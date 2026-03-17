@@ -4,10 +4,10 @@
 -- | Logical interpretation: \L ukasiewicz Logic ($\Omega = [0,1]$)
 module B_Logical.F_Interpretation.Lukasiewicz where
 
-import C_NonLogical.A_Category.Data (DATA (..))
+import C_Domain.A_Category.Data (DATA (..))
 import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..))
 import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
-import C_NonLogical.F_Interpretation.Supremum (enumAll, inf, sup)
+import C_Domain.F_Interpretation.Supremum (enumAll, inf, sup)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 

@@ -3,7 +3,7 @@
 
 module B_Logical.B_Vocabulary.FdataVocab where
 
-import C_NonLogical.B_Vocabulary.DataVocab (DataVocab)
+import C_Domain.B_Vocabulary.DataVocab (DataVocab)
 
 -- | The cartesian closed, monad-closed extension of DATA.
 --   FDATA = DATA + exponentials (function types) + monadic types.

@@ -8,7 +8,7 @@ module A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..), p
 
 import A_Categorical.F_Interpretation.Monads.Dist (Dist (..))
 import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
-import C_NonLogical.A_Category.Data (DATA (..))
+import C_Domain.A_Category.Data (DATA (..))
 import Numeric.Tools.Integration (QuadParam (..), defQuad, quadBestEst, quadRes, quadRomberg)
 import Statistics.Distribution (ContDistr (density, quantile), DiscreteDistr (probability), Mean (mean), Variance (stdDev))
 import qualified Statistics.Distribution.Beta as B

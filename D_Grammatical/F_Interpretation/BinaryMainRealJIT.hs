@@ -4,9 +4,9 @@
 -- | Executable for Binary Classification (TensReal) using JIT training.
 module Main where
 
-import C_NonLogical.F_Interpretation.BinaryRealMLP (hThetaReal)
+import C_Domain.F_Interpretation.BinaryRealMLP (hThetaReal)
 import D_Grammatical.F_Interpretation.BinaryFormulasReal (axiomReal)
-import C_NonLogical.G_Parameters.BinaryTrainingRealJIT (trainBinaryRealJIT)
+import C_Domain.G_Parameters.BinaryTrainingRealJIT (trainBinaryRealJIT)
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 

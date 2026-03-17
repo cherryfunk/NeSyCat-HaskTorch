@@ -7,12 +7,12 @@
 --   lambda=1: pure data-driven
 module Main where
 
-import C_NonLogical.A_Category.Data (DATA (..))
-import C_NonLogical.F_Interpretation.BinaryRealMLP (hThetaReal)
-import C_NonLogical.F_Interpretation.BinaryReal ()
-import C_NonLogical.G_Parameters.BinaryTrainingRealBeta (trainBinaryRealBeta)
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.F_Interpretation.BinaryRealMLP (hThetaReal)
+import C_Domain.F_Interpretation.BinaryReal ()
+import C_Domain.G_Parameters.BinaryTrainingRealBeta (trainBinaryRealBeta)
 import D_Grammatical.F_Interpretation.BinaryFormulasRealBeta (axiomRealBeta)
-import C_NonLogical.D_Theory.BinaryTheory (BinaryKlFun (classifierA))
+import C_Domain.D_Theory.BinaryTheory (BinaryKlFun (classifierA))
 import E_Benchmark.Metrics.Metrics (evaluateMetrics)
 import qualified Torch
 import System.Environment (getArgs)

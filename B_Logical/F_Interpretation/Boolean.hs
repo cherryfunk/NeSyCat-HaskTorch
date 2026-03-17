@@ -4,8 +4,8 @@
 -- | Logical interpretation: Classical Boolean Logic ($\Omega = \{\text{True}, \text{False}\}$)
 module B_Logical.F_Interpretation.Boolean where
 
-import C_NonLogical.A_Category.Data (DATA (..))
-import C_NonLogical.F_Interpretation.Supremum (enumAll)
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.F_Interpretation.Supremum (enumAll)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 

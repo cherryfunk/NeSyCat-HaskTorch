@@ -17,7 +17,7 @@ module B_Logical.G_Parameters.BetaTrainingReal
 where
 
 import B_Logical.F_Interpretation.TensReal (Omega)
-import C_NonLogical.F_Interpretation.BinaryRealMLP (Binary_MLP)
+import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP)
 import Text.Printf (printf)
 import qualified Torch
 import Torch.Autograd (IndependentTensor, makeIndependent, toDependent)

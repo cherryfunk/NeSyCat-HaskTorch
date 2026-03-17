@@ -6,7 +6,7 @@
 
 module A_Categorical.F_Interpretation.Monads.Giry where
 
-import C_NonLogical.A_Category.Data (DATA (..))
+import C_Domain.A_Category.Data (DATA (..))
 import Control.Monad (ap)
 import Statistics.Distribution (ContDistr, Mean, Variance)
 

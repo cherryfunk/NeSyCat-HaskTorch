@@ -45,7 +45,7 @@ The codebase mirrors the paper's layered categorical structure. Each top-level d
 
 - **`B_Logical/`** — Beta-level: logical connectives. The `TwoMonBLatTheory` class defines a double-monoid bounded lattice (∨, ∧, ⊕, ⊗ with bounds). Multiple interpretations exist: `Boolean`, `Real` (LogSumExp/TensReal), `Goedel`, `Lukasiewicz`, `Product`, `SProd`, `LTNp`. The `TENS` and `FDATA` modules are the two main tensor-based interpretations.
 
-- **`C_NonLogical/`** — Gamma-level: domain-specific theories. Each problem domain (Binary, MNIST, Dice, Crossing, Weather, Countable) has its own theory declaring domain sorts and function symbols, plus extensions and interpretations using HaskTorch tensors.
+- **`C_Domain/`** — Gamma-level: domain-specific theories. Each problem domain (Binary, MNIST, Dice, Crossing, Weather, Countable) has its own theory declaring domain sorts and function symbols, plus extensions and interpretations using HaskTorch tensors.
 
 - **`D_Grammatical/`** — Delta-level: formulas/axioms. Combines logical connectives with domain interpretations to express axioms (e.g., `axiomReal` builds ∀-quantified classification constraints). Executables (`Main.hs`, `BinaryMainReal.hs`, `MNISTMain.hs`) live here.
 
