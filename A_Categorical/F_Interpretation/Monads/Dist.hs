@@ -2,12 +2,12 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- | Interpretation of the Dist monad: Functor, Applicative and Monad
---   instances. The Dist type itself lives in HaskVocab (vocabulary).
+--   instances. The Dist type itself lives in StarVocab (vocabulary).
 module A_Categorical.F_Interpretation.Monads.Dist
-  ( module A_Categorical.B_Vocabulary.HaskVocab
+  ( module A_Categorical.B_Vocabulary.StarVocab
   ) where
 
-import A_Categorical.B_Vocabulary.HaskVocab (Dist (..))
+import A_Categorical.B_Vocabulary.StarVocab (Dist (..))
 import Control.Monad (ap, liftM)
 
 -- | Standard Haskell Monad Hierarchy for Dist

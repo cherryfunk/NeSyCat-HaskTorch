@@ -7,7 +7,7 @@
 module A_Categorical.E_Extension.HaskExtension where
 
 import A_Categorical.D_Theory.HaskTheory (CatFunTheory (..))
-import qualified A_Categorical.B_Vocabulary.HaskVocab as HaskVocab
+import qualified A_Categorical.B_Vocabulary.StarVocab as StarVocab
 import Data.Functor.Identity (Identity)
 import qualified A_Categorical.F_Interpretation.Monads.Giry as M
 
@@ -24,5 +24,5 @@ import qualified A_Categorical.F_Interpretation.Monads.Giry as M
 
 instance CatFunTheory where
   type Ident = Identity
-  type Dist  = HaskVocab.Dist
+  type Dist  = StarVocab.Dist
   type Giry  = M.Giry
