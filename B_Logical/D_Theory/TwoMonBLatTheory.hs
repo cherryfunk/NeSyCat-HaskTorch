@@ -14,6 +14,12 @@ class TwoMonBLatTheory tau where
   wedge :: tau -> tau -> tau
   top :: tau
 
+  -- Negation:
+  neg :: tau -> tau
+
+  -- Implication:
+  implies :: tau -> tau -> tau
+
   -- Monoids:
   -- Monoid 1:
   oplus :: tau -> tau -> tau

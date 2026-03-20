@@ -60,16 +60,8 @@ instance TwoMonBLatTheory Omega where
   otimes a b = UnsafeMkTensor (Torch.mul (toDynamic a) (toDynamic b))
   v0 = UnsafeMkTensor (Torch.asTensor [0.0 :: Float])
   v1 = UnsafeMkTensor (Torch.asTensor [1.0 :: Float])
-
-
-
--- | \mathcal{I}(\neg) : Negation
-neg :: Omega -> Omega
-neg a = UnsafeMkTensor (one `Torch.sub` toDynamic a)
-
--- | Fuzzy implication: a -> b = max(1-a, b)
-implies :: Omega -> Omega -> Omega
-implies a b = vee (neg a) b
+  neg a = UnsafeMkTensor (one `Torch.sub` toDynamic a)
+  implies a b = vee (neg a) b
 
 
 ------------------------------------------------------

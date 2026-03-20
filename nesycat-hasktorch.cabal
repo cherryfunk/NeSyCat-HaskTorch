@@ -58,6 +58,7 @@ library
     C_Domain.F_Interpretation.Supremum,
     C_Domain.F_Interpretation.Weather,
     D_Grammatical.D_Theory.FormulasTheory,
+    D_Grammatical.D_Theory.BinaryFormulas,
     D_Grammatical.D_Theory.BinaryFormulasReal,
     D_Grammatical.D_Theory.BinaryFormulasRealBeta,
     D_Grammatical.D_Theory.DiceFormulas,
@@ -65,6 +66,7 @@ library
     D_Grammatical.D_Theory.WeatherFormulas,
     D_Grammatical.D_Theory.CountableFormulas,
     D_Grammatical.D_Theory.MnistFormulas,
+    D_Grammatical.F_Interpretation.BinaryIntpTens,
 
     E_Inference.A_Category.Diff,
     E_Inference.B_Vocabulary.InferenceVocabTens,

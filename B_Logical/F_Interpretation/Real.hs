@@ -47,10 +47,8 @@ instance TwoMonBLatTheory Omega where
 
   -- \| \$\mathcal{I}(\vec{1})$ : Multiplicative unit
   v1 = 1.0
-
--- | \$\mathcal{I}(\neg)$ : Negation (additive inverse)
-neg :: Omega -> Omega
-neg x = -x
+  neg x = -x
+  implies a b = vee (neg a) b
 
 ------------------------------------------------------
 -- Quantifiers ($Q_a :: (a \to \Omega) \to \Omega$)
