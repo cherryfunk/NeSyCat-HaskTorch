@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Shared axiom formula for Binary Classification (TensReal).
-module D_Grammatical.F_Interpretation.BinaryFormulasReal
+module D_Grammatical.D_Theory.BinaryFormulasReal
   ( axiomReal,
   )
 where

@@ -1,12 +1,12 @@
 {-# LANGUAGE TypeApplications #-}
 
--- | Grammatical interpretation: Binary classification domain.
+-- | Grammatical interpretation: Binary classification domain (learnable beta).
 module Main where
 
 import C_Domain.A_Category.Data (DATA (..))
 import C_Domain.D_Theory.BinaryTheory (BinaryKlFun (classifierA))
-import C_Domain.G_Parameters.BinaryTrainingReal (trainBinaryReal)
-import D_Grammatical.D_Theory.BinaryFormulasReal (axiomReal)
+import C_Domain.G_Parameters.BinaryTrainingRealBeta (trainBinaryRealBeta)
+import D_Grammatical.D_Theory.BinaryFormulasRealBeta (axiomRealBeta)
 import F_Benchmark.Metrics.Metrics (evaluateMetrics)
 import C_Domain.F_Interpretation.BinaryReal ()
 import C_Domain.F_Interpretation.BinaryRealMLP (hThetaReal)
@@ -18,11 +18,13 @@ main = do
   args <- getArgs
   let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
 
-  -- Train: optimize theta to satisfy the axiom
-  (finalModel, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryReal 1000 0.001 lambda axiomReal
+  -- Train: optimize theta and beta jointly
+  (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels) <-
+    trainBinaryRealBeta 1000 0.001 1.25 lambda axiomRealBeta
 
-  -- Evaluate: push back to DATA category via bridge (decOmega applies sigmoid)
+  putStrLn $ "Learned beta: " ++ show (Torch.asValue learnedBeta :: Float)
+
+  -- Evaluate: push back via sigmoid
   evaluateMetrics
     (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
     (Torch.sigmoid (hThetaReal finalModel testData)) testLabels

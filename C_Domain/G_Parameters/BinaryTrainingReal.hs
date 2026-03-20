@@ -17,9 +17,8 @@ import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinarySorts (..))
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
-import E_Inference.A_Objective.Combined (combinedObjective)
-import E_Inference.A_Objective.CrossEntropy (crossEntropyLoss)
-import E_Inference.A_Objective.Softplus (softplusLoss)
+import E_Inference.D_Theory.InferenceTheory (InferenceFun (..))
+import E_Inference.F_Interpretation.InferenceIntpTens ()
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..))
@@ -87,14 +86,14 @@ trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
     -- -- J_data: pointwise cross-entropy (skipped when lambda=0) -------
     let dataLoss = if lambda == 0.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
-                        in Torch.sumAll (crossEntropyLoss preds trainLabels) `Torch.div` nTens
+                        in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
 
     -- -- J_know: axiom satisfaction penalty (skipped when lambda=1) ----
     let knowLoss = if lambda == 1.0 then zeroTens
-                   else softplusLoss (toDynamic (kbSatFormula trainData model))
+                   else lossKnow (toDynamic (kbSatFormula trainData model))
 
     -- -- J = lambda * J_data + (1-lambda) * J_know --------------------
-    let totalLoss = combinedObjective dataLoss knowLoss lambdaTens
+    let totalLoss = lossComb dataLoss knowLoss lambdaTens
 
     (newModel, newOpt) <- runStep model opt totalLoss lrTens
 

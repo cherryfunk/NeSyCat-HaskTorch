@@ -1,20 +1,21 @@
-{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Executable for Binary Classification (TensReal) using JIT training.
+-- | Grammatical interpretation: Binary classification domain (JIT compiled).
 module Main where
 
-import C_Domain.F_Interpretation.BinaryRealMLP (hThetaReal)
-import D_Grammatical.F_Interpretation.BinaryFormulasReal (axiomReal)
 import C_Domain.G_Parameters.BinaryTrainingRealJIT (trainBinaryRealJIT)
-import E_Benchmark.Metrics.Metrics (evaluateMetrics)
+import D_Grammatical.D_Theory.BinaryFormulasReal (axiomReal)
+import F_Benchmark.Metrics.Metrics (evaluateMetrics)
+import C_Domain.F_Interpretation.BinaryRealMLP (hThetaReal)
 import qualified Torch
 
 main :: IO ()
 main = do
-  putStrLn "Starting Binary Classification TensReal (JIT Compiled) Evaluation"
-  (finalModel, trainData, trainLabels, testData, testLabels) <- trainBinaryRealJIT 1000 0.001 axiomReal
+  -- Train: optimize theta to satisfy the axiom (JIT compiled)
+  (finalModel, trainData, trainLabels, testData, testLabels) <-
+    trainBinaryRealJIT 1000 0.001 axiomReal
 
-  putStrLn "\n=== Evaluation ==="
-  evaluateMetrics (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
-  putStrLn "Finished."
+  -- Evaluate: push back via sigmoid
+  evaluateMetrics
+    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
+    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels

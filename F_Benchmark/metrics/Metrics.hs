@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module E_Benchmark.Metrics.Metrics
+module F_Benchmark.Metrics.Metrics
   ( evaluateMetrics,
   )
 where

@@ -1,0 +1,15 @@
+-- | The inference level (ε) operates in Diff: the category of
+--   tensor spaces with smooth (differentiable) maps.
+--
+--   This is distinct from Tens at the domain level (γ), which
+--   allows all functions (including non-smooth ones like labelA).
+--
+--   The inference vocabulary symbols (softplus, crossEntropy, convex)
+--   must be smooth because the chain rule propagates gradients through them:
+--
+--     θ ──smooth──→ h_θ(x) ──smooth──→ lossKnow(⟦φ⟧_θ) → ℝ
+--
+--   Everything on the path from θ to the loss must be in Diff.
+--   Data-providing functions (labels, encodings) live in Tens and
+--   are treated as constants during differentiation.
+module E_Inference.A_Category.Diff () where

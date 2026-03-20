@@ -4,7 +4,7 @@
 --
 --   Same structure as BinaryFormulasReal.axiomReal, but uses the
 --   beta-parameterized connectives from TensRealBeta.
-module D_Grammatical.F_Interpretation.BinaryFormulasRealBeta
+module D_Grammatical.D_Theory.BinaryFormulasRealBeta
   ( axiomRealBeta,
   )
 where
