@@ -29,7 +29,6 @@ library
     B_Logical.F_Interpretation.Tensor,
     B_Logical.F_Interpretation.TensReal,
     B_Logical.F_Interpretation.TensRealBeta,
-
     B_Logical.F_Interpretation.Boolean,
     B_Logical.F_Interpretation.Real,
     B_Logical.F_Interpretation.Goedel,
