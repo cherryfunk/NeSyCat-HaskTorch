@@ -3,7 +3,7 @@
 -- | Grammatical interpretation of BinaryFormulas in TENS.
 --
 --   Instantiates the abstract binarySentence at @TENS, providing the
---   concrete measure (training data as Giry).
+--   concrete batch as the domain object (TensorBatch).
 --
 --   TENS INTERPRETATION: quantifier ∀ is interpreted as bigWedge (LogSumExp).
 --   This comes from the A2MonBLatTheory TENS Omega instance.
@@ -13,7 +13,6 @@ module D_Grammatical.F_Interpretation.BinaryIntpTens
   )
 where
 
-import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
 import B_Logical.A_Category.Tens (TENS (..))
 import B_Logical.F_Interpretation.TensRealBeta (bigWedgeRBeta)
 import C_Domain.D_Theory.BinaryTheory (BinarySorts (..))
@@ -28,12 +27,11 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 --     ∀x. binaryPredicate(x)
 --   = ∀x. (label(x) → pred(x)) ∧ (¬label(x) → ¬pred(x))
 --
---   The batch tensor IS the empirical measure in TENS (Pure = Dirac on
---   the batch, expectTENS applies φ in one pass without split/restack).
+--   The batch tensor IS the domain object in TENS (TensorBatch carries
+--   the concrete finite sample for GPU batch processing).
 binaryAxiomTens :: Torch.Tensor -> Binary_MLP -> Omega TENS
 binaryAxiomTens dataTensor m =
-  let mu = Pure (UnsafeMkTensor dataTensor)
-   in binarySentence @TENS TensorSpace mu m
+  binarySentence @TENS (TensorBatch dataTensor) m
 
 -- | Beta-parameterized variant: same abstract predicate,
 --   but the ∀ quantifier uses learnable beta (LogSumExp sharpness).

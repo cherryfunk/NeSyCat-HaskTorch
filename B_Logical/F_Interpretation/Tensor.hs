@@ -25,9 +25,7 @@ where
 
 import B_Logical.D_Theory.A2MonBLatTheory
 import B_Logical.D_Theory.TwoMonBLatTheory
-import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
 import B_Logical.A_Category.Tens (TENS (..))
-import A_Categorical.F_Interpretation.Monads.Expectation_TENS (expectTENS)
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))
@@ -71,34 +69,33 @@ instance TwoMonBLatTheory Omega where
   implies a b = vee (neg a) b
 
 ------------------------------------------------------
--- Guarded Quantifiers with explicit measure (A2MonBLat)
+-- Guarded Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
 instance A2MonBLatTheory TENS Omega where
   -- | Guarded forall: De Morgan dual of exists.
-  --   forall_{x|g}^μ φ(x) = −exists_{x|g}^μ (−φ(x))
-  bigWedge :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
-  bigWedge dom mu guard phi = neg (bigVee dom mu guard (neg . phi))
+  --   forall_{x|g} φ(x) = −exists_{x|g} (−φ(x))
+  bigWedge dom guard phi = neg (bigVee dom guard (neg . phi))
 
-  -- | Guarded exists with measure μ (LogSumExp aggregation):
-  --   exists_{x|g}^μ φ  =  (1/β) · logsumexp(β·φ + log(g)) − log(Σg)
-  bigVee :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
-  bigVee TensorSpace mu guard phi =
-    let evals  = expectTENS TensorSpace mu (\x -> toDynamic (phi x))
-        guards = expectTENS TensorSpace mu (\x -> toDynamic (guard x))
+  -- | Guarded exists (LogSumExp aggregation):
+  --   exists_{x|g} φ  =  (1/β) · logsumexp(β·φ + log(g)) − log(Σg)
+  --   The domain object carries the concrete batch (TensorBatch).
+  bigVee (TensorBatch batch) guard phi =
+    let batchPt = UnsafeMkTensor batch
+        evals  = toDynamic (phi batchPt)
+        guards = toDynamic (guard batchPt)
         p      = beta evals
-        logG   = logSigmoid guards    -- ℝ guard → log-weight
+        logG   = logSigmoid guards
         pphi   = (evals `Torch.mul` p) `Torch.add` logG
         lse    = F.logsumexp pphi 0 False
-        sG     = Torch.sumAll (Torch.sigmoid guards)  -- soft count
+        sG     = Torch.sumAll (Torch.sigmoid guards)
         res    = F.divScalar (lse `Torch.sub` Torch.log sG) betaVal
      in UnsafeMkTensor (Torch.reshape [1] res)
-  bigVee TensProd {} _ _ _ = error "bigVee over TensProd not yet supported"
-  bigVee TensUnit _ _ phi = phi ()
+  bigVee TensorSpace _ _ = error "bigVee on abstract TensorSpace requires TensorBatch"
+  bigVee TensProd {} _ _ = error "bigVee over TensProd not yet supported"
+  bigVee TensUnit _ phi = phi ()
 
-  bigOplus :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
   bigOplus = error "bigOplus over TENS not yet supported"
-  bigOtimes :: TENS a -> Giry a -> (a -> Omega) -> (a -> Omega) -> Omega
   bigOtimes = error "bigOtimes over TENS not yet supported"
 
 ------------------------------------------------------
@@ -107,7 +104,7 @@ instance A2MonBLatTheory TENS Omega where
 
 -- | LogSumExp smoothing parameter β.
 betaVal :: Float
-betaVal = 1.25
+betaVal = 1.2
 
 -- | β as a tensor matching shape/device of input.
 beta :: Torch.Tensor -> Torch.Tensor

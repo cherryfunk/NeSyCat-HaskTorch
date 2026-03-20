@@ -13,7 +13,6 @@ import A_Categorical.F_Interpretation.Monads.Giry (Giry (..))
 import C_Domain.A_Category.Data (DATA (..))
 import C_Domain.F_Interpretation.Supremum (enumAll, inf, sup)
 import A_Categorical.F_Interpretation.Monads.Expectation (HasExpectation (..))
-import Numeric.Natural (Natural)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -56,17 +55,23 @@ instance TwoMonBLatTheory Omega where
 
 instance A2MonBLatTheory DATA Omega where
   -- \| \$\mathcal{I}(\bigvee)$ : Supremum
-  bigVee d _mu _guard = sup d
+  bigVee d _guard = sup d
 
   -- \| \$\mathcal{I}(\bigwedge)$ : Infimum
-  bigWedge d _mu _guard = inf d
+  bigWedge d _guard = inf d
 
-  -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ chosen measure)
-  --   The measure μ is now an EXPLICIT parameter (Giry a), not hardcoded.
-  bigOplus obj mu _guard phi = expect obj mu phi
+  -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ canonical measure)
+  --   Each quantifier chooses its density per domain type (uniform for finite, etc.)
+  bigOplus Reals _guard phi = expect Reals (Uniform 0.0 1.0) phi
+  bigOplus (Finite xs) _guard phi = expect (Finite xs) (DisUniform xs) phi
+  bigOplus Booleans _guard phi = expect Booleans (DisUniform [True, False]) phi
+  bigOplus (Prod d1 d2) _guard phi =
+    bigOplus d1 (\_ -> top) (\a -> bigOplus d2 (\_ -> top) (\b -> phi (a, b)))
+  bigOplus Naturals _guard phi = expect Naturals (fmap fromIntegral (Geometric 0.5)) phi
+  bigOplus d _ _ = error $ "bigOplus: no density chosen for this domain"
 
   -- \| \$\mathcal{I}(\bigotimes)$ : Infinitary Product = $\exp(\mathbb{E}_\mu[\log \circ \varphi])$ (product integral)
-  bigOtimes obj mu _guard phi = exp (expect obj mu (log . phi))
+  bigOtimes obj _guard phi = exp (bigOplus obj _guard (log . phi))
 
 ------------------------------------------------------
 -- General predicates

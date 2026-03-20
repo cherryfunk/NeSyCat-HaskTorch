@@ -18,7 +18,6 @@ module D_Grammatical.D_Theory.BinaryFormulas
   )
 where
 
-import A_Categorical.F_Interpretation.Monads.Giry (Giry)
 import B_Logical.D_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
@@ -46,7 +45,7 @@ binaryPredicate params pt = do
   let label = labelA @cat pt
   return (implies label pred `wedge` implies (neg label) (neg pred))
 
--- | Full sentence: ∀x. φ(x) under measure μ.
+-- | Full sentence: ∀x. φ(x) with canonical measure.
 --   The quantifier bigWedge comes from A2MonBLatTheory — its interpretation
 --   depends on the category (LogSumExp for TENS, classical ∀ for DATA).
 binarySentence ::
@@ -57,8 +56,7 @@ binarySentence ::
     M cat ~ Identity
   ) =>
   cat (Point cat) ->
-  Giry (Point cat) ->
   Params cat ->
   Omega cat
-binarySentence dom mu params =
-  bigWedge dom mu (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat params pt))
+binarySentence dom params =
+  bigWedge dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat params pt))
