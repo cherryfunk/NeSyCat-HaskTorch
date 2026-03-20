@@ -54,7 +54,7 @@ trainBinaryReal ::
   Int ->
   Float ->
   Float ->
-  (Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
+  (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
   IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
 trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
@@ -90,7 +90,8 @@ trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
   let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
 
   startTime <- getCurrentTime
-  let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
+  let betaT = Torch.asTensor (1.2 :: Float)
+      lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
       nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (50.0 :: Float))
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
@@ -103,7 +104,7 @@ trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
 
     -- -- J_know: axiom satisfaction penalty (skipped when lambda=1) ----
     let knowLoss = if lambda == 1.0 then zeroTens
-                   else lossKnow (toDynamic (kbSatFormula trainData model))
+                   else lossKnow (toDynamic (kbSatFormula betaT trainData model))
 
     -- -- J = lambda * J_data + (1-lambda) * J_know --------------------
     let totalLoss = lossComb dataLoss knowLoss lambdaTens

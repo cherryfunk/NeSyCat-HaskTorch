@@ -1,24 +1,34 @@
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DefaultSignatures #-}
+
 module B_Logical.D_Theory.TwoMonBLatTheory where
+
+import Data.Kind (Type)
 
 -- | Theory of a double monoid bounded lattice (2Mon-BLat), still without axioms.
 class TwoMonBLatTheory tau where
+  -- | Logic parameters (Para morphism parameter space).
+  --   Default: () (no parameters, e.g. classical real-valued logic).
+  type LogicParams tau :: Type
+  type LogicParams tau = ()
+
   -- Comparison:
   vdash :: tau -> tau -> Bool
 
   -- Bounded Lattice:
   -- Join Lattice:
-  vee :: tau -> tau -> tau
+  vee :: LogicParams tau -> tau -> tau -> tau
   bot :: tau
 
   -- Meet Lattice:
-  wedge :: tau -> tau -> tau
+  wedge :: LogicParams tau -> tau -> tau -> tau
   top :: tau
 
   -- Negation:
   neg :: tau -> tau
 
   -- Implication:
-  implies :: tau -> tau -> tau
+  implies :: LogicParams tau -> tau -> tau -> tau
 
   -- Monoids:
   -- Monoid 1:
@@ -28,3 +38,10 @@ class TwoMonBLatTheory tau where
   -- Monoid 2:
   otimes :: tau -> tau -> tau
   v1 :: tau
+
+  -- Default implementations (De Morgan):
+  default wedge :: LogicParams tau -> tau -> tau -> tau
+  wedge lp a b = neg (vee lp (neg a) (neg b))
+
+  default implies :: LogicParams tau -> tau -> tau -> tau
+  implies lp a b = vee lp (neg a) b

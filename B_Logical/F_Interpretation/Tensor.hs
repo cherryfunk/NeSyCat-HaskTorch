@@ -4,17 +4,19 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
--- | Logical interpretation: Tensor-valued Logic on ℝ (Ω = R^1, a tensor space).
+-- | Logical interpretation: Tensor-valued Logic on R (Omega = R^1, a tensor space).
 --
---   All operations work on logits in ℝ (no sigmoid, no [0,1] restriction):
---     • neg x  = −x              (additive inverse)
---     • ∨      = smooth max      (LogSumExp)
---     • ∧      = smooth min      (De Morgan dual)
---     • True   = +∞,  False = −∞
+--   All operations work on logits in R (no sigmoid, no [0,1] restriction):
+--     * neg x  = -x              (additive inverse)
+--     * vee    = smooth max      (LogSumExp)
+--     * wedge  = smooth min      (De Morgan dual)
+--     * True   = +inf,  False = -inf
 --
---   This is standard model theory over (ℝ, +, ×, ≤).
+--   LogicParams Omega = Torch.Tensor (the beta smoothing parameter).
+--   This is standard model theory over (R, +, x, <=).
 module B_Logical.F_Interpretation.Tensor
   ( module B_Logical.F_Interpretation.Tensor,
     module B_Logical.D_Theory.A2MonBLatTheory,
@@ -32,28 +34,27 @@ import Torch.Device (DeviceType (..))
 import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
--- | Ω := I(τ) = R^1 (a tensor space)
+-- | Omega := I(tau) = R^1 (a tensor space)
 type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 
 -- ============================================================
---  TwoMonBLat: Binary Logical Operations on Omega (ℝ-valued)
+--  TwoMonBLat: Binary Logical Operations on Omega (R-valued)
 -- ============================================================
 
 instance TwoMonBLatTheory Omega where
+  type LogicParams Omega = Torch.Tensor
+
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
 
-  -- | Conjunction (∧ = smooth min): De Morgan dual of smooth max.
-  --   wedge(a, b) = −vee(−a, −b)
-  wedge a b = neg (vee (neg a) (neg b))
-
-  -- | Disjunction (∨ = smooth max):
-  --   vee(a, b) = (1/β) · logaddexp(β·a, β·b)
-  vee a b =
+  -- | Disjunction (vee = smooth max):
+  --   vee(a, b) = (1/beta) . logaddexp(beta.a, beta.b)
+  vee betaT a b =
     let a' = toDynamic a; b' = toDynamic b
-        p  = beta a'
-        pa = a' `Torch.mul` p
-        pb = b' `Torch.mul` p
-     in UnsafeMkTensor (F.logaddexp pa pb `Torch.div` p)
+        pa = a' `Torch.mul` betaT
+        pb = b' `Torch.mul` betaT
+     in UnsafeMkTensor (F.logaddexp pa pb `Torch.div` betaT)
+
+  -- wedge/implies use defaults (De Morgan via vee)
 
   bot = UnsafeMkTensor (Torch.asTensor [(-1.0 / 0.0) :: Float])
   top = UnsafeMkTensor (Torch.asTensor [(1.0 / 0.0) :: Float])
@@ -62,11 +63,8 @@ instance TwoMonBLatTheory Omega where
   v0 = UnsafeMkTensor (Torch.asTensor [0.0 :: Float])
   v1 = UnsafeMkTensor (Torch.asTensor [1.0 :: Float])
 
-  -- | Negation: −x (additive inverse on ℝ)
+  -- | Negation: -x (additive inverse on R)
   neg a = UnsafeMkTensor (negate (toDynamic a))
-
-  -- | Implication: max(−a, b) = vee(neg a, b)
-  implies a b = vee (neg a) b
 
 ------------------------------------------------------
 -- Guarded Quantifiers with canonical measure (A2MonBLat)
@@ -74,44 +72,35 @@ instance TwoMonBLatTheory Omega where
 
 instance A2MonBLatTheory TENS Omega where
   -- | Guarded forall: De Morgan dual of exists.
-  --   forall_{x|g} φ(x) = −exists_{x|g} (−φ(x))
-  bigWedge dom guard phi = neg (bigVee dom guard (neg . phi))
+  --   forall_{x|g} phi(x) = -exists_{x|g} (-phi(x))
+  bigWedge betaT dom guard phi = neg (bigVee betaT dom guard (neg . phi))
 
   -- | Guarded exists (LogSumExp aggregation):
-  --   exists_{x|g} φ  =  (1/β) · logsumexp(β·φ + log(g)) − log(Σg)
+  --   exists_{x|g} phi  =  (1/beta) . logsumexp(beta.phi + log(g)) - log(Sigma g)
   --   The domain object carries the concrete batch (TensorBatch).
-  bigVee (TensorBatch batch) guard phi =
+  bigVee betaT (TensorBatch batch) guard phi =
     let batchPt = UnsafeMkTensor batch
         evals  = toDynamic (phi batchPt)
         guards = toDynamic (guard batchPt)
-        p      = beta evals
         logG   = logSigmoid guards
-        pphi   = (evals `Torch.mul` p) `Torch.add` logG
+        pphi   = (evals `Torch.mul` betaT) `Torch.add` logG
         lse    = F.logsumexp pphi 0 False
         sG     = Torch.sumAll (Torch.sigmoid guards)
-        res    = F.divScalar (lse `Torch.sub` Torch.log sG) betaVal
+        res    = (lse `Torch.sub` Torch.log sG) `Torch.div` betaT
      in UnsafeMkTensor (Torch.reshape [1] res)
-  bigVee TensorSpace _ _ = error "bigVee on abstract TensorSpace requires TensorBatch"
-  bigVee TensProd {} _ _ = error "bigVee over TensProd not yet supported"
-  bigVee TensUnit _ phi = phi ()
+  bigVee _ TensorSpace _ _ = error "bigVee on abstract TensorSpace requires TensorBatch"
+  bigVee _ TensProd {} _ _ = error "bigVee over TensProd not yet supported"
+  bigVee _ TensUnit _ phi = phi ()
 
   bigOplus = error "bigOplus over TENS not yet supported"
   bigOtimes = error "bigOtimes over TENS not yet supported"
 
 ------------------------------------------------------
--- Internal Constants
+-- Internal Helpers
 ------------------------------------------------------
 
--- | LogSumExp smoothing parameter β.
-betaVal :: Float
-betaVal = 1.2
-
--- | β as a tensor matching shape/device of input.
-beta :: Torch.Tensor -> Torch.Tensor
-beta x = F.mulScalar (Torch.onesLike x) betaVal
-
--- | Numerically stable log-sigmoid: log σ(x) = −log(1 + exp(−x))
---   Maps ℝ → (−∞, 0]: large positive → 0, large negative → −∞.
+-- | Numerically stable log-sigmoid: log sigma(x) = -log(1 + exp(-x))
+--   Maps R -> (-inf, 0]: large positive -> 0, large negative -> -inf.
 logSigmoid :: Torch.Tensor -> Torch.Tensor
 logSigmoid x = negate (Torch.log (Torch.exp (negate x) `Torch.add` Torch.onesLike x))
 

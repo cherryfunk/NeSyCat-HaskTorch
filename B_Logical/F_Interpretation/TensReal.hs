@@ -52,6 +52,18 @@ import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
+--  Internal Constants (local, standalone — not from typeclass)
+-- ============================================================
+
+-- | LogSumExp smoothing parameter beta (fixed default).
+betaVal :: Float
+betaVal = 1.2
+
+-- | beta as a tensor matching shape/device of input.
+beta :: Torch.Tensor -> Torch.Tensor
+beta x = F.mulScalar (Torch.onesLike x) betaVal
+
+-- ============================================================
 --  BatchOmega = Torch.Tensor (a batch of truth degrees in ℝ)
 -- ============================================================
 

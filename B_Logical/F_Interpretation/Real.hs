@@ -2,6 +2,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Logical interpretation: Real-valued Logic ($\Omega = \mathbb{R}$)
@@ -20,14 +21,16 @@ infix 4 .==, ./=, .<, .>, .<=, .>=
 type Omega = Double
 
 instance TwoMonBLatTheory Omega where
+  type LogicParams Omega = ()
+
   -- \| \$\mathcal{I}(\vdash)$ : Comparison
   vdash = (<=)
 
-  -- \| \$\mathcal{I}(\wedge)$ : Meet
-  wedge = min
-
   -- \| \$\mathcal{I}(\vee)$ : Join
-  vee = max
+  vee _ = max
+
+  -- \| \$\mathcal{I}(\wedge)$ : Meet
+  wedge _ = min
 
   -- \| \$\mathcal{I}(\bot)$ : Bottom
   bot = -1.0 / 0.0
@@ -47,7 +50,7 @@ instance TwoMonBLatTheory Omega where
   -- \| \$\mathcal{I}(\vec{1})$ : Multiplicative unit
   v1 = 1.0
   neg x = -x
-  implies a b = vee (neg a) b
+  implies _ a b = vee () (neg a) b
 
 ------------------------------------------------------
 -- Quantifiers ($Q_a :: (a \to \Omega) \to \Omega$)
@@ -55,10 +58,10 @@ instance TwoMonBLatTheory Omega where
 
 instance A2MonBLatTheory DATA Omega where
   -- \| \$\mathcal{I}(\bigvee)$ : Supremum
-  bigVee d _guard = sup d
+  bigVee _ d _guard = sup d
 
   -- \| \$\mathcal{I}(\bigwedge)$ : Infimum
-  bigWedge d _guard = inf d
+  bigWedge _ d _guard = inf d
 
   -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ canonical measure)
   --   Each quantifier chooses its density per domain type (uniform for finite, etc.)

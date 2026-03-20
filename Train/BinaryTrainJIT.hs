@@ -52,7 +52,7 @@ unpackParams shapes packed = go 0 shapes
 
 -- | JIT Training loop (TensReal).
 --   The axiom takes training data (empirical measure) and the model.
-trainBinaryRealJIT :: Int -> Float -> (Torch.Tensor -> Binary_MLP -> TENS.Omega) -> IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
+trainBinaryRealJIT :: Int -> Float -> (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) -> IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
 trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
   initModel <- return . Torch.toDevice (Device CPU 0) =<< sample binarySpecReal
 
@@ -69,6 +69,7 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
       testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
+  let betaT = Torch.asTensor (1.2 :: Float)
   let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
   let paramShapes = map Torch.shape (map toDependent (flattenParameters initModel))
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
@@ -80,15 +81,15 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
   -- 1. Compile the computational graph using `torch.jit.trace`
   let initPacked = packParams (map toDependent (flattenParameters initModel))
   rawMod <- trace "axiom" "forward"
-    (\[d, pp] -> do
+    (\[b, d, pp] -> do
        let paramTensors = unpackParams paramShapes pp
            model = replaceParameters initModel (map IndependentTensor paramTensors)
-           sat = kbSatFormula d model
+           sat = kbSatFormula b d model
            satDyn = toDynamic sat
            loss = negate (Torch.log (Torch.sigmoid satDyn))
        return [loss]
     )
-    [trainData, initPacked]
+    [betaT, trainData, initPacked]
   scriptMod <- toScriptModule rawMod
 
   traceEnd <- getCurrentTime
@@ -100,7 +101,7 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
     let paramTensors = map toDependent params
         packedParams = packParams paramTensors
         tempModel = replaceParameters initModel params
-        result = forward scriptMod [IVTensor trainData, IVTensor packedParams]
+        result = forward scriptMod [IVTensor betaT, IVTensor trainData, IVTensor packedParams]
     case result of
       IVTensor jitLoss -> do
         (newModel, newOpt) <- runStep tempModel opt jitLoss lrTens

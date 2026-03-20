@@ -16,7 +16,7 @@ import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinaryS
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
-import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTensBeta)
+import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inference.D_Theory.InferenceTheory (InferenceFun (..))
 import E_Inference.F_Interpretation.InferenceIntpTens ()
 import F_Benchmark.Metrics.Metrics (evaluateMetrics)
@@ -38,7 +38,7 @@ main = do
 
   -- Train: optimize theta and beta jointly
   (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryRealBeta 1000 0.001 1.2 lambda binaryAxiomTensBeta
+    trainBinaryRealBeta 1000 0.001 1.2 lambda binaryAxiomTens
 
   putStrLn $ "Learned beta: " ++ show (Torch.asValue learnedBeta :: Float)
 
