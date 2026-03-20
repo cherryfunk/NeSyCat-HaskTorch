@@ -1,5 +1,7 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -8,15 +10,19 @@
 --   Written once, polymorphic over the category.
 --   Instantiate at @DATA or @TENS to get the concrete formula.
 --
---   POINTWISE PREDICATE (functorial action: X^n -> Y^n)
---   The quantifier aggregation (Y^n -> Y) lives in F_Interpretation.
+--   POINTWISE PREDICATE: X -> Omega  (functorial action: X^n -> Omega^n)
+--   SENTENCE:            ∀x. φ(x)   (quantifier from A2MonBLatTheory)
 module D_Grammatical.D_Theory.BinaryFormulas
   ( binaryPredicate,
+    binarySentence,
   )
 where
 
+import A_Categorical.F_Interpretation.Monads.Giry (Giry)
+import B_Logical.D_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
+import Data.Functor.Identity (Identity, runIdentity)
 
 -- | Abstract pointwise predicate for binary classification:
 --     (label(x) → pred(x)) ∧ (¬label(x) → ¬pred(x))
@@ -39,3 +45,20 @@ binaryPredicate params pt = do
   pred <- classifierA @cat params pt
   let label = labelA @cat pt
   return (implies label pred `wedge` implies (neg label) (neg pred))
+
+-- | Full sentence: ∀x. φ(x) under measure μ.
+--   The quantifier bigWedge comes from A2MonBLatTheory — its interpretation
+--   depends on the category (LogSumExp for TENS, classical ∀ for DATA).
+binarySentence ::
+  forall cat.
+  ( BinaryKlFun cat,
+    TwoMonBLatTheory (Omega cat),
+    A2MonBLatTheory cat (Omega cat),
+    M cat ~ Identity
+  ) =>
+  cat (Point cat) ->
+  Giry (Point cat) ->
+  Params cat ->
+  Omega cat
+binarySentence dom mu params =
+  bigWedge dom mu (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat params pt))
