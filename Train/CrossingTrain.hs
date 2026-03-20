@@ -1,4 +1,4 @@
--- | Grammatical interpretation: Crossing domain.
+-- | Evaluate crossing domain formula (no learnable params).
 module Main where
 
 import A_Categorical.F_Interpretation.Monads.Expectation (probDist)

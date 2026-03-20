@@ -91,11 +91,10 @@ impliesRBeta betaT a b = veeRBeta betaT (negR a) b
 --   exists_{x|g}^{unif,beta} φ  =  (1/beta) · logsumexp(beta·φ + log(g)) − log(Σg)
 bigVeeRBeta :: Torch.Tensor -> BatchOmega -> BatchOmega -> Omega
 bigVeeRBeta betaT g phi =
-  let eps = epsLikeBeta g
-      logG = Torch.log (g `Torch.add` eps)
+  let logG = logSigmoid g               -- ℝ guard → log-weight
       pphi = (phi `Torch.mul` betaT) `Torch.add` logG
       lse = F.logsumexp pphi 0 False
-      sG = Torch.sumAll g
+      sG = Torch.sumAll (Torch.sigmoid g) -- soft count
       res = (lse `Torch.sub` Torch.log sG) `Torch.div` betaT
    in UnsafeMkTensor (Torch.reshape [1] res)
 

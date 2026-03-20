@@ -100,6 +100,9 @@ instance BinaryKlFun DATA where
 -- ============================================================
 
 instance BinaryFun TENS where
+  -- | Label in TENS: returns ℝ logits (True = +logitScale, False = -logitScale).
+  --   NOT {0,1} — those are [0,1] truth values. In ℝ-valued logic,
+  --   True = +∞ and False = -∞. We use ±logitScale as a finite proxy.
   labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -108,8 +111,17 @@ instance BinaryFun TENS where
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
         radiusSq = F.mulScalar (Torch.onesLike dist2) (0.09 :: Float)
         isInside = Torch.lt dist2 radiusSq
-        val = Torch.toType Torch.Float isInside
+        -- Map Bool to ℝ logits: True → +scale, False → -scale
+        boolFloat = Torch.toType Torch.Float isInside  -- {0, 1}
+        scale = F.mulScalar (Torch.onesLike boolFloat) logitScale
+        val = boolFloat `Torch.mul` (scale `Torch.add` scale) `Torch.sub` scale
+        -- = 2*scale*b - scale = scale*(2b-1) = +scale if b=1, -scale if b=0
      in UnsafeMkTensor val
+
+-- | Finite proxy for ±∞ in ℝ-valued logic.
+--   Large enough that sigmoid(logitScale) ≈ 1, but finite to avoid NaN.
+logitScale :: Float
+logitScale = 10.0
 
 -- ============================================================
 --  TENS: Kleisli function symbols (BinaryKlFun)

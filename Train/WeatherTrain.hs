@@ -1,4 +1,4 @@
--- | Grammatical interpretation: Weather domain.
+-- | Evaluate weather domain formulas (no learnable params).
 module Main where
 
 import A_Categorical.F_Interpretation.Monads.Expectation (probGiry)

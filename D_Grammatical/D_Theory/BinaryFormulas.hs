@@ -7,6 +7,9 @@
 -- | Abstract binary classification formula.
 --   Written once, polymorphic over the category.
 --   Instantiate at @DATA or @TENS to get the concrete formula.
+--
+--   POINTWISE PREDICATE (functorial action: X^n -> Y^n)
+--   The quantifier aggregation (Y^n -> Y) lives in F_Interpretation.
 module D_Grammatical.D_Theory.BinaryFormulas
   ( binaryPredicate,
   )

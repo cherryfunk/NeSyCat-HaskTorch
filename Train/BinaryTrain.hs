@@ -3,23 +3,26 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Training loop for Binary Classification using TensReal logic.
+-- | Train binary classification (TensReal).
 --
---   Objective: J(θ) = λ · J_data(θ) + (1-λ) · J_know(θ)
---     • J_data = cross-entropy between σ(h_θ(x)) and labels
---     • J_know = softplus penalty on axiom satisfaction
-module C_Domain.G_Parameters.BinaryTrainingReal
-  ( trainBinaryReal,
-  )
-where
+--   Finds optimal theta* by minimizing:
+--     J(theta) = lambda * J_data(theta) + (1-lambda) * J_know(theta)
+--
+--   J_data = cross-entropy between sigma(h_theta(x)) and labels
+--   J_know = softplus penalty on axiom satisfaction
+module Main where
 
-import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinarySorts (..))
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inference.D_Theory.InferenceTheory (InferenceFun (..))
 import E_Inference.F_Interpretation.InferenceIntpTens ()
+import F_Benchmark.Metrics.Metrics (evaluateMetrics)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
+import System.Environment (getArgs)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..))
 import qualified Torch
@@ -28,15 +31,25 @@ import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
+main :: IO ()
+main = do
+  args <- getArgs
+  let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
+
+  -- Train: optimize theta to satisfy the axiom
+  (finalModel, trainData, trainLabels, testData, testLabels) <-
+    trainBinaryReal 1000 0.001 lambda binaryAxiomTens
+
+  -- Evaluate: push back to DATA category via bridge (decOmega applies sigmoid)
+  evaluateMetrics
+    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
+    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
+
+  -- Inference in DATA category
+  print (classifierA @DATA () (0.5 :: Float, 0.5 :: Float))
+  print (classifierA @DATA () (0.9 :: Float, 0.9 :: Float))
+
 -- | Training loop for Binary Classification using TensReal logic.
---
---   J(θ) = λ · J_data(θ) + (1-λ) · J_know(θ)
---
---   J_data: pointwise cross-entropy between σ(h_θ(x)) and labels y.
---   J_know: softplus penalty on the axiom satisfaction level.
---
---   When λ=0, this is pure axiom-driven learning.
---   When λ=1, this is pure data-driven learning (cross-entropy only).
 trainBinaryReal ::
   Int ->
   Float ->

@@ -3,17 +3,19 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | MNIST Training: inductive learning via the formula
---   forall (x,y). digitEq (digitPlus (digit x) (digit y)) (add (x,y))
-module C_Domain.G_Parameters.MNIST_Training
-  ( trainMNIST,
-  )
-where
+-- | Train MNIST digit addition.
+--
+--   Inductive learning: optimize MLP to satisfy
+--     forall (x,y). digitEq (digitPlus (digit x) (digit y)) (add (x,y))
+module Main where
 
-import C_Domain.D_Theory.MnistTheory (MnistTheory (..))
+import C_Domain.D_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..))
+import C_Domain.A_Category.Data (DATA (..))
 import B_Logical.A_Category.Tens (TENS (..))
-import C_Domain.F_Interpretation.MNIST (mnistTableTENS, setGlobalMLP)
+import C_Domain.F_Interpretation.MNIST (mnistTable, mnistTableTENS, setGlobalMLP)
 import C_Domain.F_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
+import D_Grammatical.D_Theory.MnistFormulas (mnistPredicate, mnistSen)
+import A_Categorical.F_Interpretation.Monads.Expectation (probDist)
 import Data.List (foldl')
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
@@ -24,8 +26,24 @@ import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.Typed.Tensor (toDynamic)
 
+main :: IO ()
+main = do
+  putStrLn $ "[MNIST] Table size: " ++ show (length mnistTable) ++ " pairs"
+
+  let total = fromIntegral (length mnistTable) :: Double
+
+  -- Train the MLP for 20 Epochs
+  putStrLn "\n[Start Training]"
+  _trained <- trainMNIST 20 0.001
+  putStrLn "[Training complete]"
+
+  -- Re-evaluate the exact same logic formula natively substituting the new optimized parameters
+  let finalExp = probDist (mnistSen ())
+  let finalAcc = sum (map (probDist . mnistPredicate) mnistTable) / total
+  putStrLn $ "\n[MNIST TRAINED DATA] forall P(formula) = " ++ show finalExp
+  putStrLn $ "[MNIST TRAINED DATA] Accuracy = " ++ show finalAcc
+
 -- | The tensor table: each entry is (image1, image2, sum_digit).
---   The sum digit comes directly from mnistTableTENS (= add's table).
 {-# NOINLINE tensTable #-}
 tensTable :: [(Image TENS, Image TENS, Digit TENS)]
 tensTable = mnistTableTENS

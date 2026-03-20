@@ -135,23 +135,20 @@ bigWedgeR g phi =
       nLse = bigVeeR g nPhi -- exists_{g}(−φ)
    in UnsafeMkTensor (Torch.reshape [1] (negR (toDynamic nLse)))
 
--- | Guarded exists over finite uniform measure:
+-- | Guarded exists over finite uniform measure (ℝ-valued guards):
 --
---   exists_{x|g}^unif φ  =  (1/p) * logsumexp(p*φ + log(g)) - log(Σg)
+--   exists_{x|g}^unif φ  =  (1/β) * logsumexp(β·φ + log σ(g)) − log(Σ σ(g))
 --
---   Uses native fused logsumexp kernel. Guard masking via log(g):
---   log(0)=-∞ masks elements, log(1)=0 keeps them.
+--   Guards g are ℝ logits: positive = include, negative = exclude.
+--   log_sigmoid(g) maps ℝ → (−∞, 0]: large positive → 0 (keep),
+--   large negative → −∞ (mask). No {0,1} conversion needed.
 bigVeeR :: BatchOmega -> BatchOmega -> Omega
 bigVeeR g phi =
-  let eps = epsLike g
-      logG = Torch.log (g `Torch.add` eps) -- log(g), eps masks zeros
-      p = beta phi -- shape = phi.shape (e.g. [50])
-      pphi = (phi `Torch.mul` p) `Torch.add` logG -- p*φ + log(g)
-      lse = F.logsumexp pphi 0 False -- scalar via native fused kernel
-      sG = Torch.sumAll g -- scalar
-      -- F.divScalar betaVal (not `Torch.div res (beta sG)`) because beta() creates
-      -- a same-shaped tensor just to hold a constant — needless FFI overhead.
-      -- Both reference betaVal, so changing beta means changing one place only.
+  let logG = logSigmoid g              -- ℝ guard → log-weight
+      p = beta phi
+      pphi = (phi `Torch.mul` p) `Torch.add` logG
+      lse = F.logsumexp pphi 0 False
+      sG = Torch.sumAll (Torch.sigmoid g) -- soft count of active elements
       res = F.divScalar (lse `Torch.sub` Torch.log sG) betaVal
    in UnsafeMkTensor (Torch.reshape [1] res)
 
@@ -174,21 +171,8 @@ bigOtimesR g phi =
    in UnsafeMkTensor (Torch.reshape [1] (sW `Torch.div` (sG `Torch.add` epsLike sG)))
 
 -- ============================================================
---  Dynamic JIT-safe Constants
+--  Internal Helpers
 -- ============================================================
-
--- | The single canonical value for beta (LogSumExp smoothing parameter).
---   Change this one constant to retune the entire logic.
-betaVal :: Float
-betaVal = 1.25
-
--- | LogSumExp smoothing parameter beta as a tensor (matches shape/device of input).
-beta :: Torch.Tensor -> Torch.Tensor
-beta x = F.mulScalar (Torch.onesLike x) betaVal
-
--- | Synthesizes a constant tensor of 0.5 dynamically.
-halfLike :: Torch.Tensor -> Torch.Tensor
-halfLike x = Torch.onesLike x `Torch.div` beta x
 
 -- | Synthesizes a constant tensor of 1e-8 dynamically using pure graph mathematics.
 --   PyTorch's JIT compiler will perform constant-folding to optimize this entirely.

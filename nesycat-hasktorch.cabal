@@ -59,8 +59,6 @@ library
     C_Domain.F_Interpretation.Weather,
     D_Grammatical.D_Theory.FormulasTheory,
     D_Grammatical.D_Theory.BinaryFormulas,
-    D_Grammatical.D_Theory.BinaryFormulasReal,
-    D_Grammatical.D_Theory.BinaryFormulasRealBeta,
     D_Grammatical.D_Theory.DiceFormulas,
     D_Grammatical.D_Theory.CrossingFormulas,
     D_Grammatical.D_Theory.WeatherFormulas,
@@ -73,11 +71,6 @@ library
     E_Inference.C_Inhabitation.InferenceInhabTens,
     E_Inference.D_Theory.InferenceTheory,
     E_Inference.F_Interpretation.InferenceIntpTens,
-    B_Logical.G_Parameters.BetaTrainingReal,
-    C_Domain.G_Parameters.MNIST_Training,
-    C_Domain.G_Parameters.BinaryTrainingReal,
-    C_Domain.G_Parameters.BinaryTrainingRealJIT,
-    C_Domain.G_Parameters.BinaryTrainingRealBeta,
     MNIST_Loader,
     F_Benchmark.Metrics.Metrics
   hs-source-dirs: ., C_Domain/F_Interpretation/data/mnist
@@ -93,21 +86,20 @@ library
   default-language: Haskell2010
 
 executable mnist-test
-  main-is: MNISTMain.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: MnistTrain.hs
+  hs-source-dirs: Train
   build-depends:
     base,
     nesycat-hasktorch,
     mtl,
     containers,
-    hasktorch
+    hasktorch,
+    time
   default-language: Haskell2010
 
-
-
 executable binary-test-real
-  main-is: BinaryMainReal.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: BinaryTrain.hs
+  hs-source-dirs: Train
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -119,8 +111,8 @@ executable binary-test-real
   default-language: Haskell2010
 
 executable binary-test-jit-real
-  main-is: BinaryMainRealJIT.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: BinaryTrainJIT.hs
+  hs-source-dirs: Train
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -132,8 +124,8 @@ executable binary-test-jit-real
   default-language: Haskell2010
 
 executable binary-test-real-beta
-  main-is: BinaryMainRealBeta.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: BinaryTrainBeta.hs
+  hs-source-dirs: Train
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -146,8 +138,8 @@ executable binary-test-real-beta
   default-language: Haskell2010
 
 executable dice-test
-  main-is: DiceMain.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: DiceTrain.hs
+  hs-source-dirs: Train
   build-depends:
     base,
     nesycat-hasktorch,
@@ -155,8 +147,8 @@ executable dice-test
   default-language: Haskell2010
 
 executable crossing-test
-  main-is: CrossingMain.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: CrossingTrain.hs
+  hs-source-dirs: Train
   build-depends:
     base,
     nesycat-hasktorch,
@@ -164,8 +156,8 @@ executable crossing-test
   default-language: Haskell2010
 
 executable weather-test
-  main-is: WeatherMain.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: WeatherTrain.hs
+  hs-source-dirs: Train
   build-depends:
     base,
     nesycat-hasktorch,
@@ -173,8 +165,8 @@ executable weather-test
   default-language: Haskell2010
 
 executable countable-test
-  main-is: CountableMain.hs
-  hs-source-dirs: D_Grammatical/F_Interpretation
+  main-is: CountableTrain.hs
+  hs-source-dirs: Train
   build-depends:
     base,
     nesycat-hasktorch,

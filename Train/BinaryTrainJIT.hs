@@ -3,15 +3,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | JIT Training loop for Binary Classification using TensReal logic.
-module C_Domain.G_Parameters.BinaryTrainingRealJIT
-  ( trainBinaryRealJIT,
-  )
-where
+-- | Train binary classification (TensReal, JIT compiled).
+--
+--   Uses torch.jit.trace to compile the axiom computation graph
+--   before the training loop for faster execution.
+module Main where
 
-import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal)
+import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import qualified B_Logical.F_Interpretation.Tensor as TENS
+import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTens)
+import F_Benchmark.Metrics.Metrics (evaluateMetrics)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..), replaceParameters, sample)
@@ -22,6 +24,17 @@ import Torch.NN (HasForward (..))
 import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Script (IValue (..), ScriptModule, toScriptModule, trace)
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
+
+main :: IO ()
+main = do
+  -- Train: optimize theta to satisfy the axiom (JIT compiled)
+  (finalModel, trainData, trainLabels, testData, testLabels) <-
+    trainBinaryRealJIT 1000 0.001 binaryAxiomTens
+
+  -- Evaluate: push back via sigmoid
+  evaluateMetrics
+    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
+    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
 
 -- | Generic param packing: works for ANY Parameterized model.
 packParams :: [Torch.Tensor] -> Torch.Tensor
@@ -36,10 +49,6 @@ unpackParams shapes packed = go 0 shapes
       let sz = product sh
           t = Torch.reshape sh $ Torch.sliceDim 0 offset (offset + sz) 1 packed
        in t : go (offset + sz) rest
-
-foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
-foldLoop acc [] _ = return acc
-foldLoop acc (x : xs) f = f acc x >>= \a -> foldLoop a xs f
 
 -- | JIT Training loop (TensReal).
 --   The axiom takes training data (empirical measure) and the model.
@@ -125,3 +134,7 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
   setGlobalBinaryMLP finalModel
 
   return (finalModel, trainData, trainLabels, testData, testLabels)
+
+foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
+foldLoop acc [] _ = return acc
+foldLoop acc (x : xs) f = f acc x >>= \a -> foldLoop a xs f

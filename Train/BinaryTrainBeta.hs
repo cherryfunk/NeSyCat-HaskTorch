@@ -3,36 +3,68 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Joint beta + theta training for Binary Classification on TensRealBeta.
+-- | Train binary classification (TensRealBeta, learnable beta).
 --
---   Objective: J(θ,β) = λ · J_data(θ) + (1-λ) · J_know(θ,β)
---     • J_data = cross-entropy between σ(h_θ(x)) and labels
---     • J_know = softplus penalty on axiom satisfaction (depends on β)
-module C_Domain.G_Parameters.BinaryTrainingRealBeta
-  ( trainBinaryRealBeta,
-  )
-where
+--   Finds optimal (theta*, beta*) by jointly minimizing:
+--     J(theta,beta) = lambda * J_data(theta) + (1-lambda) * J_know(theta,beta)
+--
+--   Beta controls the sharpness of soft logical connectives.
+module Main where
 
-import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinarySorts (..))
+import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTensBeta)
 import E_Inference.D_Theory.InferenceTheory (InferenceFun (..))
 import E_Inference.F_Interpretation.InferenceIntpTens ()
-import B_Logical.G_Parameters.BetaTrainingReal (stepBeta)
+import F_Benchmark.Metrics.Metrics (evaluateMetrics)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
+import System.Environment (getArgs)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..))
 import qualified Torch
-import Torch.Autograd (makeIndependent, toDependent)
+import Torch.Autograd (IndependentTensor, makeIndependent, toDependent)
 import Torch.Device (Device (..), DeviceType (..))
 import Torch.Optim (Adam (..), mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
+main :: IO ()
+main = do
+  args <- getArgs
+  let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
+
+  -- Train: optimize theta and beta jointly
+  (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels) <-
+    trainBinaryRealBeta 1000 0.001 1.25 lambda binaryAxiomTensBeta
+
+  putStrLn $ "Learned beta: " ++ show (Torch.asValue learnedBeta :: Float)
+
+  -- Evaluate: push back via sigmoid
+  evaluateMetrics
+    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
+    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
+
+  -- Inference in DATA category
+  print (classifierA @DATA () (0.5 :: Float, 0.5 :: Float))
+  print (classifierA @DATA () (0.9 :: Float, 0.9 :: Float))
+
+-- | One beta-optimization step via manual SGD on the gradient.
+--   Clamps beta > 0.01 to stay positive.
+stepBeta :: IndependentTensor -> Torch.Tensor -> Float -> IO IndependentTensor
+stepBeta betaInd lossTensor lr = do
+  let grads = Torch.grad lossTensor [betaInd]
+      gradBeta = head grads
+      betaDep = toDependent betaInd
+      lrT = Torch.asTensor lr
+      newBeta = betaDep `Torch.sub` (gradBeta `Torch.mul` lrT)
+      epsT = Torch.asTensor (0.01 :: Float)
+      clamped = Torch.relu (newBeta `Torch.sub` epsT) `Torch.add` epsT
+  makeIndependent clamped
+
 -- | Joint beta + theta training loop.
---
---   J(θ,β) = λ · J_data(θ) + (1-λ) · J_know(θ,β)
 trainBinaryRealBeta ::
   Int ->
   Float ->
@@ -84,22 +116,22 @@ trainBinaryRealBeta numEpochs learningRate initBeta lambda kbSatFormula = do
     foldLoop (initModel, initOpt, betaInd) [1 .. numEpochs] $ \(model, opt, bInd) epoch -> do
       let betaVal = toDependent bInd
 
-      -- ── J_data: pointwise cross-entropy (skipped when λ=0) ───────────
+      -- J_data: pointwise cross-entropy (skipped when lambda=0)
       let dataLoss = if lambda == 0.0 then zeroTens
                      else let preds = Torch.sigmoid (hThetaReal model trainData)
                           in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
 
-      -- ── J_know: axiom satisfaction penalty (skipped when λ=1) ────────
+      -- J_know: axiom satisfaction penalty (skipped when lambda=1)
       let knowLoss = if lambda == 1.0 then zeroTens
                      else lossKnow (toDynamic (kbSatFormula betaVal trainData model))
 
-      -- ── J = λ · J_data + (1-λ) · J_know ─────────────────────────────
+      -- J = lambda * J_data + (1-lambda) * J_know
       let totalLoss = lossComb dataLoss knowLoss lambdaTens
 
       -- Step 1: Update theta (MLP weights) via Adam
       (newModel, newOpt) <- runStep model opt totalLoss lrTens
 
-      -- Step 2: Update beta via stepBeta (skipped when λ=1: no axiom → no gradient)
+      -- Step 2: Update beta via stepBeta (skipped when lambda=1: no axiom -> no gradient)
       newBInd <- if lambda == 1.0 then return bInd
                  else stepBeta bInd totalLoss learningRate
 
