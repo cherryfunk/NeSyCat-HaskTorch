@@ -37,8 +37,8 @@ binaryPredicate ::
     TwoMonBLatTheory (Omega cat),
     Monad (M cat)
   ) =>
-  LogicParams (Omega cat) ->
-  Params cat ->
+  ParamsLogic (Omega cat) ->
+  ParamsDomain cat ->
   Point cat ->
   M cat (Omega cat)
 binaryPredicate lp params pt = do
@@ -56,9 +56,9 @@ binarySentence ::
     A2MonBLatTheory cat (Omega cat),
     M cat ~ Identity
   ) =>
-  LogicParams (Omega cat) ->
+  ParamsLogic (Omega cat) ->
   cat (Point cat) ->
-  Params cat ->
+  ParamsDomain cat ->
   Omega cat
 binarySentence lp dom params =
   bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat lp params pt))

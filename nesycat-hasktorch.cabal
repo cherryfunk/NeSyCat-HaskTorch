@@ -135,6 +135,17 @@ executable binary-test-real-beta
     statistics
   default-language: Haskell2010
 
+executable sweep-100
+  main-is: Sweep100.hs
+  hs-source-dirs: Train
+  ghc-options: -rtsopts -O2
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
 executable dice-test
   main-is: DiceTrain.hs
   hs-source-dirs: Train

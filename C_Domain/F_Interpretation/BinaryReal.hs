@@ -88,7 +88,7 @@ instance BinaryFun DATA where
 -- ============================================================
 
 instance BinaryKlFun DATA where
-  classifierA :: Params DATA -> Point DATA -> M DATA (Omega DATA)
+  classifierA :: ParamsDomain DATA -> Point DATA -> M DATA (Omega DATA)
   classifierA _params pt = unsafePerformIO $ do
     m <- readIORef globalBinaryMLP
     let ptTens = encPoint @DATA @TENS pt
@@ -128,7 +128,7 @@ logitScale = 10.0
 -- ============================================================
 
 instance BinaryKlFun TENS where
-  classifierA :: Params TENS -> Point TENS -> M TENS (Omega TENS)
+  classifierA :: ParamsDomain TENS -> Point TENS -> M TENS (Omega TENS)
   classifierA m ptTensor = Identity $ do
     let logits = hThetaReal m (toDynamic ptTensor)
     UnsafeMkTensor logits

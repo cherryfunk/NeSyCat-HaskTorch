@@ -21,7 +21,7 @@ infix 4 .==, ./=, .<, .>, .<=, .>=
 type Omega = Double
 
 instance TwoMonBLatTheory Omega where
-  type LogicParams Omega = ()
+  type ParamsLogic Omega = ()
 
   -- \| \$\mathcal{I}(\vdash)$ : Comparison
   vdash = (<=)

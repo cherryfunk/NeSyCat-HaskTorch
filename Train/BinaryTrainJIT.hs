@@ -69,7 +69,7 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
       testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
-  let betaT = Torch.asTensor (1.2 :: Float)
+  let betaT = Torch.asTensor (1.0 :: Float)
   let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
   let paramShapes = map Torch.shape (map toDependent (flattenParameters initModel))
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)

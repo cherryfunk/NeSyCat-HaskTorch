@@ -23,7 +23,7 @@ class BinarySorts (cat :: Type -> Type) where
   type Point cat :: Type         -- sort: input data point (e.g. R^2)
   type Omega cat :: Type         -- sort: truth value (e.g. Bool, [0,1])
   type M cat :: Type -> Type     -- monad M defining the Kleisli category Kl(M)
-  type Params cat :: Type        -- Theta: parameter space of I_theta
+  type ParamsDomain cat :: Type   -- Theta: parameter space of I_theta
 
 -- | BinaryFun: plain (deterministic) function symbols.
 --   Interpreted as morphisms in C (not Kl(M)).
@@ -35,7 +35,7 @@ class (BinarySorts cat) => BinaryFun (cat :: Type -> Type) where
 --   Interpreted as morphisms in Kl(M), i.e. A -> M(B) in Haskell.
 --   Instances live in F_Interpretation/.
 class (BinaryFun cat) => BinaryKlFun (cat :: Type -> Type) where
-  classifierA :: Params cat -> Point cat -> (M cat) (Omega cat)
+  classifierA :: ParamsDomain cat -> Point cat -> (M cat) (Omega cat)
 
 -- | Bridge for encoding/decoding between two category interpretations.
 --   Only requires BinarySorts: encPoint/decOmega use only sort assignments.

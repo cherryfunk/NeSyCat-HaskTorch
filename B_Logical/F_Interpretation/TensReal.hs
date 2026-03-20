@@ -57,7 +57,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- | LogSumExp smoothing parameter beta (fixed default).
 betaVal :: Float
-betaVal = 1.2
+betaVal = 1.0
 
 -- | beta as a tensor matching shape/device of input.
 beta :: Torch.Tensor -> Torch.Tensor

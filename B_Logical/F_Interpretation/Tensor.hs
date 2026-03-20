@@ -15,7 +15,7 @@
 --     * wedge  = smooth min      (De Morgan dual)
 --     * True   = +inf,  False = -inf
 --
---   LogicParams Omega = Torch.Tensor (the beta smoothing parameter).
+--   ParamsLogic Omega = Torch.Tensor (the beta smoothing parameter).
 --   This is standard model theory over (R, +, x, <=).
 module B_Logical.F_Interpretation.Tensor
   ( module B_Logical.F_Interpretation.Tensor,
@@ -42,7 +42,7 @@ type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 -- ============================================================
 
 instance TwoMonBLatTheory Omega where
-  type LogicParams Omega = Torch.Tensor
+  type ParamsLogic Omega = Torch.Tensor
 
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
 

@@ -16,8 +16,8 @@ import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 --   not passed as a parameter.
 class (TwoMonBLatTheory tau) => A2MonBLatTheory dom tau | tau -> dom where
   -- Infinitary Lattice (guarded):
-  bigVee    :: forall a. LogicParams tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
-  bigWedge  :: forall a. LogicParams tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
+  bigVee    :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
+  bigWedge  :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
 
   -- Infinitary Monoids (guarded):
   bigOplus  :: forall a. dom a -> (a -> tau) -> (a -> tau) -> tau

@@ -38,7 +38,7 @@ main = do
 
   -- Train: optimize theta and beta jointly
   (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryRealBeta 1000 0.001 1.2 lambda binaryAxiomTens
+    trainBinaryRealBeta 1000 0.001 2.0 lambda binaryAxiomTens
 
   putStrLn $ "Learned beta: " ++ show (Torch.asValue learnedBeta :: Float)
 

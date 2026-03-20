@@ -10,6 +10,10 @@
 --
 --   J_data = cross-entropy between sigma(h_theta(x)) and labels
 --   J_know = softplus penalty on axiom satisfaction
+--
+--   Usage:
+--     cabal run binary-test-real              -- default beta=1.0
+--     cabal run binary-test-real -- 1.5       -- single run with beta=1.5
 module Main where
 
 import C_Domain.A_Category.Data (DATA (..))
@@ -34,13 +38,25 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 main :: IO ()
 main = do
   args <- getArgs
-  let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
+  let beta = case args of { (x:_) -> read x; _ -> 1.0 :: Float }
+
+  -- Generate dataset
+  dataset <- Torch.toDevice (Device CPU 0) <$> Torch.randIO' [100, 2]
+  let center = Torch.toDevice (Device CPU 0) (Torch.asTensor ([0.5, 0.5] :: [Float]))
+      diffs = dataset - center
+      sq = diffs * diffs
+      distances = Torch.sumDim (Torch.Dim 1) Torch.RemoveDim Torch.Float sq
+      labelsBool = distances `Torch.lt` Torch.asTensor (0.09 :: Float)
+      labels = Torch.toType Torch.Float labelsBool
+      trainData = Torch.sliceDim 0 0 50 1 dataset
+      trainLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 labels)
+      testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
+      testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   -- Train: optimize theta to satisfy the axiom
-  (finalModel, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryReal 1000 0.001 lambda binaryAxiomTens
+  finalModel <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
-  -- Evaluate: push back to DATA category via bridge (decOmega applies sigmoid)
+  -- Evaluate
   evaluateMetrics
     (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
     (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
@@ -51,67 +67,34 @@ main = do
 
 -- | Training loop for Binary Classification using TensReal logic.
 trainBinaryReal ::
-  Int ->
-  Float ->
-  Float ->
+  Int -> Float -> Float -> Float ->
+  Torch.Tensor -> Torch.Tensor ->
   (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
-  IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
-trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
+  IO Binary_MLP
+trainBinaryReal numEpochs learningRate lambda betaFixed trainData trainLabels kbSatFormula = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
 
-  -- Generate 100 random points in [0, 1]^2
-  dataset <- Torch.toDevice (Device CPU 0) <$> Torch.randIO' [100, 2]
-  let center = Torch.toDevice (Device CPU 0) (Torch.asTensor ([0.5, 0.5] :: [Float]))
-      diffs = dataset - center
-      sq = diffs * diffs
-      distances = Torch.sumDim (Torch.Dim 1) Torch.RemoveDim Torch.Float sq
-      labelsBool = distances `Torch.lt` Torch.asTensor (0.09 :: Float)
-      labels = Torch.toType Torch.Float labelsBool
+  putStrLn $ "[Training] " ++ show numEpochs ++ " epochs, beta=" ++ show betaFixed
+          ++ ", Adam lr=" ++ show learningRate ++ ", lambda=" ++ show lambda
 
-      -- subset the first 50 for training
-      trainData = Torch.sliceDim 0 0 50 1 dataset
-      trainLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 labels)
-
-      -- subset the remaining 50 for testing
-      testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
-      testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
-
-  putStrLn $
-    "[Training] "
-      ++ show numEpochs
-      ++ " epochs, empirical measure ("
-      ++ show (50 :: Int)
-      ++ " pts), Adam lr="
-      ++ show learningRate
-      ++ ", lambda="
-      ++ show lambda
-
-  let !_ = trainData `seq` trainLabels `seq` testData `seq` testLabels `seq` ()
+  let !_ = trainData `seq` trainLabels `seq` ()
 
   startTime <- getCurrentTime
-  let betaT = Torch.asTensor (1.2 :: Float)
+  let betaT = Torch.asTensor betaFixed
       lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
       nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (50.0 :: Float))
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 
   (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
-    -- -- J_data: pointwise cross-entropy (skipped when lambda=0) -------
     let dataLoss = if lambda == 0.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
-
-    -- -- J_know: axiom satisfaction penalty (skipped when lambda=1) ----
     let knowLoss = if lambda == 1.0 then zeroTens
                    else lossKnow (toDynamic (kbSatFormula betaT trainData model))
-
-    -- -- J = lambda * J_data + (1-lambda) * J_know --------------------
     let totalLoss = lossComb dataLoss knowLoss lambdaTens
-
     (newModel, newOpt) <- runStep model opt totalLoss lrTens
-
-    -- Metrics: only evaluated every 100 epochs (NOT in the hot path)
     if epoch `mod` 100 == 0 || epoch == numEpochs || epoch == 1
       then do
         epochEnd <- getCurrentTime
@@ -119,20 +102,17 @@ trainBinaryReal numEpochs learningRate lambda kbSatFormula = do
         let knowVal = Torch.asValue knowLoss :: Float
         let totalVal = Torch.asValue totalLoss :: Float
         let diffMs = (realToFrac (diffUTCTime epochEnd startTime) :: Double) * 1000
-        putStrLn $
-          printf
-            "[Epoch %3d/%d] J_data=%7.5f J_know=%7.5f J=%7.5f | %.2fms"
+        putStrLn $ printf "[Epoch %3d/%d] J_data=%7.5f J_know=%7.5f J=%7.5f | %.2fms"
             epoch numEpochs dataVal knowVal totalVal diffMs
       else return ()
-
     return (newModel, newOpt)
+
   totalEnd <- getCurrentTime
   let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
   putStrLn $ printf "[Training complete] Total Time: %5.2fs" totalDiff
 
   setGlobalBinaryMLP finalModel
-
-  return (finalModel, trainData, trainLabels, testData, testLabels)
+  return finalModel
 
 foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
 foldLoop acc [] _ = return acc
