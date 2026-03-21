@@ -70,10 +70,9 @@ instance TwoMonBLatTheory TENS Omega where
 -- Guarded Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
--- TODO: A2MonBLatTheory instance for TENS removed during GADT refactor.
--- The TENS training pipeline handles quantification (LogSumExp aggregation)
--- directly in the training loop, not via the quantifier theory.
--- This will be redesigned when batching is properly integrated.
+-- A2MonBLatTheory for TENS: not needed here.
+-- The quantifier (aggregation over the point dimension) is done
+-- in binaryAxiomTens after the formula produces [N,1] truth values.
 
 ------------------------------------------------------
 -- Internal Helpers
