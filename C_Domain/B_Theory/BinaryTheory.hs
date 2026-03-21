@@ -31,7 +31,10 @@ class (BinarySorts cat) => BinaryFun (cat :: Type -> Type) where
 
 -- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(m)).
 --   Parameterized by both the type system (cat) and the monad (m).
-class (BinaryFun cat, Monad m) => BinaryKlFun (cat :: Type -> Type) (m :: Type -> Type) where
+class
+  (BinaryFun cat, Monad m) =>
+  BinaryKlFun (cat :: Type -> Type) (m :: Type -> Type)
+  where
   classifierA :: ParamsMLP -> Point cat -> m (Omega cat)
 
 -- | Bridge for encoding/decoding between two type system interpretations.

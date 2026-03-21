@@ -1,6 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
@@ -8,11 +7,15 @@
 
 -- | Abstract binary classification formula.
 --   Written once, polymorphic over the type system (cat) and monad (m).
---   Instantiate at @DATA @Dist or @TENS @Identity to get the concrete formula.
+--
+--   The Kleisli-lifted quantifier bigWedgeKl decomposes as:
+--     I(Q)^M . com . Lambda(phi)
+--   where com = sequence (Haskell's Traversable commutator).
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
-    binarySentenceM,
+    binarySentenceTens,
+    bigWedgeKl,
   )
 where
 
@@ -21,6 +24,21 @@ import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 import Data.Functor.Identity (Identity, runIdentity)
+
+-- | Kleisli-lifted universal quantifier.
+--   Decomposes as: I(bigWedge)^M . com . Lambda(phi)
+--     1. map phi        -- functorial action
+--     2. sequence       -- commutator (inside mapM)
+--     3. fmap fold      -- lifted fold with wedge
+bigWedgeKl ::
+  (TwoMonBLatTheory dom tau, Monad m) =>
+  ParamsLogic tau ->
+  [a] ->
+  (a -> m tau) ->
+  m tau
+bigWedgeKl lp pts phi = do
+  omegas <- mapM phi pts
+  return (foldr (wedge lp) top omegas)
 
 -- | Abstract pointwise predicate for binary classification:
 --     (label(x) -> pred(x)) /\ (not label(x) -> not pred(x))
@@ -42,23 +60,10 @@ binaryPredicate lp paramMLP pt = do
   let label = labelA @cat pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
--- | Full sentence: forall x. phi(x) with canonical measure.
---   For deterministic monads (m ~ Identity).
+-- | Sentence: forall x. phi(x) via Kleisli-lifted quantifier.
+--   Works for any monad m (Dist, Identity, Giry, ...).
+--   Uses bigWedgeKl (the Kleisli lift of bigWedge).
 binarySentence ::
-  forall cat.
-  ( BinaryKlFun cat Identity,
-    TwoMonBLatTheory cat (Omega cat),
-    A2MonBLatTheory cat (Omega cat)
-  ) =>
-  ParamsLogic (Omega cat) ->
-  cat (Point cat) ->
-  ParamsMLP ->
-  Omega cat
-binarySentence lp dom paramMLP =
-  bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat @Identity lp paramMLP pt))
-
--- | Monadic sentence: forall x. phi(x) when m is a proper monad (e.g. Dist).
-binarySentenceM ::
   forall cat m.
   ( BinaryKlFun cat m,
     TwoMonBLatTheory cat (Omega cat),
@@ -68,6 +73,21 @@ binarySentenceM ::
   [Point cat] ->
   ParamsMLP ->
   m (Omega cat)
-binarySentenceM lp pts paramMLP = do
-  omegas <- mapM (binaryPredicate @cat @m lp paramMLP) pts
-  return (foldr (wedge lp) top omegas)
+binarySentence lp pts paramMLP =
+  bigWedgeKl lp pts (binaryPredicate @cat @m lp paramMLP)
+
+-- | TENS-specific sentence using the pure vectorized bigWedge.
+--   For the geometry paradigm where m = Identity and the quantifier
+--   operates on TensorBatch via batched LogSumExp (not point-by-point).
+binarySentenceTens ::
+  forall cat.
+  ( BinaryKlFun cat Identity,
+    TwoMonBLatTheory cat (Omega cat),
+    A2MonBLatTheory cat (Omega cat)
+  ) =>
+  ParamsLogic (Omega cat) ->
+  cat (Point cat) ->
+  ParamsMLP ->
+  Omega cat
+binarySentenceTens lp dom paramMLP =
+  bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat @Identity lp paramMLP pt))

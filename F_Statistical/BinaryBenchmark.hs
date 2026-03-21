@@ -12,6 +12,7 @@
 --     cabal run binary-benchmark -- 1.5       -- single run with beta=1.5
 module Main where
 
+import A_Categorical.DA_Realization.Dist (Dist)
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
 import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
@@ -55,7 +56,7 @@ main = do
 
   -- Evaluate via classifierA @DATA (pass theta* directly, no global state)
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA paramMLPOpti pt)
+        where predProb pt = pTrueDist (classifierA @DATA @Dist paramMLPOpti pt)
       -- Train + test points
       trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
       testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]

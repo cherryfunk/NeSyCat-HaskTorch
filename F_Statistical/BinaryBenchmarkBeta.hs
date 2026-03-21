@@ -5,6 +5,7 @@
 --   Trains jointly on theta and beta, then evaluates via classifierA @DATA.
 module Main where
 
+import A_Categorical.DA_Realization.Dist (Dist)
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
 import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
@@ -39,7 +40,7 @@ main = do
 
   -- Evaluate via classifierA @DATA (pass theta* directly)
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA paramMLPOpti pt)
+        where predProb pt = pTrueDist (classifierA @DATA @Dist paramMLPOpti pt)
       trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
       testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
       trainPairs = toPairs trainPts
