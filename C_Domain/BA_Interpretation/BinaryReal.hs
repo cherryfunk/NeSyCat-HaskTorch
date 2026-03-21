@@ -1,20 +1,18 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
-
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
--- | D_Interpretation: function implementations for Binary Classification.
+-- | Function implementations for Binary Classification.
 --
---   Sort assignments are in B_Realization (BinaryDataRlz, BinaryTensRlz).
 --   This module provides:
---     1. BinaryFun DATA -- classifierA + labelA for the DATA category
---     2. BinaryFun TENS -- classifierA + labelA for the TENS category
---     3. BinaryBridge DATA TENS -- encPoint + decOmega
+--     1. BinaryFun DATA / TENS -- labelA for each type system
+--     2. BinaryKlFun DATA Dist -- classifierA for DATA + Dist
+--     3. BinaryKlFun TENS Identity -- classifierA for TENS + Identity
+--     4. BinaryBridge DATA TENS Dist -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
   ( module C_Domain.B_Theory.BinaryTheory,
     module C_Domain.BA_Interpretation.BinaryRealMLP,
@@ -50,15 +48,15 @@ instance BinaryFun DATA where
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  DATA: Kleisli function symbols (BinaryKlFun)
+--  DATA + Dist: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun DATA where
-  classifierA :: ParamsMLP -> Point DATA -> M DATA (Omega DATA)
+instance BinaryKlFun DATA Dist where
+  classifierA :: ParamsMLP -> Point DATA -> Dist (Omega DATA)
   classifierA paramMLP pt =
-    let ptTens = encPoint @DATA @TENS pt
+    let ptTens = encPoint @DATA @TENS @Dist pt
         logits = UnsafeMkTensor (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
-     in decOmega @DATA @TENS logits
+     in decOmega @DATA @TENS @Dist logits
 
 -- ============================================================
 --  TENS: plain function symbols (BinaryFun)
@@ -66,8 +64,6 @@ instance BinaryKlFun DATA where
 
 instance BinaryFun TENS where
   -- | Label in TENS: returns R logits (True = +logitScale, False = -logitScale).
-  --   NOT {0,1} -- those are [0,1] truth values. In R-valued logic,
-  --   True = +inf and False = -inf. We use +/-logitScale as a finite proxy.
   labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -76,37 +72,33 @@ instance BinaryFun TENS where
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
         radiusSq = F.mulScalar (Torch.onesLike dist2) (0.09 :: Float)
         isInside = Torch.lt dist2 radiusSq
-        -- Map Bool to R logits: True -> +scale, False -> -scale
-        boolFloat = Torch.toType Torch.Float isInside  -- {0, 1}
+        boolFloat = Torch.toType Torch.Float isInside
         scale = F.mulScalar (Torch.onesLike boolFloat) logitScale
         val = boolFloat `Torch.mul` (scale `Torch.add` scale) `Torch.sub` scale
-        -- = 2*scale*b - scale = scale*(2b-1) = +scale if b=1, -scale if b=0
      in UnsafeMkTensor val
 
--- | Finite proxy for +/-inf in R-valued logic.
---   Large enough that sigmoid(logitScale) ~= 1, but finite to avoid NaN.
 logitScale :: Float
 logitScale = 10.0
 
 -- ============================================================
---  TENS: Kleisli function symbols (BinaryKlFun)
+--  TENS + Identity: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun TENS where
-  classifierA :: ParamsMLP -> Point TENS -> M TENS (Omega TENS)
+instance BinaryKlFun TENS Identity where
+  classifierA :: ParamsMLP -> Point TENS -> Identity (Omega TENS)
   classifierA paramMLP ptTensor = Identity $ do
     let logits = hThetaReal paramMLP (toDynamic ptTensor)
     UnsafeMkTensor logits
 
 -- ============================================================
---  BRIDGE: DATA <-> TENS encoding/decoding
+--  BRIDGE: DATA <-> TENS (with Dist monad for decoding)
 -- ============================================================
 
-instance BinaryBridge DATA TENS where
+instance BinaryBridge DATA TENS Dist where
   encPoint :: Point DATA -> Point TENS
   encPoint (x1, x2) = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 
-  decOmega :: Omega TENS -> (M DATA) (Omega DATA)
+  decOmega :: Omega TENS -> Dist (Omega DATA)
   decOmega probs =
     let val = Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
         p = realToFrac (head (head val)) :: Double
