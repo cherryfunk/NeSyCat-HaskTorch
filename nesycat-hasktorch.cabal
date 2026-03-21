@@ -10,72 +10,71 @@ maintainer: user@example.com
 library
   exposed-modules:
     A_Categorical.A_Category.STAR,
-    A_Categorical.D_Theory.HaskTheory,
-    A_Categorical.E_Extension.HaskExtension,
-    A_Categorical.B_Vocabulary.StarVocab,
-    A_Categorical.C_Inhabitation.StarInhabitation,
-    A_Categorical.F_Interpretation.HaskInt,
-    A_Categorical.F_Interpretation.Monads.Dist,
-    A_Categorical.F_Interpretation.Monads.Giry,
-    A_Categorical.F_Interpretation.Monads.Expectation,
-    A_Categorical.F_Interpretation.Monads.Expectation_TENS,
-    B_Logical.D_Theory.TwoMonBLatTheory,
-    B_Logical.D_Theory.A2MonBLatTheory,
-    B_Logical.B_Vocabulary.TensVocab,
-    B_Logical.B_Vocabulary.FdataVocab,
+    A_Categorical.B_Theory.StarTheory,
+    A_Categorical.BA_Interpretation.StarIntp,
+    A_Categorical.C_TypeSystem.StarTypes,
+    A_Categorical.D_Vocabulary.StarVocab,
+    A_Categorical.DA_Realization.Dist,
+    A_Categorical.DA_Realization.Giry,
+    A_Categorical.BA_Interpretation.Monads.Expectation,
+    A_Categorical.BA_Interpretation.Monads.Expectation_TENS,
+    B_Logical.B_Theory.TwoMonBLatTheory,
+    B_Logical.B_Theory.A2MonBLatTheory,
+    B_Logical.D_Vocabulary.TensVocab,
+    B_Logical.D_Vocabulary.FdataVocab,
     B_Logical.A_Category.Tens,
     C_Domain.A_Category.Data,
-    B_Logical.F_Interpretation.FDATA,
-    B_Logical.F_Interpretation.Tensor,
-    B_Logical.F_Interpretation.TensReal,
-    B_Logical.F_Interpretation.Boolean,
-    B_Logical.F_Interpretation.Real,
-    B_Logical.F_Interpretation.Goedel,
-    B_Logical.F_Interpretation.Lukasiewicz,
-    B_Logical.F_Interpretation.Product,
-    B_Logical.F_Interpretation.SProd,
-    B_Logical.F_Interpretation.LTNp,
-    B_Logical.F_Interpretation.JitCompile,
-    C_Domain.D_Theory.BinaryTheory,
-    C_Domain.E_Extension.BinaryDataExtension,
-    C_Domain.E_Extension.BinaryTensExtension,
-    C_Domain.D_Theory.MnistTheory,
-    C_Domain.D_Theory.DiceTheory,
-    C_Domain.D_Theory.CrossingTheory,
-    C_Domain.D_Theory.CountableTheory,
-    C_Domain.D_Theory.WeatherTheory,
-    C_Domain.B_Vocabulary.DataVocab,
-    C_Domain.F_Interpretation.BinaryReal,
-    C_Domain.F_Interpretation.BinaryRealMLP,
+    B_Logical.BA_Interpretation.FDATA,
+    B_Logical.BA_Interpretation.Tensor,
+    B_Logical.BA_Interpretation.TensReal,
+    B_Logical.BA_Interpretation.Boolean,
+    B_Logical.BA_Interpretation.Real,
+    B_Logical.BA_Interpretation.Goedel,
+    B_Logical.BA_Interpretation.Lukasiewicz,
+    B_Logical.BA_Interpretation.Product,
+    B_Logical.BA_Interpretation.SProd,
+    B_Logical.BA_Interpretation.LTNp,
+    B_Logical.BA_Interpretation.JitCompile,
+    C_Domain.B_Theory.BinaryTheory,
+    C_Domain.BC_Extension.BinaryDataExtension,
+    C_Domain.BC_Extension.BinaryTensExtension,
+    C_Domain.B_Theory.MnistTheory,
+    C_Domain.B_Theory.DiceTheory,
+    C_Domain.B_Theory.CrossingTheory,
+    C_Domain.B_Theory.CountableTheory,
+    C_Domain.B_Theory.WeatherTheory,
+    C_Domain.D_Vocabulary.DataVocab,
+    C_Domain.BA_Interpretation.BinaryReal,
+    C_Domain.BA_Interpretation.BinaryRealMLP,
 
-    C_Domain.F_Interpretation.Countable,
-    C_Domain.F_Interpretation.Crossing,
-    C_Domain.F_Interpretation.Dice,
-    C_Domain.F_Interpretation.MNIST,
-    C_Domain.F_Interpretation.MNIST_MLP,
-    C_Domain.F_Interpretation.Supremum,
-    C_Domain.F_Interpretation.Weather,
-    D_Grammatical.D_Theory.FormulasTheory,
-    D_Grammatical.D_Theory.BinaryFormulas,
-    D_Grammatical.D_Theory.DiceFormulas,
-    D_Grammatical.D_Theory.CrossingFormulas,
-    D_Grammatical.D_Theory.WeatherFormulas,
-    D_Grammatical.D_Theory.CountableFormulas,
-    D_Grammatical.D_Theory.MnistFormulas,
-    D_Grammatical.F_Interpretation.BinaryIntpTens,
-    D_Grammatical.F_Interpretation.BinaryIntpData,
+    C_Domain.BA_Interpretation.Countable,
+    C_Domain.BA_Interpretation.Crossing,
+    C_Domain.BA_Interpretation.Dice,
+    C_Domain.BA_Interpretation.MNIST,
+    C_Domain.BA_Interpretation.MNIST_MLP,
+    C_Domain.BA_Interpretation.Supremum,
+    C_Domain.BA_Interpretation.Weather,
+    D_Grammatical.B_Theory.FormulasTheory,
+    D_Grammatical.B_Theory.BinaryFormulas,
+    D_Grammatical.B_Theory.DiceFormulas,
+    D_Grammatical.B_Theory.CrossingFormulas,
+    D_Grammatical.B_Theory.WeatherFormulas,
+    D_Grammatical.B_Theory.CountableFormulas,
+    D_Grammatical.B_Theory.MnistFormulas,
+    D_Grammatical.BA_Interpretation.BinaryIntpTens,
+    D_Grammatical.BA_Interpretation.BinaryIntpData,
 
-    E_Inference.A_Category.Diff,
-    E_Inference.B_Vocabulary.InferenceVocabTens,
-    E_Inference.C_Inhabitation.InferenceInhabTens,
-    E_Inference.D_Theory.InferenceTheory,
-    E_Inference.F_Interpretation.InferenceIntpTens,
+    E_Inferential.A_Category.Diff,
+    E_Inferential.D_Vocabulary.InferenceVocabTens,
+    E_Inferential.DA_Realization.InferenceRlzTens,
+    E_Inferential.B_Theory.InferenceTheory,
+    E_Inferential.BA_Interpretation.InferenceIntpTens,
     MNIST_Loader,
-    F_Benchmark.B_Vocabulary.BenchmarkVocab,
-    F_Benchmark.C_Inhabitation.BenchmarkInhabData,
-    F_Benchmark.D_Theory.BenchmarkTheory,
-    F_Benchmark.F_Interpretation.BenchmarkIntpData
-  hs-source-dirs: ., C_Domain/F_Interpretation/data/mnist
+    F_Statistical.D_Vocabulary.BenchmarkVocab,
+    F_Statistical.DA_Realization.BenchmarkRlzData,
+    F_Statistical.B_Theory.BenchmarkTheory,
+    F_Statistical.BA_Interpretation.BenchmarkIntpData
+  hs-source-dirs: ., C_Domain/BA_Interpretation/data/mnist
   build-depends:
     base >=4.16,
     bytestring,
@@ -89,7 +88,7 @@ library
 
 executable mnist-test
   main-is: MnistTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   build-depends:
     base,
     nesycat-hasktorch,
@@ -101,7 +100,7 @@ executable mnist-test
 
 executable binary-benchmark
   main-is: BinaryBenchmark.hs
-  hs-source-dirs: F_Benchmark
+  hs-source-dirs: F_Statistical
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -114,7 +113,7 @@ executable binary-benchmark
 
 executable binary-test-real
   main-is: BinaryTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -127,7 +126,7 @@ executable binary-test-real
 
 executable binary-test-jit-real
   main-is: BinaryTrainJIT.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -140,7 +139,7 @@ executable binary-test-jit-real
 
 executable binary-test-real-beta
   main-is: BinaryTrainBeta.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   ghc-options: -rtsopts
   build-depends:
     base,
@@ -154,7 +153,7 @@ executable binary-test-real-beta
 
 executable sweep-100
   main-is: Sweep100.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   ghc-options: -rtsopts -O2
   build-depends:
     base,
@@ -165,7 +164,7 @@ executable sweep-100
 
 executable dice-test
   main-is: DiceTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   build-depends:
     base,
     nesycat-hasktorch,
@@ -174,7 +173,7 @@ executable dice-test
 
 executable crossing-test
   main-is: CrossingTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   build-depends:
     base,
     nesycat-hasktorch,
@@ -183,7 +182,7 @@ executable crossing-test
 
 executable weather-test
   main-is: WeatherTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   build-depends:
     base,
     nesycat-hasktorch,
@@ -192,7 +191,7 @@ executable weather-test
 
 executable countable-test
   main-is: CountableTrain.hs
-  hs-source-dirs: Train
+  hs-source-dirs: _F_Training
   build-depends:
     base,
     nesycat-hasktorch,
