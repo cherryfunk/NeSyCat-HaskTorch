@@ -26,8 +26,8 @@ import A_Categorical.DA_Realization.Dist (Dist (..))
 import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.C_TypeSystem.Tens (TENS (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
-import B_Logical.BA_Interpretation.TensReal hiding (Omega, TENS)
-import qualified B_Logical.BA_Interpretation.TensReal as TensLogic
+import B_Logical.BA_Interpretation.Tensor hiding (Omega, TENS)
+import qualified B_Logical.BA_Interpretation.Tensor as TensLogic
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import Data.Functor.Identity (Identity (..))
 import Torch (asTensor)

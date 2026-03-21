@@ -14,7 +14,7 @@
 --
 --   This is just standard model theory over (R, +, x, <=).
 --   All operations are on BatchOmega (= Torch.Tensor, pre-evaluated batches).
-module B_Logical.BA_Interpretation.TensReal
+module B_Logical.BA_Interpretation.Tensor
   ( BatchOmega,
 
     -- * TwoMonBLat-R: Binary Logical Operations on BatchOmega

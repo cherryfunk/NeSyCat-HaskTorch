@@ -27,7 +27,7 @@ library
     C_Domain.C_TypeSystem.Data,
     
     B_Logical.BA_Interpretation.Tensor,
-    B_Logical.BA_Interpretation.TensReal,
+    -- B_Logical.BA_Interpretation.TensReal,  -- merged into Tensor.hs
     B_Logical.BA_Interpretation.Boolean,
     B_Logical.BA_Interpretation.Real,
     -- B_Logical.BA_Interpretation.Goedel,  -- TODO: make proper A2MonBLatTheory instances
