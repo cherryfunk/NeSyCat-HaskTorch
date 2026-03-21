@@ -19,7 +19,7 @@ module Main where
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
-import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTensWrap)
+import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
 
@@ -52,7 +52,7 @@ main = do
       testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   -- Train: optimize theta to satisfy the axiom
-  paramMLPOpti <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTensWrap
+  paramMLPOpti <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
   return ()
 

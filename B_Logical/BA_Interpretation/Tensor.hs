@@ -72,7 +72,7 @@ instance TwoMonBLatTheory TENS Omega where
 
 -- A2MonBLatTheory for TENS: not needed here.
 -- The quantifier (aggregation over the point dimension) is done
--- in binaryAxiomTensWrap after the formula produces [N,1] truth values.
+-- in binaryAxiomTens after the formula produces [N,1] truth values.
 
 ------------------------------------------------------
 -- Internal Helpers

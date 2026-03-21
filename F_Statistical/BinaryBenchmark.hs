@@ -18,7 +18,7 @@ import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
-import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTensWrap)
+import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
 import F_Statistical.B_Theory.BenchmarkTheory (BenchmarkFun (..))
@@ -52,7 +52,7 @@ main = do
       testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
 
   -- Train in TENS -> theta*
-  paramMLPOpti <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTensWrap
+  paramMLPOpti <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
   -- Evaluate via classifierA @DATA (pass theta* directly, no global state)
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]

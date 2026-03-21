@@ -11,7 +11,7 @@ module Main where
 
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
-import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTensWrap)
+import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..), replaceParameters, sample)
@@ -27,7 +27,7 @@ main :: IO ()
 main = do
   -- Train: optimize theta to satisfy the axiom (JIT compiled)
   (paramMLPOpti, trainData, trainLabels, testData, testLabels) <-
-    trainBinaryRealJIT 1000 0.001 binaryAxiomTensWrap
+    trainBinaryRealJIT 1000 0.001 binaryAxiomTens
 
   return ()
 
