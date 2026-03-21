@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Logic on the REAL LINE (R) for the FINITE UNIFORM EMPIRICAL MEASURE case.

@@ -1,30 +1,46 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
-module C_Domain.C_TypeSystem.Data where
+-- | The DATA type system (set/measure theory paradigm).
+--   DataObj type class replaces the old DATA GADT.
+--   DATA remains as a phantom type for BinarySorts compatibility.
+module C_Domain.C_TypeSystem.Data
+  ( DATA,
+    DataObj (..),
+    IntegrationStrategy (..),
+    tableLookup,
+  )
+where
 
-import Data.Typeable (Typeable)
 import Numeric.Natural (Natural)
 
--- | The category DATA
--- Objects are specific sets: infinite sets (Reals, Integers) or finite enumerations.
--- 'DATA a' means "a is an object in the DATA category."
-data DATA a where
-  -- | Base types (matching DataVocab order):
-  Booleans :: DATA Bool
-  Naturals :: DATA Natural
-  Integers :: DATA Integer -- maybe instead use Int for speed?
-  Strings :: DATA String
-  Reals :: DATA Double
-  -- | A specific finite "set" (list), e.g. Finite [1,2,3,4,5,6]
-  Finite :: (Eq a, Show a, Typeable a) => [a] -> DATA a
-  -- | Constructed types (matching DataVocab order):
-  Unit :: DATA ()
-  Prod :: DATA a -> DATA b -> DATA (a, b)
-  Lists :: DATA a -> DATA [a]
+-- | Phantom type tag for BinarySorts etc.
+data DATA a
 
--- | Generic table lookup (the "WHERE key = k" query).
---   tableLookup keyOf k rows -- find the first row whose key matches k.
+-- | Integration strategy per type.
+data IntegrationStrategy
+  = FiniteStrategy
+  | CountableStrategy
+  | ContinuousStrategy
+  | TrivialStrategy
+  deriving (Show, Eq)
+
+-- | Type membership in the DATA type system.
+class DataObj a where
+  integrationStrategy :: IntegrationStrategy
+
+instance DataObj Bool where integrationStrategy = FiniteStrategy
+instance DataObj Natural where integrationStrategy = CountableStrategy
+instance DataObj Integer where integrationStrategy = CountableStrategy
+instance DataObj Char where integrationStrategy = FiniteStrategy
+instance DataObj Double where integrationStrategy = ContinuousStrategy
+instance DataObj Int where integrationStrategy = FiniteStrategy
+instance DataObj () where integrationStrategy = TrivialStrategy
+instance (DataObj a, DataObj b) => DataObj (a, b) where integrationStrategy = FiniteStrategy
+instance (DataObj a) => DataObj [a] where integrationStrategy = CountableStrategy
+
+-- | Generic table lookup.
 tableLookup :: (Eq k, Show k) => (row -> k) -> k -> [row] -> row
 tableLookup keyOf k rows = case filter (\r -> keyOf r == k) rows of
   (r : _) -> r

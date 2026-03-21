@@ -11,7 +11,7 @@ module D_Grammatical.BA_Interpretation.BinaryIntpData
 where
 
 import B_Logical.BA_Interpretation.Boolean ()           -- TwoMonBLatTheory Bool instance
-import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 import C_Domain.BA_Interpretation.BinaryReal ()         -- BinaryKlFun DATA Dist instance

@@ -1,13 +1,12 @@
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
 
 -- | Logical interpretation: \L ukasiewicz Logic ($\Omega = [0,1]$)
 module B_Logical.BA_Interpretation.Lukasiewicz where
 
-import C_Domain.C_TypeSystem.Data (DATA (..))
-import B_Logical.DA_Realization.ExpectGiry (expectGiry)
+
+import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
-import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
+import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -73,16 +72,16 @@ bigWedge = inf
 -- | $\mathcal{I}(\bigoplus)$ : Infinitary Bounded Sum: min(1, Sigma phi(x))
 --   = min(1, $\mathbb{E}_\mu[\varphi]$) for continuous domains.
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOplus Reals phi = min 1.0 (expectGiry Reals (Uniform 0.0 1.0) phi)
-bigOplus (Prod da db) phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
-bigOplus d phi = min 1.0 (sum (map phi (enumAll d)))
+bigOplus phi = min 1.0 (expectGiry (Uniform 0.0 1.0) phi)
+-- TODO: product quantifier phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
+bigOplus phi = min 1.0 (sum (map phi (enumAll)))
 
 -- | $\mathcal{I}(\bigotimes)$ : Infinitary Bounded Product: $\max(0, \sum \varphi(x) - (n-1))$
 bigOtimes :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOtimes Reals phi = error "Lukasiewicz bigOtimes over R requires integration."
-bigOtimes (Prod da db) phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
-bigOtimes d phi =
-  let xs = map phi (enumAll d)
+bigOtimes phi = error "Lukasiewicz bigOtimes over R requires integration."
+-- TODO: product quantifier phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
+bigOtimes phi =
+  let xs = map phi (enumAll)
    in max 0.0 (sum xs - fromIntegral (length xs - 1))
 
 ------------------------------------------------------

@@ -1,13 +1,12 @@
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
 
 -- | Logical interpretation: Product Logic ($\$\Omega = [0,1]$ \subset \mathbb{R}$)
 module B_Logical.BA_Interpretation.Product where
 
-import C_Domain.C_TypeSystem.Data (DATA (..))
-import B_Logical.DA_Realization.ExpectGiry (expectGiry)
+
+import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
-import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
+import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))
 
 -- Fixity: comparisons (.==, .<, .>) bind tighter than connectives (wedge, vee)
 infix 4 .==, ./=, .<, .>, .<=, .>=
@@ -74,16 +73,16 @@ bigWedge = inf
 -- | $\mathcal{I}(\bigoplus)$ : Infinitary Probabilistic Sum: $1 - \prod (1 - \varphi(x))$
 --   = 1 - exp(E_mu[log(1 - phi)]) for continuous domains.
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOplus Reals phi = 1.0 - exp (expectGiry Reals (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
-bigOplus (Prod da db) phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
-bigOplus d phi = 1.0 - product (map (\x -> 1.0 - phi x) (enumAll d))
+bigOplus phi = 1.0 - exp (expectGiry (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
+-- TODO: product quantifier phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
+bigOplus phi = 1.0 - product (map (\x -> 1.0 - phi x) (enumAll))
 
 -- | $\mathcal{I}(\bigotimes)$ : Infinitary Product: $\prod \varphi(x)$
 --   = $\exp(\mathbb{E}_\mu[\log \circ \varphi])$ for continuous domains.
 bigOtimes :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOtimes Reals phi = exp (expectGiry Reals (Uniform 0.0 1.0) (log . phi))
-bigOtimes (Prod da db) phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
-bigOtimes d phi = product (map phi (enumAll d))
+bigOtimes phi = exp (expectGiry (Uniform 0.0 1.0) (log . phi))
+-- TODO: product quantifier phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
+bigOtimes phi = product (map phi (enumAll))
 
 ------------------------------------------------------
 -- General predicates

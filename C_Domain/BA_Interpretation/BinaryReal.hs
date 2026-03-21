@@ -23,7 +23,7 @@ import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), Binary
 import C_Domain.BC_Extension.BinaryDataExtension ()   -- instance BinarySorts DATA
 import C_Domain.BC_Extension.BinaryTensExtension ()   -- instance BinarySorts TENS
 import A_Categorical.DA_Realization.Dist (Dist (..))
-import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.C_TypeSystem.Tens (TENS (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
 import B_Logical.BA_Interpretation.TensReal hiding (Omega, TENS)

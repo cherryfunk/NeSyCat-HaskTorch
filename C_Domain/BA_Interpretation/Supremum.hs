@@ -1,78 +1,54 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE FlexibleInstances #-}
 
--- | Supremum and Infimum over DATA objects.
---   Analogous to Expectation.hs (which provides the generalized sum / integral),
---   this module provides the generalized maximum (supremum) and minimum (infimum):
---
---     sup  ::  DATA a  ->  (a -> Double) -> Double     -- sup_a phi(a)
---     inf  ::  DATA a  ->  (a -> Double) -> Double     -- inf_a phi(a)
---
---   For finite / countably infinite objects, these use lazy bounded convergence.
---   For R (uncountable), these require numerical optimization and are not yet supported.
+-- | Supremum, Infimum, Enumeration — type class dispatch, no GADT.
 module C_Domain.BA_Interpretation.Supremum
-  ( sup,
-    inf,
-    enumAll,
+  ( HasSup (..),
+    HasInf (..),
+    EnumAll (..),
   )
 where
 
-import C_Domain.C_TypeSystem.Data (DATA (..))
 import Numeric.Natural (Natural)
-
-------------------------------------------------------
--- Enumeration
-------------------------------------------------------
-
--- | Canonical enumeration of Z: [0, 1, -1, 2, -2, ...]
-enumIntegers :: [Integer]
-enumIntegers = 0 : concatMap (\n -> [n, -n]) [1 ..]
-
--- | Canonical enumeration of N: [0, 1, 2, 3, ...]
-enumNaturals :: [Natural]
-enumNaturals = [0 ..]
-
--- | Canonical enumeration of all strings: ["", "a", "b", ..., "aa", ...]
-enumStrings :: [String]
-enumStrings = "" : [c : s | s <- enumStrings, c <- ['a' .. 'z']]
-
--- | Enumerate all elements of a DATA object (finite or lazily infinite).
-enumAll :: DATA a -> [a]
-enumAll (Finite xs) = xs
-enumAll Booleans = [True, False]
-enumAll Unit = [()]
-enumAll Naturals = enumNaturals
-enumAll Integers = enumIntegers
-enumAll Strings = enumStrings
-enumAll Reals = error "Cannot enumerate R."
-enumAll (Prod da db) = [(a, b) | a <- enumAll da, b <- enumAll db]
-enumAll (Lists da) = [] : [a : as | a <- enumAll da, as <- enumAll (Lists da)]
-
-------------------------------------------------------
--- Budget for lazy convergence
-------------------------------------------------------
 
 maxBudget :: Int
 maxBudget = 10000
 
-------------------------------------------------------
--- sup / inf
-------------------------------------------------------
+class HasSup a where
+  sup :: (a -> Double) -> Double
 
--- | Supremum: sup_a phi(a) = max { phi(a) | a in D }
---   For countable sets, uses lazy bounded convergence.
-sup :: DATA a -> (a -> Double) -> Double
-sup Reals _ = error "sup over R requires numerical optimization."
-sup d phi = lazyFold max (-(1.0 / 0.0)) (map phi (enumAll d))
+class HasInf a where
+  inf :: (a -> Double) -> Double
 
--- | Infimum: inf_a phi(a) = min { phi(a) | a in D }
---   For countable sets, uses lazy bounded convergence.
-inf :: DATA a -> (a -> Double) -> Double
-inf Reals _ = error "inf over R requires numerical optimization."
-inf d phi = lazyFold min (1.0 / 0.0) (map phi (enumAll d))
+class EnumAll a where
+  enumAll :: [a]
 
-------------------------------------------------------
--- Internal: lazy fold with budget
-------------------------------------------------------
+instance HasSup Bool where sup phi = max (phi True) (phi False)
+instance HasInf Bool where inf phi = min (phi True) (phi False)
+instance EnumAll Bool where enumAll = [True, False]
+
+instance HasSup () where sup phi = phi ()
+instance HasInf () where inf phi = phi ()
+instance EnumAll () where enumAll = [()]
+
+instance HasSup Natural where sup phi = lazyFold max (-(1.0/0.0)) (map phi [0..])
+instance HasInf Natural where inf phi = lazyFold min (1.0/0.0) (map phi [0..])
+instance EnumAll Natural where enumAll = [0..]
+
+instance HasSup Integer where sup phi = lazyFold max (-(1.0/0.0)) (map phi (0 : concatMap (\n -> [n,-n]) [1..]))
+instance HasInf Integer where inf phi = lazyFold min (1.0/0.0) (map phi (0 : concatMap (\n -> [n,-n]) [1..]))
+instance EnumAll Integer where enumAll = 0 : concatMap (\n -> [n,-n]) [1..]
+
+instance EnumAll Char where enumAll = [minBound .. maxBound]
+
+instance HasSup Double where sup _ = error "sup over R requires numerical optimization"
+instance HasInf Double where inf _ = error "inf over R requires numerical optimization"
+
+instance (HasSup a, HasSup b) => HasSup (a, b) where
+  sup phi = sup (\a -> sup (\b -> phi (a, b)))
+instance (HasInf a, HasInf b) => HasInf (a, b) where
+  inf phi = inf (\a -> inf (\b -> phi (a, b)))
+instance (EnumAll a, EnumAll b) => EnumAll (a, b) where
+  enumAll = [(a,b) | a <- enumAll, b <- enumAll]
 
 lazyFold :: (b -> a -> b) -> b -> [a] -> b
 lazyFold f = go 0

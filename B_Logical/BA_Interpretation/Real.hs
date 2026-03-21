@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -11,9 +10,9 @@ module B_Logical.BA_Interpretation.Real where
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
-import C_Domain.C_TypeSystem.Data (DATA (..))
-import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
-import B_Logical.DA_Realization.ExpectGiry (expectGiry)
+
+import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))
+import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -58,19 +57,19 @@ instance TwoMonBLatTheory DATA Omega where
 
 instance A2MonBLatTheory DATA Omega where
   -- \| \$\mathcal{I}(\bigvee)$ : Supremum
-  bigVee _ d _guard = sup d
+  bigVee _ d _guard = sup
 
   -- \| \$\mathcal{I}(\bigwedge)$ : Infimum
-  bigWedge _ d _guard = inf d
+  bigWedge _ d _guard = inf
 
   -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ canonical measure)
   --   Each quantifier chooses its density per domain type (uniform for finite, etc.)
-  bigOplus Reals _guard phi = expectGiry Reals (Uniform 0.0 1.0) phi
-  bigOplus (Finite xs) _guard phi = expectGiry (Finite xs) (GFinUniform xs) phi
-  bigOplus Booleans _guard phi = expectGiry Booleans (GFinUniform [True, False]) phi
+  bigOplus Reals _guard phi = expectGiry (Uniform 0.0 1.0) phi
+  bigOplus (Finite xs) _guard phi = expectGiry (GFinUniform xs) phi
+  bigOplus Booleans _guard phi = expectGiry (GFinUniform [True, False]) phi
   bigOplus (Prod d1 d2) _guard phi =
     bigOplus d1 (\_ -> top) (\a -> bigOplus d2 (\_ -> top) (\b -> phi (a, b)))
-  bigOplus Naturals _guard phi = expectGiry Naturals (fmap fromIntegral (Geometric 0.5)) phi
+  bigOplus Naturals _guard phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
   bigOplus d _ _ = error $ "bigOplus: no density chosen for this domain"
 
   -- \| \$\mathcal{I}(\bigotimes)$ : Infinitary Product = $\exp(\mathbb{E}_\mu[\log \circ \varphi])$ (product integral)

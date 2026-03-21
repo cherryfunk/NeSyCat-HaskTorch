@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -29,8 +28,8 @@ where
 
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
-import C_Domain.C_TypeSystem.Data (DATA (..))
-import C_Domain.BA_Interpretation.Supremum (enumAll)
+
+import C_Domain.BA_Interpretation.Supremum (EnumAll (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -60,10 +59,10 @@ instance TwoMonBLatTheory DATA Bool where
 ------------------------------------------------------
 
 instance A2MonBLatTheory DATA Bool where
-  bigVee _ d _guard phi = any phi (enumAll d)
-  bigWedge _ d _guard phi = all phi (enumAll d)
-  bigOplus d _guard phi = any phi (enumAll d)
-  bigOtimes d _guard phi = all phi (enumAll d)
+  bigVee _ d _guard phi = any phi (enumAll)
+  bigWedge _ d _guard phi = all phi (enumAll)
+  bigOplus d _guard phi = any phi (enumAll)
+  bigOtimes d _guard phi = all phi (enumAll)
 
 ------------------------------------------------------
 -- Monadic quantifier helpers
@@ -72,13 +71,13 @@ instance A2MonBLatTheory DATA Bool where
 -- | Monadic lift: $\bigwedge$ for predicates returning in a monad
 bigWedgeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
 bigWedgeM d phi = do
-  omegas <- mapM phi (enumAll d)
+  omegas <- mapM phi (enumAll)
   return (and omegas)
 
 -- | Monadic lift: $\bigvee$ for predicates returning in a monad
 bigVeeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
 bigVeeM d phi = do
-  omegas <- mapM phi (enumAll d)
+  omegas <- mapM phi (enumAll)
   return (or omegas)
 
 ------------------------------------------------------

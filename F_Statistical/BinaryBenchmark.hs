@@ -14,7 +14,7 @@ module Main where
 
 import A_Categorical.DA_Realization.Dist (Dist)
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
-import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)

@@ -10,7 +10,7 @@
 module Main where
 
 import C_Domain.B_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..))
-import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.C_TypeSystem.Tens (TENS (..))
 import C_Domain.BA_Interpretation.MNIST (mnistTable, mnistTableTENS, setGlobalMLP)
 import C_Domain.BA_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)

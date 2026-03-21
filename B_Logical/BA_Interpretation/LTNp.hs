@@ -1,13 +1,12 @@
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE RankNTypes #-}
 
 -- | Logical interpretation: Logic Tensor Networks with p-mean approximation (LTNp, $\$\Omega = [0,1]$ \subset \mathbb{R}$)
 module B_Logical.BA_Interpretation.LTNp where
 
-import C_Domain.C_TypeSystem.Data (DATA (..))
-import B_Logical.DA_Realization.ExpectGiry (expectGiry)
+
+import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
-import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
+import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -89,27 +88,27 @@ errPMean p xs = 1.0 - pMean p (map (\x -> 1.0 - x) xs)
 
 -- | $\mathcal{I}(\bigvee)$ : p-mean (smooth approximation of supremum)
 bigVee :: forall a. DATA a -> (a -> Omega) -> Omega
-bigVee Reals _ = error "LTNp bigVee over R requires numerical optimization."
-bigVee (Prod da db) phi = bigVee da (\a -> bigVee db (\b -> phi (a, b)))
-bigVee d phi = pMean p_LTN (map phi (enumAll d))
+bigVee _ = error "LTNp bigVee over R requires numerical optimization."
+-- TODO: product quantifier phi = bigVee da (\a -> bigVee db (\b -> phi (a, b)))
+bigVee phi = pMean p_LTN (map phi (enumAll))
 
 -- | $\mathcal{I}(\bigwedge)$ : Error p-mean (smooth approximation of infimum)
 bigWedge :: forall a. DATA a -> (a -> Omega) -> Omega
-bigWedge Reals phi = error "LTNp bigWedge over R requires numerical optimization."
-bigWedge (Prod da db) phi = bigWedge da (\a -> bigWedge db (\b -> phi (a, b)))
-bigWedge d phi = errPMean p_LTN (map phi (enumAll d))
+bigWedge phi = error "LTNp bigWedge over R requires numerical optimization."
+-- TODO: product quantifier phi = bigWedge da (\a -> bigWedge db (\b -> phi (a, b)))
+bigWedge phi = errPMean p_LTN (map phi (enumAll))
 
 -- | $\mathcal{I}(\bigoplus)$ : Infinitary Probabilistic Sum: $1 - \prod (1 - \varphi(x))$
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOplus Reals phi = 1.0 - exp (expectGiry Reals (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
-bigOplus (Prod da db) phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
-bigOplus d phi = 1.0 - product (map (\x -> 1.0 - phi x) (enumAll d))
+bigOplus phi = 1.0 - exp (expectGiry (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
+-- TODO: product quantifier phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
+bigOplus phi = 1.0 - product (map (\x -> 1.0 - phi x) (enumAll))
 
 -- | $\mathcal{I}(\bigotimes)$ : Infinitary Product: $\prod \varphi(x)$
 bigOtimes :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOtimes Reals phi = exp (expectGiry Reals (Uniform 0.0 1.0) (log . phi))
-bigOtimes (Prod da db) phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
-bigOtimes d phi = product (map phi (enumAll d))
+bigOtimes phi = exp (expectGiry (Uniform 0.0 1.0) (log . phi))
+-- TODO: product quantifier phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
+bigOtimes phi = product (map phi (enumAll))
 
 ------------------------------------------------------
 -- General predicates
