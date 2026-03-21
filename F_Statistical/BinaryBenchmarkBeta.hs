@@ -11,7 +11,7 @@ import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
-import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
+import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTensWrap)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
 import F_Statistical.B_Theory.BenchmarkTheory (BenchmarkFun (..))
@@ -35,7 +35,7 @@ main = do
 
   -- Train with learnable beta
   (paramMLPOpti, learnedBeta, trainData, _, testData, _) <-
-    trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTens
+    trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTensWrap
   let learnedBetaVal = Torch.asValue learnedBeta :: Float
 
   -- Evaluate via classifierA @DATA (pass theta* directly)

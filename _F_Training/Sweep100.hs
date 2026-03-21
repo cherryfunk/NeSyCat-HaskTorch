@@ -7,7 +7,7 @@ module Main where
 
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
-import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
+import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTensWrap)
 import C_Domain.BA_Interpretation.BinaryReal ()
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
 import Text.Printf (printf)
@@ -86,7 +86,7 @@ train epochs lr beta _ trainData trainLabels = do
       lrT = Torch.toDevice (Device CPU 0) (Torch.asTensor lr)
       nT = Torch.toDevice (Device CPU 0) (Torch.asTensor (50.0 :: Float))
   (m, _) <- foldLoop (initModel, initOpt) [1..epochs] $ \(model, opt) _ -> do
-    let sat = toDynamic (binaryAxiomTens betaT trainData model)
+    let sat = toDynamic (binaryAxiomTensWrap betaT trainData model)
         loss = negate (Torch.log (Torch.sigmoid sat))
     (nm, no) <- runStep model opt loss lrT
     return (nm, no)
@@ -101,7 +101,7 @@ trainBeta epochs lr initBeta trainData trainLabels = do
   betaInd <- Torch.makeIndependent (Torch.asTensor initBeta)
   (m, _, bFinal) <- foldLoop (initModel, initOpt, betaInd) [1..epochs] $ \(model, opt, bInd) _ -> do
     let betaVal = Torch.toDependent bInd
-        sat = toDynamic (binaryAxiomTens betaVal trainData model)
+        sat = toDynamic (binaryAxiomTensWrap betaVal trainData model)
         loss = negate (Torch.log (Torch.sigmoid sat))
     (nm, no) <- runStep model opt loss lrT
     -- Step beta via manual SGD, clamp > 0.01
