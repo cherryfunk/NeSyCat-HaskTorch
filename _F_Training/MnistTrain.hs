@@ -15,7 +15,7 @@ import B_Logical.A_Category.Tens (TENS (..))
 import C_Domain.BA_Interpretation.MNIST (mnistTable, mnistTableTENS, setGlobalMLP)
 import C_Domain.BA_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import D_Grammatical.B_Theory.MnistFormulas (mnistPredicate, mnistSen)
-import A_Categorical.BA_Interpretation.Monads.Expectation (probDist)
+import B_Logical.DA_Realization.ExpectDist (pTrueDist)
 import Data.List (foldl')
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
@@ -38,8 +38,8 @@ main = do
   putStrLn "[Training complete]"
 
   -- Re-evaluate the exact same logic formula natively substituting the new optimized parameters
-  let finalExp = probDist (mnistSen ())
-  let finalAcc = sum (map (probDist . mnistPredicate) mnistTable) / total
+  let finalExp = pTrueDist (mnistSen ())
+  let finalAcc = sum (map (pTrueDist . mnistPredicate) mnistTable) / total
   putStrLn $ "\n[MNIST TRAINED DATA] forall P(formula) = " ++ show finalExp
   putStrLn $ "[MNIST TRAINED DATA] Accuracy = " ++ show finalAcc
 

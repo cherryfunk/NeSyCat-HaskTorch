@@ -13,7 +13,7 @@ import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
 import C_Domain.A_Category.Data (DATA (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
-import A_Categorical.BA_Interpretation.Monads.Expectation (HasExpectation (..))
+import B_Logical.DA_Realization.ExpectGiry (expectGiry)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -65,12 +65,12 @@ instance A2MonBLatTheory DATA Omega where
 
   -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ canonical measure)
   --   Each quantifier chooses its density per domain type (uniform for finite, etc.)
-  bigOplus Reals _guard phi = expect Reals (Uniform 0.0 1.0) phi
-  bigOplus (Finite xs) _guard phi = expect (Finite xs) (GFinUniform xs) phi
-  bigOplus Booleans _guard phi = expect Booleans (GFinUniform [True, False]) phi
+  bigOplus Reals _guard phi = expectGiry Reals (Uniform 0.0 1.0) phi
+  bigOplus (Finite xs) _guard phi = expectGiry (Finite xs) (GFinUniform xs) phi
+  bigOplus Booleans _guard phi = expectGiry Booleans (GFinUniform [True, False]) phi
   bigOplus (Prod d1 d2) _guard phi =
     bigOplus d1 (\_ -> top) (\a -> bigOplus d2 (\_ -> top) (\b -> phi (a, b)))
-  bigOplus Naturals _guard phi = expect Naturals (fmap fromIntegral (Geometric 0.5)) phi
+  bigOplus Naturals _guard phi = expectGiry Naturals (fmap fromIntegral (Geometric 0.5)) phi
   bigOplus d _ _ = error $ "bigOplus: no density chosen for this domain"
 
   -- \| \$\mathcal{I}(\bigotimes)$ : Infinitary Product = $\exp(\mathbb{E}_\mu[\log \circ \varphi])$ (product integral)

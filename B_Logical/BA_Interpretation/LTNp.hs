@@ -5,7 +5,7 @@
 module B_Logical.BA_Interpretation.LTNp where
 
 import C_Domain.A_Category.Data (DATA (..))
-import A_Categorical.BA_Interpretation.Monads.Expectation (HasExpectation (..))
+import B_Logical.DA_Realization.ExpectGiry (expectGiry)
 import A_Categorical.DA_Realization.Giry (Giry (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
 
@@ -101,13 +101,13 @@ bigWedge d phi = errPMean p_LTN (map phi (enumAll d))
 
 -- | $\mathcal{I}(\bigoplus)$ : Infinitary Probabilistic Sum: $1 - \prod (1 - \varphi(x))$
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOplus Reals phi = 1.0 - exp (expect Reals (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
+bigOplus Reals phi = 1.0 - exp (expectGiry Reals (Uniform 0.0 1.0) (\x -> log (1.0 - phi x)))
 bigOplus (Prod da db) phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
 bigOplus d phi = 1.0 - product (map (\x -> 1.0 - phi x) (enumAll d))
 
 -- | $\mathcal{I}(\bigotimes)$ : Infinitary Product: $\prod \varphi(x)$
 bigOtimes :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOtimes Reals phi = exp (expect Reals (Uniform 0.0 1.0) (log . phi))
+bigOtimes Reals phi = exp (expectGiry Reals (Uniform 0.0 1.0) (log . phi))
 bigOtimes (Prod da db) phi = bigOtimes da (\a -> bigOtimes db (\b -> phi (a, b)))
 bigOtimes d phi = product (map phi (enumAll d))
 

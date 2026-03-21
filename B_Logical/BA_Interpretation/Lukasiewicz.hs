@@ -5,7 +5,7 @@
 module B_Logical.BA_Interpretation.Lukasiewicz where
 
 import C_Domain.A_Category.Data (DATA (..))
-import A_Categorical.BA_Interpretation.Monads.Expectation (HasExpectation (..))
+import B_Logical.DA_Realization.ExpectGiry (expectGiry)
 import A_Categorical.DA_Realization.Giry (Giry (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
 
@@ -73,7 +73,7 @@ bigWedge = inf
 -- | $\mathcal{I}(\bigoplus)$ : Infinitary Bounded Sum: min(1, Sigma phi(x))
 --   = min(1, $\mathbb{E}_\mu[\varphi]$) for continuous domains.
 bigOplus :: forall a. DATA a -> (a -> Omega) -> Omega
-bigOplus Reals phi = min 1.0 (expect Reals (Uniform 0.0 1.0) phi)
+bigOplus Reals phi = min 1.0 (expectGiry Reals (Uniform 0.0 1.0) phi)
 bigOplus (Prod da db) phi = bigOplus da (\a -> bigOplus db (\b -> phi (a, b)))
 bigOplus d phi = min 1.0 (sum (map phi (enumAll d)))
 

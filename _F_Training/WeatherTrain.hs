@@ -1,12 +1,12 @@
 -- | Evaluate weather domain formulas (no learnable params).
 module Main where
 
-import A_Categorical.BA_Interpretation.Monads.Expectation (probGiry)
+import B_Logical.DA_Realization.ExpectGiry (pTrueGiry)
 import D_Grammatical.B_Theory.WeatherFormulas (weatherSen1, weatherSen2, weatherSen3)
 
 main :: IO ()
 main = do
-  print (probGiry weatherSen1)
-  print (probGiry weatherSen2)
-  print (probGiry weatherSen3)
-  putStrLn $ "Berlin entails Hamburg: " ++ show (probGiry weatherSen1 <= probGiry weatherSen2)
+  print (pTrueGiry weatherSen1)
+  print (pTrueGiry weatherSen2)
+  print (pTrueGiry weatherSen3)
+  putStrLn $ "Berlin entails Hamburg: " ++ show (pTrueGiry weatherSen1 <= pTrueGiry weatherSen2)

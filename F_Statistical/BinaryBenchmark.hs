@@ -12,7 +12,7 @@
 --     cabal run binary-benchmark -- 1.5       -- single run with beta=1.5
 module Main where
 
-import A_Categorical.BA_Interpretation.Monads.Expectation (probDist)
+import B_Logical.DA_Realization.ExpectDist (pTrueDist)
 import C_Domain.A_Category.Data (DATA (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
@@ -57,7 +57,7 @@ main = do
 
   -- Evaluate via classifierA @DATA
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = probDist (classifierA @DATA () pt)
+        where predProb pt = pTrueDist (classifierA @DATA () pt)
       -- Train + test points
       trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
       testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
