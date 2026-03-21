@@ -31,11 +31,11 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 main :: IO ()
 main = do
   args <- getArgs
-  let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
+  let initBeta = case args of { (x:_) -> read x; _ -> 2.0 :: Float }
 
   -- Train with learnable beta
   (finalModel, learnedBeta, trainData, _, testData, _) <-
-    trainBinaryBeta 1000 0.001 2.0 lambda binaryAxiomTens
+    trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTens
   setGlobalBinaryMLP finalModel
 
   let learnedBetaVal = Torch.asValue learnedBeta :: Float
