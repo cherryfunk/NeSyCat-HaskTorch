@@ -12,7 +12,7 @@ import Data.Kind (Type)
 -- | Non-Logical Theory for the MNIST Addition domain.
 --
 -- Sor = {Image, Digit}
--- Fun = {digit : Image -> Digit, add : Image² -> Digit}
+-- Fun = {digit : Image -> Digit, add : Image^2 -> Digit}
 data ImagePairRow = ImagePairRow
   { im1 :: Int,
     im2 :: Int,

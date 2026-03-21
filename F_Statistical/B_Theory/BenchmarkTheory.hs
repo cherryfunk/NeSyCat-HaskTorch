@@ -1,14 +1,14 @@
 {-# LANGUAGE TypeFamilies #-}
 
--- | The benchmark theory (level ζ) declares the function symbols needed
+-- | The benchmark theory (level zeta) declares the function symbols needed
 --   to evaluate a trained classifier against ground truth.
 --
 --   Function symbols:
---     accuracy   : [(pred, label)] → MetricVal   fraction of correct predictions
---     f1Score    : [(pred, label)] → MetricVal   harmonic mean of precision and recall
---     precision  : [(pred, label)] → MetricVal   tp / (tp + fp)
---     recall     : [(pred, label)] → MetricVal   tp / (tp + fn)
---     confidence : [(pred, label)] → (MetricVal, MetricVal)   mean P+ and P-
+--     accuracy   : [(pred, label)] -> MetricVal   fraction of correct predictions
+--     f1Score    : [(pred, label)] -> MetricVal   harmonic mean of precision and recall
+--     precision  : [(pred, label)] -> MetricVal   tp / (tp + fp)
+--     recall     : [(pred, label)] -> MetricVal   tp / (tp + fn)
+--     confidence : [(pred, label)] -> (MetricVal, MetricVal)   mean P+ and P-
 module F_Statistical.B_Theory.BenchmarkTheory
   ( BenchmarkFun (..),
   )

@@ -13,7 +13,7 @@
 --     2. Compile it:  @compiled <- jitTrace "axiom" fwd exampleInputs@
 --     3. Run it:      @result <- compiled [actualInputs]@
 --
---   This is completely abstract — it does not know or care about
+--   This is completely abstract -- it does not know or care about
 --   the formula structure. It compiles whatever operations happen
 --   to execute during the trace, just like @@tf.function@.
 module B_Logical.BA_Interpretation.JitCompile
@@ -31,7 +31,7 @@ import qualified Torch
 --
 --   Traces a function @f :: [Tensor] -> IO [Tensor]@ with example inputs,
 --   producing a compiled 'ScriptModule'.  Subsequent calls to 'runJit'
---   execute the fused graph — equivalent to TensorFlow's @@tf.function@.
+--   execute the fused graph -- equivalent to TensorFlow's @@tf.function@.
 jitTrace :: String -> ([Torch.Tensor] -> IO [Torch.Tensor]) -> [Torch.Tensor] -> IO ScriptModule
 jitTrace name f exampleInputs = do
   rawMod <- trace name "forward" f exampleInputs
@@ -50,7 +50,7 @@ runJit scriptMod input =
 --   traces it with example inputs, and returns a ScriptModule.
 --
 --   The traced graph captures ALL tensor operations (MLP forward,
---   quantifiers, wedge, 1-sat) as a single fused kernel — no per-op
+--   quantifiers, wedge, 1-sat) as a single fused kernel -- no per-op
 --   FFI overhead on subsequent calls.
 jitTraceAxiom :: (Torch.Tensor -> Torch.Tensor -> IO Torch.Tensor)
               -> Torch.Tensor  -- ^ example data

@@ -6,7 +6,7 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
--- | MNIST — All three instances in one module:
+-- | MNIST -- All three instances in one module:
 --   1. MnistTheory DATA   (data category, Dist monad)
 --   2. MnistTheory TENS   (tensor spaces, Identity monad)
 --   3. MnistBridge DATA TENS (encoding/decoding between the two)

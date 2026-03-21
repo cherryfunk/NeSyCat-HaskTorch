@@ -9,7 +9,7 @@ import B_Logical.BA_Interpretation.Boolean
 import C_Domain.BA_Interpretation.Crossing
 
 -- | "Only continue driving if there is a green light."
---   ¬drive ∨ light = Green
+--   not drive \/ light = Green
 crossingSen :: Dist Omega
 crossingSen = do
   l <- lightDetector

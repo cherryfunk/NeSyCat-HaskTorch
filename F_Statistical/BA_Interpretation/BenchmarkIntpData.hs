@@ -14,11 +14,11 @@ import F_Statistical.DA_Realization.BenchmarkRlzData ()
 import F_Statistical.B_Theory.BenchmarkTheory (BenchmarkFun (..))
 
 -- | DATA benchmark interpretation:
---     accuracy   ↦  fractionTrue(pred > 0.5 == label)
---     precision  ↦  fractionTrue(label | pred > 0.5)
---     recall     ↦  fractionTrue(pred > 0.5 | label)
---     f1Score    ↦  harmonicMean(precision, recall)
---     confidence ↦  (meanWhere preds posLabels, meanWhere preds negLabels)
+--     accuracy   |->  fractionTrue(pred > 0.5 == label)
+--     precision  |->  fractionTrue(label | pred > 0.5)
+--     recall     |->  fractionTrue(pred > 0.5 | label)
+--     f1Score    |->  harmonicMean(precision, recall)
+--     confidence |->  (meanWhere preds posLabels, meanWhere preds negLabels)
 instance BenchmarkFun Double where
   type MetricVal Double = Double
 

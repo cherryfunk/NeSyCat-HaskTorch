@@ -17,4 +17,4 @@ instance BinarySorts TENS where
   type Point  TENS = Tensor '( 'CPU, 0) 'Float '[2]
   type Omega  TENS = TensLogic.Omega  -- = Tensor '(CPU,0) Float '[1]
   type M      TENS = Identity
-  type ParamsDomain TENS = Binary_MLP -- Θ_TENS: neural network weights
+  type ParamsDomain TENS = Binary_MLP -- Theta_TENS: neural network weights

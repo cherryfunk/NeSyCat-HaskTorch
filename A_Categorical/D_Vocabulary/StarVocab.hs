@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 
 -- | Star vocabulary: the monad types available in the framework.
---   These are names with their data structure — realizations (Monad instances)
+--   These are names with their data structure -- realizations (Monad instances)
 --   live in DA_Realization/.
 module A_Categorical.D_Vocabulary.StarVocab
   ( Dist (..),
@@ -12,7 +12,7 @@ where
 import Statistics.Distribution (ContDistr, Mean, Variance)
 
 -- | The Dist Monad: finitely supported probability distributions.
---   Represented as a free monad (symbolic/lazy) — evaluation via expect.
+--   Represented as a free monad (symbolic/lazy) -- evaluation via expect.
 --   Only finite support constructors are allowed.
 data Dist a where
   -- Monadic structure
@@ -24,7 +24,7 @@ data Dist a where
 
 
 -- | The Giry Monad: general probability measures (finite, countable, continuous).
---   Also a free monad — evaluation via expect.
+--   Also a free monad -- evaluation via expect.
 data Giry a where
   -- Monadic structure
   GPure       :: a -> Giry a

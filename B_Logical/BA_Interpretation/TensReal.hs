@@ -3,17 +3,17 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
--- | Logic on the REAL LINE (ℝ) for the FINITE UNIFORM EMPIRICAL MEASURE case.
+-- | Logic on the REAL LINE (R) for the FINITE UNIFORM EMPIRICAL MEASURE case.
 --
---   TensReal operates on ℝ with:
+--   TensReal operates on R with:
 --
---     • notx = −x            (additive inverse)
---     • MLP outputs logits  (no sigmoid)
---     • `tensor` = ×,  `oplus` = +      (standard real arithmetic)
---     • /\ = smooth min,  \/ = smooth max (LogSumExp)
---     • True = +∞,  False = −∞
+--     * notx = -x            (additive inverse)
+--     * MLP outputs logits  (no sigmoid)
+--     * `tensor` = x,  `oplus` = +      (standard real arithmetic)
+--     * /\ = smooth min,  \/ = smooth max (LogSumExp)
+--     * True = +inf,  False = -inf
 --
---   This is just standard model theory over (ℝ, +, ×, <=).
+--   This is just standard model theory over (R, +, x, <=).
 --   All operations are on BatchOmega (= Torch.Tensor, pre-evaluated batches).
 module B_Logical.BA_Interpretation.TensReal
   ( BatchOmega,
@@ -52,7 +52,7 @@ import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
---  Internal Constants (local, standalone — not from typeclass)
+--  Internal Constants (local, standalone -- not from typeclass)
 -- ============================================================
 
 -- | LogSumExp smoothing parameter beta (fixed default).
@@ -64,15 +64,15 @@ beta :: Torch.Tensor -> Torch.Tensor
 beta x = F.mulScalar (Torch.onesLike x) betaVal
 
 -- ============================================================
---  BatchOmega = Torch.Tensor (a batch of truth degrees in ℝ)
+--  BatchOmega = Torch.Tensor (a batch of truth degrees in R)
 -- ============================================================
 
--- | A batch of truth degrees — Torch.Tensor of shape [N] or [N, 1].
---   Values are in ℝ (logits), NOT restricted to [0,1].
+-- | A batch of truth degrees -- Torch.Tensor of shape [N] or [N, 1].
+--   Values are in R (logits), NOT restricted to [0,1].
 type BatchOmega = Torch.Tensor
 
 -- ============================================================
---  TwoMonBLat-R: pointwise batch operations on ℝ
+--  TwoMonBLat-R: pointwise batch operations on R
 -- ============================================================
 
 -- | Entailment (lattice ordering <=): true iff forall i. a_i <= b_i
@@ -124,39 +124,39 @@ v1R = Torch.asTensor [1.0 :: Float]
 --  Derived Operations
 -- ============================================================
 
--- | Pointwise negation: notφᵢ = −φᵢ  (additive inverse on ℝ)
+-- | Pointwise negation: notphi_i = -phi_i  (additive inverse on R)
 negR :: BatchOmega -> BatchOmega
 negR = negate -- Prelude negate, works on Torch.Tensor via Num instance
 
--- | Implication: (a -> b)ᵢ = max(−aᵢ, bᵢ) = vee(nota, b)
+-- | Implication: (a -> b)_i = max(-a_i, b_i) = vee(nota, b)
 impliesR :: BatchOmega -> BatchOmega -> BatchOmega
 impliesR a b = veeR (negR a) b
 
 -- ============================================================
---  A2MonBLat-R: quantifiers (finite uniform measure, ℝ-valued)
+--  A2MonBLat-R: quantifiers (finite uniform measure, R-valued)
 -- ============================================================
 
 -- | Guarded forall over finite uniform measure (De Morgan dual of exists):
 --
---   forall_{x|g}^unif φ  =  not exists_{x|g}^unif (notφ)
+--   forall_{x|g}^unif phi  =  not exists_{x|g}^unif (notphi)
 --
---   Equivalent to the negative LogSumExp of −φ.
+--   Equivalent to the negative LogSumExp of -phi.
 bigWedgeR :: BatchOmega -> BatchOmega -> Omega
 bigWedgeR g phi =
-  let nPhi = negR phi -- −φ
-      nLse = bigVeeR g nPhi -- exists_{g}(−φ)
+  let nPhi = negR phi -- -phi
+      nLse = bigVeeR g nPhi -- exists_{g}(-phi)
    in UnsafeMkTensor (Torch.reshape [1] (negR (toDynamic nLse)))
 
--- | Guarded exists over finite uniform measure (ℝ-valued guards):
+-- | Guarded exists over finite uniform measure (R-valued guards):
 --
---   exists_{x|g}^unif φ  =  (1/β) * logsumexp(β·φ + log σ(g)) − log(Σ σ(g))
+--   exists_{x|g}^unif phi  =  (1/beta) * logsumexp(beta*phi + log sigma(g)) - log(Sum sigma(g))
 --
---   Guards g are ℝ logits: positive = include, negative = exclude.
---   log_sigmoid(g) maps ℝ → (−∞, 0]: large positive → 0 (keep),
---   large negative → −∞ (mask). No {0,1} conversion needed.
+--   Guards g are R logits: positive = include, negative = exclude.
+--   log_sigmoid(g) maps R -> (-inf, 0]: large positive -> 0 (keep),
+--   large negative -> -inf (mask). No {0,1} conversion needed.
 bigVeeR :: BatchOmega -> BatchOmega -> Omega
 bigVeeR g phi =
-  let logG = logSigmoid g              -- ℝ guard → log-weight
+  let logG = logSigmoid g              -- R guard -> log-weight
       p = beta phi
       pphi = (phi `Torch.mul` p) `Torch.add` logG
       lse = F.logsumexp pphi 0 False
@@ -165,7 +165,7 @@ bigVeeR g phi =
    in UnsafeMkTensor (Torch.reshape [1] res)
 
 -- | Guarded `oplus`-aggregation (weighted mean):
---   `oplus`_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
+--   `oplus`_{x|g}^unif phi  =  Sum_i g_i * phi_i  /  Sum_i g_i
 bigOplusR :: BatchOmega -> BatchOmega -> Omega
 bigOplusR g phi =
   let w = g `Torch.mul` phi
@@ -174,7 +174,7 @@ bigOplusR g phi =
    in UnsafeMkTensor (Torch.reshape [1] (sW `Torch.div` (sG `Torch.add` epsLike sG)))
 
 -- | Guarded `tensor`-aggregation (weighted mean):
---   `tensor`_{x|g}^unif φ  =  Σᵢ gᵢ · φᵢ  /  Σᵢ gᵢ
+--   `tensor`_{x|g}^unif phi  =  Sum_i g_i * phi_i  /  Sum_i g_i
 bigOtimesR :: BatchOmega -> BatchOmega -> Omega
 bigOtimesR g phi =
   let w = g `Torch.mul` phi

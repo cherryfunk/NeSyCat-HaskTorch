@@ -4,7 +4,7 @@
 
 -- | Star interpretation: assigns concrete Haskell types to the abstract
 --   monad roles declared in StarTheory.
---   At the type level, this IS the interpretation — types are values here.
+--   At the type level, this IS the interpretation -- types are values here.
 module A_Categorical.BA_Interpretation.StarIntp () where
 
 import qualified A_Categorical.DA_Realization.Giry as M

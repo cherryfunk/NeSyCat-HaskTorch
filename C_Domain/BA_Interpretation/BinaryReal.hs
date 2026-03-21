@@ -12,9 +12,9 @@
 --
 --   Sort assignments are in B_Realization (BinaryDataRlz, BinaryTensRlz).
 --   This module provides:
---     1. BinaryFun DATA — classifierA + labelA for the DATA category
---     2. BinaryFun TENS — classifierA + labelA for the TENS category
---     3. BinaryBridge DATA TENS — encPoint + decOmega
+--     1. BinaryFun DATA -- classifierA + labelA for the DATA category
+--     2. BinaryFun TENS -- classifierA + labelA for the TENS category
+--     3. BinaryBridge DATA TENS -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
   ( setGlobalBinaryMLP,
     module C_Domain.B_Theory.BinaryTheory,
@@ -84,9 +84,9 @@ instance BinaryKlFun DATA where
 -- ============================================================
 
 instance BinaryFun TENS where
-  -- | Label in TENS: returns ℝ logits (True = +logitScale, False = -logitScale).
-  --   NOT {0,1} — those are [0,1] truth values. In ℝ-valued logic,
-  --   True = +∞ and False = -∞. We use ±logitScale as a finite proxy.
+  -- | Label in TENS: returns R logits (True = +logitScale, False = -logitScale).
+  --   NOT {0,1} -- those are [0,1] truth values. In R-valued logic,
+  --   True = +inf and False = -inf. We use +/-logitScale as a finite proxy.
   labelA :: Point TENS -> Omega TENS
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -95,15 +95,15 @@ instance BinaryFun TENS where
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
         radiusSq = F.mulScalar (Torch.onesLike dist2) (0.09 :: Float)
         isInside = Torch.lt dist2 radiusSq
-        -- Map Bool to ℝ logits: True → +scale, False → -scale
+        -- Map Bool to R logits: True -> +scale, False -> -scale
         boolFloat = Torch.toType Torch.Float isInside  -- {0, 1}
         scale = F.mulScalar (Torch.onesLike boolFloat) logitScale
         val = boolFloat `Torch.mul` (scale `Torch.add` scale) `Torch.sub` scale
         -- = 2*scale*b - scale = scale*(2b-1) = +scale if b=1, -scale if b=0
      in UnsafeMkTensor val
 
--- | Finite proxy for ±∞ in ℝ-valued logic.
---   Large enough that sigmoid(logitScale) ≈ 1, but finite to avoid NaN.
+-- | Finite proxy for +/-inf in R-valued logic.
+--   Large enough that sigmoid(logitScale) ~= 1, but finite to avoid NaN.
 logitScale :: Float
 logitScale = 10.0
 

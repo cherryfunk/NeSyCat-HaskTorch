@@ -12,9 +12,9 @@ import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import qualified Torch
 
 -- | TensReal inference interpretation:
---     lossKnow ↦  softplus     (from vocabulary)
---     lossData ↦  crossEntropy (from vocabulary)
---     lossComb ↦  convex       (from vocabulary)
+--     lossKnow |->  softplus     (from vocabulary)
+--     lossData |->  crossEntropy (from vocabulary)
+--     lossComb |->  convex       (from vocabulary)
 instance InferenceFun Torch.Tensor where
   type Loss Torch.Tensor = Torch.Tensor
   lossKnow = softplus

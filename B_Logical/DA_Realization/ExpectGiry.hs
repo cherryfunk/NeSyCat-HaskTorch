@@ -45,7 +45,7 @@ expectGiry _ (Poisson lambda) f = chainedDiscreteStrategy [(k, probability (Poi.
 expectGiry _ (Geometric p) f = chainedDiscreteStrategy [(k, probability (Geo.geometric0 p) k) | k <- [0 ..]] f
 expectGiry _ _ _ = error "expectGiry: unsupported Giry constructor for this DATA object"
 
--- | P(True) for Giry: canonical isomorphism Giry(Bool) → [0,1].
+-- | P(True) for Giry: canonical isomorphism Giry(Bool) -> [0,1].
 pTrueGiry :: Giry Bool -> Double
 pTrueGiry m = expectGiry Booleans m (\b -> if b then 1.0 else 0.0)
 

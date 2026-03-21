@@ -2,8 +2,8 @@
 
 -- | Benchmark executable for binary classification.
 --
---   1. Trains in TENS (produces θ*)
---   2. Evaluates classifierA @DATA per test point → Dist Bool → Double
+--   1. Trains in TENS (produces theta*)
+--   2. Evaluates classifierA @DATA per test point -> Dist Bool -> Double
 --   3. Compares to labelA @DATA ground truth
 --   4. Reports accuracy, confidence, F1 via BenchmarkTheory
 --
@@ -51,7 +51,7 @@ main = do
       trainLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 labels)
       testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
 
-  -- Train in TENS → θ*
+  -- Train in TENS -> theta*
   finalModel <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
   setGlobalBinaryMLP finalModel
 
@@ -79,7 +79,7 @@ main = do
   putStrLn $ printf "  Confidence:      P+=%.4f  P-=%.4f" pPos pNeg
 
 
--- | Training loop (TENS only, produces θ*).
+-- | Training loop (TENS only, produces theta*).
 trainBinary ::
   Int -> Float -> Float -> Float ->
   Torch.Tensor -> Torch.Tensor ->

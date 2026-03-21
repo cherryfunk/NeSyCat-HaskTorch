@@ -9,12 +9,12 @@ where
 
 import Data.Kind (Type)
 
--- | Higher-Order Categorical Theory Σ_alpha
+-- | Higher-Order Categorical Theory Sum_alpha
 --
 -- The three monad roles correspond to the three paradigms of NeSyCat:
---   MonadSetTh  — set theory
---   MonadMeasTh — measure / probability theory
---   MonadGeomTh — geometry / differential geometry
+--   MonadSetTh  -- set theory
+--   MonadMeasTh -- measure / probability theory
+--   MonadGeomTh -- geometry / differential geometry
 --
 -- Natural transformations (eta, mu) are already given by Haskell's Monad class.
 class StarTheory where
