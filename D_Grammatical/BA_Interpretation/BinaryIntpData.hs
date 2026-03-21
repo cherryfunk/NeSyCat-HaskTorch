@@ -1,23 +1,24 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Grammatical interpretation of BinaryFormulas in DATA + Dist.
---
---   Uses the Kleisli-lifted quantifier (bigWedgeKl) via binarySentence.
---   Each classifierA @DATA @Dist returns Dist Bool (via the bridge).
---   The result is Dist Bool: the probability that the formula is satisfied.
+--   Kleisli lift: commutator (mapM) + fold with wedge from TwoMonBLatTheory.
 module D_Grammatical.BA_Interpretation.BinaryIntpData
   ( binaryAxiomData,
   )
 where
 
-import B_Logical.BA_Interpretation.Boolean ()           -- TwoMonBLatTheory Bool instance
+import B_Logical.BA_Interpretation.Boolean ()
+import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
-import C_Domain.BA_Interpretation.BinaryReal ()         -- BinaryKlFun DATA Dist instance
+import C_Domain.BA_Interpretation.BinaryReal ()
 import A_Categorical.DA_Realization.Dist (Dist)
-import D_Grammatical.B_Theory.BinaryFormulas (binarySentence)
+import D_Grammatical.B_Theory.BinaryFormulas (binaryPredicate)
 
--- | Binary axiom evaluated in DATA + Dist.
+-- | Binary axiom in DATA + Dist.
+--   Kleisli lift: commutator (mapM) + fold (wedge from theory).
 binaryAxiomData :: [Point DATA] -> ParamsMLP -> Dist (Omega DATA)
-binaryAxiomData pts paramMLP = binarySentence @DATA @Dist () pts paramMLP
+binaryAxiomData pts paramMLP = do
+  omegas <- mapM (binaryPredicate @DATA @Dist () paramMLP) pts
+  return (foldr (wedge ()) top omegas)

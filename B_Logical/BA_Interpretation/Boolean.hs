@@ -56,19 +56,21 @@ instance TwoMonBLatTheory DATA Bool where
 -- A2MonBLatTheory instance: quantifiers over DATA domains
 ------------------------------------------------------
 
--- | Boolean quantifiers for Bool: enumerate {True, False}
+-- | Boolean quantifiers for Bool
 instance A2MonBLatTheory Bool DATA Bool where
-  bigVee _ _guard phi = any phi [True, False]
-  bigWedge _ _guard phi = all phi [True, False]
-  bigOplus _guard phi = any phi [True, False]
-  bigOtimes _guard phi = all phi [True, False]
+  type Domain Bool = [Bool]
+  bigVee _ domain phi = any phi domain
+  bigWedge _ domain phi = all phi domain
+  bigOplus domain phi = any phi domain
+  bigOtimes domain phi = all phi domain
 
--- | Boolean quantifiers for (): trivial
+-- | Boolean quantifiers for ()
 instance A2MonBLatTheory () DATA Bool where
-  bigVee _ _guard phi = phi ()
-  bigWedge _ _guard phi = phi ()
-  bigOplus _guard phi = phi ()
-  bigOtimes _guard phi = phi ()
+  type Domain () = [()]
+  bigVee _ domain phi = all phi domain
+  bigWedge _ domain phi = all phi domain
+  bigOplus domain phi = all phi domain
+  bigOtimes domain phi = all phi domain
 
 ------------------------------------------------------
 -- Comparison predicates

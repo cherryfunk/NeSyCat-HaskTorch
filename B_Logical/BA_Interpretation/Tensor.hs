@@ -46,10 +46,11 @@ instance TwoMonBLatTheory TENS Omega where
 
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
 
-  -- | Disjunction (vee = smooth max):
+  -- \| Disjunction (vee = smooth max):
   --   vee(a, b) = (1/beta) . logaddexp(beta.a, beta.b)
   vee betaT a b =
-    let a' = toDynamic a; b' = toDynamic b
+    let a' = toDynamic a
+        b' = toDynamic b
         pa = a' `Torch.mul` betaT
         pb = b' `Torch.mul` betaT
      in UnsafeMkTensor (F.logaddexp pa pb `Torch.div` betaT)
@@ -63,16 +64,36 @@ instance TwoMonBLatTheory TENS Omega where
   v0 = UnsafeMkTensor (Torch.asTensor [0.0 :: Float])
   v1 = UnsafeMkTensor (Torch.asTensor [1.0 :: Float])
 
-  -- | Negation: -x (additive inverse on R)
+  -- \| Negation: -x (additive inverse on R)
   neg a = UnsafeMkTensor (negate (toDynamic a))
 
 ------------------------------------------------------
--- Guarded Quantifiers with canonical measure (A2MonBLat)
+-- Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
--- A2MonBLatTheory for TENS: not needed here.
--- The quantifier (aggregation over the point dimension) is done
--- in binaryAxiomTens after the formula produces [N,1] truth values.
+-- | TENS quantifier: domain is a batch tensor.
+--   Applies predicate once (PyTorch broadcasts), then reduces.
+instance A2MonBLatTheory (Tensor d dt s) TENS Omega where
+  type Domain (Tensor d dt s) = Torch.Tensor
+
+  -- bigWedge = forall = smooth min = De Morgan of LogSumExp
+  bigWedge betaT batchTensor phi =
+    let result = phi (UnsafeMkTensor batchTensor)
+        n = head (Torch.shape batchTensor)
+        negResult = neg result
+        lse = F.logsumexp (toDynamic negResult `Torch.mul` betaT) 0 False
+        reduced = negate ((lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT)
+     in UnsafeMkTensor (Torch.reshape [1] reduced)
+
+  -- bigVee = exists = LogSumExp
+  bigVee betaT batchTensor phi =
+    let result = phi (UnsafeMkTensor batchTensor)
+        n = head (Torch.shape batchTensor)
+        lse = F.logsumexp (toDynamic result `Torch.mul` betaT) 0 False
+        reduced = (lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT
+     in UnsafeMkTensor (Torch.reshape [1] reduced)
+  bigOplus _ _ = error "bigOplus over TENS not yet supported"
+  bigOtimes _ _ = error "bigOtimes over TENS not yet supported"
 
 ------------------------------------------------------
 -- Internal Helpers

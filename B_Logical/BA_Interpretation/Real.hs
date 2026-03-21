@@ -64,34 +64,32 @@ instance TwoMonBLatTheory DATA Omega where
 -- Per-type quantifier instances for real-valued logic:
 
 instance A2MonBLatTheory Double DATA Omega where
-  bigVee _ _guard phi = sup phi
-  bigWedge _ _guard phi = inf phi
-  bigOplus _guard phi = expectGiry (Uniform 0.0 1.0) phi
-  bigOtimes _guard phi = exp (bigOplus @Double @DATA @Omega _guard (log . phi))
+  type Domain Double = ()  -- continuous: domain is implicit (R)
+  bigVee _ _ phi = sup phi
+  bigWedge _ _ phi = inf phi
+  bigOplus _ phi = expectGiry (Uniform 0.0 1.0) phi
+  bigOtimes _ phi = exp (bigOplus @Double @DATA @Omega () (log . phi))
 
 instance A2MonBLatTheory Bool DATA Omega where
-  bigVee _ _guard phi = sup phi
-  bigWedge _ _guard phi = inf phi
-  bigOplus _guard phi = expectGiry (GFinUniform [True, False]) phi
-  bigOtimes _guard phi = exp (bigOplus @Bool @DATA @Omega _guard (log . phi))
+  type Domain Bool = [Bool]
+  bigVee _ domain phi = sup phi
+  bigWedge _ domain phi = inf phi
+  bigOplus domain phi = expectGiry (GFinUniform domain) phi
+  bigOtimes domain phi = exp (bigOplus @Bool @DATA @Omega domain (log . phi))
 
 instance A2MonBLatTheory Natural DATA Omega where
-  bigVee _ _guard phi = sup phi
-  bigWedge _ _guard phi = inf phi
-  bigOplus _guard phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
-  bigOtimes _guard phi = exp (bigOplus @Natural @DATA @Omega _guard (log . phi))
+  type Domain Natural = ()  -- countable: domain is implicit (N)
+  bigVee _ _ phi = sup phi
+  bigWedge _ _ phi = inf phi
+  bigOplus _ phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
+  bigOtimes _ phi = exp (bigOplus @Natural @DATA @Omega () (log . phi))
 
 instance A2MonBLatTheory () DATA Omega where
-  bigVee _ _guard phi = phi ()
-  bigWedge _ _guard phi = phi ()
-  bigOplus _guard phi = phi ()
-  bigOtimes _guard phi = phi ()
-
-instance (A2MonBLatTheory a DATA Omega, A2MonBLatTheory b DATA Omega) => A2MonBLatTheory (a, b) DATA Omega where
-  bigVee lp _guard phi = bigVee @a @DATA @Omega lp (\_ -> top) (\a -> bigVee @b @DATA @Omega lp (\_ -> top) (\b -> phi (a, b)))
-  bigWedge lp _guard phi = bigWedge @a @DATA @Omega lp (\_ -> top) (\a -> bigWedge @b @DATA @Omega lp (\_ -> top) (\b -> phi (a, b)))
-  bigOplus _guard phi = bigOplus @a @DATA @Omega (\_ -> top) (\a -> bigOplus @b @DATA @Omega (\_ -> top) (\b -> phi (a, b)))
-  bigOtimes _guard phi = exp (bigOplus @(a,b) @DATA @Omega (\_ -> top) (log . phi))
+  type Domain () = [()]
+  bigVee _ domain phi = phi ()
+  bigWedge _ domain phi = phi ()
+  bigOplus domain phi = phi ()
+  bigOtimes domain phi = phi ()
 
 ------------------------------------------------------
 -- General predicates
