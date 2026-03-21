@@ -9,8 +9,7 @@
 --   before the training loop for faster execution.
 module Main where
 
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
-import C_Domain.BA_Interpretation.BinaryReal (setGlobalBinaryMLP)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
@@ -27,7 +26,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 main :: IO ()
 main = do
   -- Train: optimize theta to satisfy the axiom (JIT compiled)
-  (finalModel, trainData, trainLabels, testData, testLabels) <-
+  (paramMLPOpti, trainData, trainLabels, testData, testLabels) <-
     trainBinaryRealJIT 1000 0.001 binaryAxiomTens
 
   return ()
@@ -48,7 +47,7 @@ unpackParams shapes packed = go 0 shapes
 
 -- | JIT Training loop (TensReal).
 --   The axiom takes training data (empirical measure) and the model.
-trainBinaryRealJIT :: Int -> Float -> (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) -> IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
+trainBinaryRealJIT :: Int -> Float -> (Torch.Tensor -> Torch.Tensor -> ParamsMLP -> TENS.Omega) -> IO (ParamsMLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
 trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
   initModel <- return . Torch.toDevice (Device CPU 0) =<< sample binarySpecReal
 
@@ -127,10 +126,9 @@ trainBinaryRealJIT numEpochs learningRate kbSatFormula = do
   let jitTime = realToFrac (diffUTCTime jitEnd jitStart) :: Double
   putStrLn $ printf "[Training complete] Total Time (incl. trace): %5.2fs" jitTime
 
-  let finalModel = replaceParameters initModel finalParams
-  setGlobalBinaryMLP finalModel
+  let paramMLPOpti = replaceParameters initModel finalParams
 
-  return (finalModel, trainData, trainLabels, testData, testLabels)
+  return (paramMLPOpti, trainData, trainLabels, testData, testLabels)
 
 foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
 foldLoop acc [] _ = return acc

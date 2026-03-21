@@ -20,11 +20,12 @@ library
     B_Logical.DA_Realization.ExpectGiry,
     B_Logical.B_Theory.TwoMonBLatTheory,
     B_Logical.B_Theory.A2MonBLatTheory,
-    B_Logical.D_Vocabulary.TensVocab,
-    B_Logical.D_Vocabulary.FdataVocab,
-    B_Logical.A_Category.Tens,
-    C_Domain.A_Category.Data,
-    B_Logical.BA_Interpretation.FDATA,
+    C_Domain.C_TypeSystem.Tens,
+    B_Logical.C_TypeSystem.FData,
+    B_Logical.C_TypeSystem.FTens,
+    
+    C_Domain.C_TypeSystem.Data,
+    
     B_Logical.BA_Interpretation.Tensor,
     B_Logical.BA_Interpretation.TensReal,
     B_Logical.BA_Interpretation.Boolean,
@@ -43,7 +44,7 @@ library
     C_Domain.B_Theory.CrossingTheory,
     C_Domain.B_Theory.CountableTheory,
     C_Domain.B_Theory.WeatherTheory,
-    C_Domain.D_Vocabulary.DataVocab,
+    
     C_Domain.BA_Interpretation.BinaryReal,
     C_Domain.BA_Interpretation.BinaryRealMLP,
 

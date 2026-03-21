@@ -10,7 +10,7 @@ where
 
 import A_Categorical.D_Vocabulary.StarVocab (Giry (..))
 import A_Categorical.DA_Realization.Giry ()
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import Numeric.Tools.Integration (QuadParam (..), defQuad, quadBestEst, quadRes, quadRomberg)
 import Statistics.Distribution (ContDistr (density, quantile), DiscreteDistr (probability), Mean (mean), Variance (stdDev))
 import qualified Statistics.Distribution.Beta as B

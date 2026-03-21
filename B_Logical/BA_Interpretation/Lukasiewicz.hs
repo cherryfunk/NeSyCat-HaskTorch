@@ -4,7 +4,7 @@
 -- | Logical interpretation: \L ukasiewicz Logic ($\Omega = [0,1]$)
 module B_Logical.BA_Interpretation.Lukasiewicz where
 
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import B_Logical.DA_Realization.ExpectGiry (expectGiry)
 import A_Categorical.DA_Realization.Giry (Giry (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)

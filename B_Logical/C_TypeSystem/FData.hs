@@ -1,8 +1,8 @@
 {-# LANGUAGE GADTs #-}
 
-module B_Logical.BA_Interpretation.FDATA where
+module B_Logical.C_TypeSystem.FData where
 
-import C_Domain.A_Category.Data (DATA)
+import C_Domain.C_TypeSystem.Data (DATA)
 
 -- | The category FDATA (cartesian closed extension of DATA)
 -- FDATA = DATA + exponentials (function objects) + monadic objects.

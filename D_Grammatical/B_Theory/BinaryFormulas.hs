@@ -22,16 +22,14 @@ where
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 import Data.Functor.Identity (Identity, runIdentity)
 
 -- | Abstract pointwise predicate for binary classification:
 --     (label(x) -> pred(x)) /\ (not label(x) -> not pred(x))
 --   i.e. "the classifier agrees with the label."
 --
---   Works for any category cat that has:
---     * BinaryKlFun cat            (classifierA, labelA)
---     * TwoMonBLatTheory cat (Omega cat)  (wedge, vee, neg)
---     * Monad (M cat)
+--   ParamsMLP (theta) is external (from Para), curried in.
 binaryPredicate ::
   forall cat.
   ( BinaryKlFun cat,
@@ -39,17 +37,15 @@ binaryPredicate ::
     Monad (M cat)
   ) =>
   ParamsLogic (Omega cat) ->
-  ParamsDomain cat ->
+  ParamsMLP ->
   Point cat ->
   M cat (Omega cat)
-binaryPredicate lp params pt = do
-  pred <- classifierA @cat params pt
+binaryPredicate lp paramMLP pt = do
+  pred <- classifierA @cat paramMLP pt
   let label = labelA @cat pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
 -- | Full sentence: forall x. phi(x) with canonical measure.
---   The quantifier bigWedge comes from A2MonBLatTheory -- its interpretation
---   depends on the category (LogSumExp for TENS, classical forall for DATA).
 binarySentence ::
   forall cat.
   ( BinaryKlFun cat,
@@ -59,14 +55,12 @@ binarySentence ::
   ) =>
   ParamsLogic (Omega cat) ->
   cat (Point cat) ->
-  ParamsDomain cat ->
+  ParamsMLP ->
   Omega cat
-binarySentence lp dom params =
-  bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat lp params pt))
+binarySentence lp dom paramMLP =
+  bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat lp paramMLP pt))
 
 -- | Monadic sentence: forall x. phi(x) when M cat is a proper monad (e.g. Dist).
---   Evaluates the predicate for each point (each may be stochastic),
---   then folds with wedge (conjunction) over all results.
 binarySentenceM ::
   forall cat.
   ( BinaryKlFun cat,
@@ -75,8 +69,8 @@ binarySentenceM ::
   ) =>
   ParamsLogic (Omega cat) ->
   [Point cat] ->
-  ParamsDomain cat ->
+  ParamsMLP ->
   M cat (Omega cat)
-binarySentenceM lp pts params = do
-  omegas <- mapM (binaryPredicate @cat lp params) pts
+binarySentenceM lp pts paramMLP = do
+  omegas <- mapM (binaryPredicate @cat lp paramMLP) pts
   return (foldr (wedge lp) top omegas)

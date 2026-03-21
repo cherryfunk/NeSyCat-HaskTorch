@@ -29,7 +29,7 @@ where
 
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=

@@ -11,7 +11,7 @@ module B_Logical.BA_Interpretation.Real where
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.BA_Interpretation.Supremum (enumAll, inf, sup)
 import B_Logical.DA_Realization.ExpectGiry (expectGiry)
 

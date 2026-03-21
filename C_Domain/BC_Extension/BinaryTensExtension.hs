@@ -1,12 +1,11 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
 
--- | B_Realization: sort assignment (Point, Omega, M, Params) for TENS category.
+-- | B_Realization: sort assignment (Point, Omega, M) for TENS category.
 module C_Domain.BC_Extension.BinaryTensExtension where
 
 import C_Domain.B_Theory.BinaryTheory (BinarySorts (..))
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP)
-import B_Logical.A_Category.Tens (TENS)
+import C_Domain.C_TypeSystem.Tens (TENS)
 import qualified B_Logical.BA_Interpretation.TensReal as TensLogic
 import Data.Functor.Identity (Identity)
 import Torch.Typed.Tensor (Tensor)
@@ -17,4 +16,3 @@ instance BinarySorts TENS where
   type Point  TENS = Tensor '( 'CPU, 0) 'Float '[2]
   type Omega  TENS = TensLogic.Omega  -- = Tensor '(CPU,0) Float '[1]
   type M      TENS = Identity
-  type ParamsDomain TENS = Binary_MLP -- Theta_TENS: neural network weights

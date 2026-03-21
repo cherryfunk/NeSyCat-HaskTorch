@@ -16,45 +16,27 @@
 --     2. BinaryFun TENS -- classifierA + labelA for the TENS category
 --     3. BinaryBridge DATA TENS -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
-  ( setGlobalBinaryMLP,
-    module C_Domain.B_Theory.BinaryTheory,
+  ( module C_Domain.B_Theory.BinaryTheory,
     module C_Domain.BA_Interpretation.BinaryRealMLP,
   )
 where
 
-import B_Logical.D_Vocabulary.TensVocab ()
 import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BC_Extension.BinaryDataExtension ()   -- instance BinarySorts DATA
 import C_Domain.BC_Extension.BinaryTensExtension ()   -- instance BinarySorts TENS
 import A_Categorical.DA_Realization.Dist (Dist (..))
-import C_Domain.A_Category.Data (DATA (..))
-import B_Logical.A_Category.Tens (TENS (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Tens (TENS (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
 import B_Logical.BA_Interpretation.TensReal hiding (Omega, TENS)
 import qualified B_Logical.BA_Interpretation.TensReal as TensLogic
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import Data.Functor.Identity (Identity (..))
-import Data.IORef (IORef, newIORef, readIORef, writeIORef)
-import Data.Kind (Type)
-import System.IO.Unsafe (unsafePerformIO)
-import Torch (Randomizable (..), asTensor)
+import Torch (asTensor)
 import qualified Torch
 import Torch.Device (Device (..), DeviceType (..))
 import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
-
--- ============================================================
---  Global MLP state
--- ============================================================
-
-{-# NOINLINE globalBinaryMLP #-}
-globalBinaryMLP :: IORef Binary_MLP
-globalBinaryMLP = unsafePerformIO $ do
-  m <- sample binarySpecReal
-  newIORef m
-
-setGlobalBinaryMLP :: Binary_MLP -> IO ()
-setGlobalBinaryMLP = writeIORef globalBinaryMLP
 
 -- ============================================================
 --  DATA: plain function symbols (BinaryFun)
@@ -72,12 +54,11 @@ instance BinaryFun DATA where
 -- ============================================================
 
 instance BinaryKlFun DATA where
-  classifierA :: ParamsDomain DATA -> Point DATA -> M DATA (Omega DATA)
-  classifierA _params pt = unsafePerformIO $ do
-    m <- readIORef globalBinaryMLP
+  classifierA :: ParamsMLP -> Point DATA -> M DATA (Omega DATA)
+  classifierA paramMLP pt =
     let ptTens = encPoint @DATA @TENS pt
-        logits = UnsafeMkTensor (hThetaReal m (Torch.reshape [1, 2] (toDynamic ptTens)))
-    return (decOmega @DATA @TENS logits)
+        logits = UnsafeMkTensor (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
+     in decOmega @DATA @TENS logits
 
 -- ============================================================
 --  TENS: plain function symbols (BinaryFun)
@@ -112,9 +93,9 @@ logitScale = 10.0
 -- ============================================================
 
 instance BinaryKlFun TENS where
-  classifierA :: ParamsDomain TENS -> Point TENS -> M TENS (Omega TENS)
-  classifierA m ptTensor = Identity $ do
-    let logits = hThetaReal m (toDynamic ptTensor)
+  classifierA :: ParamsMLP -> Point TENS -> M TENS (Omega TENS)
+  classifierA paramMLP ptTensor = Identity $ do
+    let logits = hThetaReal paramMLP (toDynamic ptTensor)
     UnsafeMkTensor logits
 
 -- ============================================================

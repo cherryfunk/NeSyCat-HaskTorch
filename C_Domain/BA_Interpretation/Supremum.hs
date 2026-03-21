@@ -16,7 +16,7 @@ module C_Domain.BA_Interpretation.Supremum
   )
 where
 
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import Numeric.Natural (Natural)
 
 ------------------------------------------------------

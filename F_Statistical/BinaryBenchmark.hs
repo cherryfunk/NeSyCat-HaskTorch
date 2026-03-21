@@ -13,11 +13,10 @@
 module Main where
 
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
-import C_Domain.BA_Interpretation.BinaryReal (setGlobalBinaryMLP)
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
@@ -52,12 +51,11 @@ main = do
       testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
 
   -- Train in TENS -> theta*
-  finalModel <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
-  setGlobalBinaryMLP finalModel
+  paramMLPOpti <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
-  -- Evaluate via classifierA @DATA
+  -- Evaluate via classifierA @DATA (pass theta* directly, no global state)
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA () pt)
+        where predProb pt = pTrueDist (classifierA @DATA paramMLPOpti pt)
       -- Train + test points
       trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
       testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
@@ -83,8 +81,8 @@ main = do
 trainBinary ::
   Int -> Float -> Float -> Float ->
   Torch.Tensor -> Torch.Tensor ->
-  (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
-  IO Binary_MLP
+  (Torch.Tensor -> Torch.Tensor -> ParamsMLP -> TENS.Omega) ->
+  IO ParamsMLP
 trainBinary numEpochs learningRate lambda betaFixed trainData trainLabels kbSatFormula = do
   initModel <- toDevice (Device CPU 0) <$> sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
@@ -95,7 +93,7 @@ trainBinary numEpochs learningRate lambda betaFixed trainData trainLabels kbSatF
       lambdaTens = Torch.asTensor lambda
 
   startTime <- getCurrentTime
-  (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
+  (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
     let dataLoss = if lambda == 0.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
@@ -115,7 +113,7 @@ trainBinary numEpochs learningRate lambda betaFixed trainData trainLabels kbSatF
   totalEnd <- getCurrentTime
   let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
   putStrLn $ printf "[Training complete] %.2fs" totalDiff
-  return finalModel
+  return paramMLPOpti
 
 foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
 foldLoop acc [] _ = return acc

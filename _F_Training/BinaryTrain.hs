@@ -18,8 +18,7 @@ module Main where
 
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
-import C_Domain.BA_Interpretation.BinaryReal (setGlobalBinaryMLP)
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
@@ -53,7 +52,7 @@ main = do
       testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   -- Train: optimize theta to satisfy the axiom
-  finalModel <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
+  paramMLPOpti <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
   return ()
 
@@ -61,8 +60,8 @@ main = do
 trainBinaryReal ::
   Int -> Float -> Float -> Float ->
   Torch.Tensor -> Torch.Tensor ->
-  (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
-  IO Binary_MLP
+  (Torch.Tensor -> Torch.Tensor -> ParamsMLP -> TENS.Omega) ->
+  IO ParamsMLP
 trainBinaryReal numEpochs learningRate lambda betaFixed trainData trainLabels kbSatFormula = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
@@ -79,7 +78,7 @@ trainBinaryReal numEpochs learningRate lambda betaFixed trainData trainLabels kb
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 
-  (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
+  (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
     let dataLoss = if lambda == 0.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
@@ -103,8 +102,7 @@ trainBinaryReal numEpochs learningRate lambda betaFixed trainData trainLabels kb
   let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
   putStrLn $ printf "[Training complete] Total Time: %5.2fs" totalDiff
 
-  setGlobalBinaryMLP finalModel
-  return finalModel
+  return paramMLPOpti
 
 foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
 foldLoop acc [] _ = return acc

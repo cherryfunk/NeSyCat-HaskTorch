@@ -4,7 +4,7 @@
 -- | Logical interpretation: G\"odel Logic ($\Omega = [0,1]$)
 module B_Logical.BA_Interpretation.Goedel where
 
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.BA_Interpretation.Supremum (inf, sup)
 
 infix 4 .==, ./=, .<, .>, .<=, .>=

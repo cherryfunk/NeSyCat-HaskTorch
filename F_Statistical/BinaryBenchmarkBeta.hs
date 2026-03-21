@@ -6,11 +6,10 @@
 module Main where
 
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
-import C_Domain.BA_Interpretation.BinaryReal (setGlobalBinaryMLP)
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inferential.B_Theory.InferenceTheory (InferenceFun (..))
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
@@ -34,15 +33,13 @@ main = do
   let initBeta = case args of { (x:_) -> read x; _ -> 2.0 :: Float }
 
   -- Train with learnable beta
-  (finalModel, learnedBeta, trainData, _, testData, _) <-
+  (paramMLPOpti, learnedBeta, trainData, _, testData, _) <-
     trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTens
-  setGlobalBinaryMLP finalModel
-
   let learnedBetaVal = Torch.asValue learnedBeta :: Float
 
-  -- Evaluate via classifierA @DATA
+  -- Evaluate via classifierA @DATA (pass theta* directly)
   let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA () pt)
+        where predProb pt = pTrueDist (classifierA @DATA paramMLPOpti pt)
       trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
       testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
       trainPairs = toPairs trainPts
@@ -63,8 +60,8 @@ main = do
 -- | Joint beta + theta training loop.
 trainBinaryBeta ::
   Int -> Float -> Float -> Float ->
-  (Torch.Tensor -> Torch.Tensor -> Binary_MLP -> TENS.Omega) ->
-  IO (Binary_MLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
+  (Torch.Tensor -> Torch.Tensor -> ParamsMLP -> TENS.Omega) ->
+  IO (ParamsMLP, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor)
 trainBinaryBeta numEpochs learningRate initBeta lambda kbSatFormula = do
   initModel <- toDevice (Device CPU 0) <$> sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
@@ -90,7 +87,7 @@ trainBinaryBeta numEpochs learningRate initBeta lambda kbSatFormula = do
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 
-  (finalModel, _, finalBetaInd) <-
+  (paramMLPOpti, _, finalBetaInd) <-
     foldLoop (initModel, initOpt, betaInd) [1 .. numEpochs] $ \(model, opt, bInd) epoch -> do
       let betaVal = toDependent bInd
       let dataLoss = if lambda == 0.0 then zeroTens
@@ -116,7 +113,7 @@ trainBinaryBeta numEpochs learningRate initBeta lambda kbSatFormula = do
   let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
   let learnedBeta = toDependent finalBetaInd
   putStrLn $ printf "[Training complete] %.2fs" totalDiff
-  return (finalModel, learnedBeta, trainData, trainLabels, testData, testLabels)
+  return (paramMLPOpti, learnedBeta, trainData, trainLabels, testData, testLabels)
 
 stepBeta :: IndependentTensor -> Torch.Tensor -> Float -> IO IndependentTensor
 stepBeta betaInd lossTensor lr = do

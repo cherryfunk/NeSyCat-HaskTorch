@@ -2,7 +2,7 @@
 module C_Domain.BA_Interpretation.Weather where
 
 import C_Domain.B_Theory.WeatherTheory (Worlds, WorldsRow (..))
-import C_Domain.A_Category.Data (tableLookup)
+import C_Domain.C_TypeSystem.Data (tableLookup)
 import A_Categorical.DA_Realization.Giry (Giry (..))
 
 ------------------------------------------------------

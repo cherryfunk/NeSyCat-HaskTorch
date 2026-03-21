@@ -21,13 +21,13 @@ module B_Logical.BA_Interpretation.Tensor
   ( module B_Logical.BA_Interpretation.Tensor,
     module B_Logical.B_Theory.A2MonBLatTheory,
     module B_Logical.B_Theory.TwoMonBLatTheory,
-    module B_Logical.A_Category.Tens,
+    module C_Domain.C_TypeSystem.Tens,
   )
 where
 
 import B_Logical.B_Theory.A2MonBLatTheory
 import B_Logical.B_Theory.TwoMonBLatTheory
-import B_Logical.A_Category.Tens (TENS (..))
+import C_Domain.C_TypeSystem.Tens (TENS (..))
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))

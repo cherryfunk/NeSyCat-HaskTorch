@@ -10,8 +10,8 @@
 module Main where
 
 import C_Domain.B_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..))
-import C_Domain.A_Category.Data (DATA (..))
-import B_Logical.A_Category.Tens (TENS (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Tens (TENS (..))
 import C_Domain.BA_Interpretation.MNIST (mnistTable, mnistTableTENS, setGlobalMLP)
 import C_Domain.BA_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import D_Grammatical.B_Theory.MnistFormulas (mnistPredicate, mnistSen)
@@ -70,7 +70,7 @@ trainMNIST numEpochs learningRate = do
 
   startTime <- getCurrentTime
 
-  (finalModel, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
+  (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
     epochStart <- getCurrentTime
     ((newModel, newOpt), batchTimes) <- foldLoop ((model, opt), [] :: [Double]) batches $ \((m, o), times) batch -> do
       bStart <- getCurrentTime
@@ -96,9 +96,9 @@ trainMNIST numEpochs learningRate = do
   let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
   putStrLn $ printf "[Training complete] Total Time: %5.2fs" totalDiff
 
-  setGlobalMLP finalModel
+  setGlobalMLP paramMLPOpti
 
-  return finalModel
+  return paramMLPOpti
 
 -- | Batch loss: operates entirely in TENS, from the pre-joined tensor table.
 batchLoss :: MLP -> (Torch.Tensor, Torch.Tensor, Torch.Tensor, Torch.Tensor) -> Torch.Tensor

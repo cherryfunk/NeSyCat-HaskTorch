@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE StandaloneDeriving #-}
 
-module C_Domain.A_Category.Data where
+module C_Domain.C_TypeSystem.Data where
 
 import Data.Typeable (Typeable)
 import Numeric.Natural (Natural)

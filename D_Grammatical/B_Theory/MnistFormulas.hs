@@ -9,7 +9,7 @@ where
 
 import A_Categorical.DA_Realization.Dist (Dist)
 import B_Logical.BA_Interpretation.Boolean hiding (Omega)
-import C_Domain.A_Category.Data (DATA (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
 import C_Domain.B_Theory.MnistTheory (ImagePairRow (..), MnistTheory (..))
 import C_Domain.BA_Interpretation.MNIST (mnistTable)
 

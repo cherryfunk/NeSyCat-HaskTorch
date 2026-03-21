@@ -6,7 +6,7 @@
 module Main where
 
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
-import C_Domain.BA_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThetaReal)
+import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import D_Grammatical.BA_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import C_Domain.BA_Interpretation.BinaryReal ()
 import E_Inferential.BA_Interpretation.InferenceIntpTens ()
@@ -78,7 +78,7 @@ main = do
   putStrLn $ printf "F1 wins: Fixed=%d  Learnable=%d  Ties=%d" fixWins lrnWins ties
 
 -- Fixed-beta training (silent)
-train :: Int -> Float -> Float -> Bool -> Torch.Tensor -> Torch.Tensor -> IO Binary_MLP
+train :: Int -> Float -> Float -> Bool -> Torch.Tensor -> Torch.Tensor -> IO ParamsMLP
 train epochs lr beta _ trainData trainLabels = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)
@@ -93,7 +93,7 @@ train epochs lr beta _ trainData trainLabels = do
   return m
 
 -- Learnable-beta training (silent)
-trainBeta :: Int -> Float -> Float -> Torch.Tensor -> Torch.Tensor -> IO (Binary_MLP, Float)
+trainBeta :: Int -> Float -> Float -> Torch.Tensor -> Torch.Tensor -> IO (ParamsMLP, Float)
 trainBeta epochs lr initBeta trainData trainLabels = do
   initModel <- return . toDevice (Device CPU 0) =<< sample binarySpecReal
   let initOpt = mkAdam 0 0.9 0.999 (flattenParameters initModel)

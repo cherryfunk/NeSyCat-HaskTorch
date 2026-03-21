@@ -20,10 +20,9 @@ module C_Domain.BA_Interpretation.MNIST
   )
 where
 
-import B_Logical.D_Vocabulary.TensVocab ()
 import C_Domain.B_Theory.MnistTheory (ImagePairRow (..), MnistBridge (..), MnistTheory (..))
-import C_Domain.A_Category.Data (DATA (..))
-import B_Logical.A_Category.Tens (TENS (..))
+import C_Domain.C_TypeSystem.Data (DATA (..))
+import C_Domain.C_TypeSystem.Tens (TENS (..))
 import B_Logical.BA_Interpretation.Tensor hiding (Omega, TENS)
 import C_Domain.BA_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import A_Categorical.DA_Realization.Dist (Dist (..))
