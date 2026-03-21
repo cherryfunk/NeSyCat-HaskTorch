@@ -14,7 +14,7 @@ import B_Logical.D_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 --     3. phi     -- the formula to quantify over
 --   The density is canonical: chosen by the quantifier for each domain type,
 --   not passed as a parameter.
-class (TwoMonBLatTheory tau) => A2MonBLatTheory dom tau | tau -> dom where
+class (TwoMonBLatTheory dom tau) => A2MonBLatTheory dom tau | tau -> dom where
   -- Infinitary Lattice (guarded):
   bigVee    :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
   bigWedge  :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau

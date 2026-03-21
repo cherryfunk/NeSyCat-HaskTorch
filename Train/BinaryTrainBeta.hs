@@ -11,7 +11,6 @@
 --   Beta controls the sharpness of soft logical connectives.
 module Main where
 
-import C_Domain.A_Category.Data (DATA (..))
 import C_Domain.D_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
@@ -19,7 +18,7 @@ import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThe
 import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTens)
 import E_Inference.D_Theory.InferenceTheory (InferenceFun (..))
 import E_Inference.F_Interpretation.InferenceIntpTens ()
-import F_Benchmark.Metrics.Metrics (evaluateMetrics)
+
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import System.Environment (getArgs)
 import Text.Printf (printf)
@@ -42,14 +41,7 @@ main = do
 
   putStrLn $ "Learned beta: " ++ show (Torch.asValue learnedBeta :: Float)
 
-  -- Evaluate: push back via sigmoid
-  evaluateMetrics
-    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
-    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
-
-  -- Inference in DATA category
-  print (classifierA @DATA () (0.5 :: Float, 0.5 :: Float))
-  print (classifierA @DATA () (0.9 :: Float, 0.9 :: Float))
+  return ()
 
 -- | One beta-optimization step via manual SGD on the gradient.
 --   Clamps beta > 0.01 to stay positive.

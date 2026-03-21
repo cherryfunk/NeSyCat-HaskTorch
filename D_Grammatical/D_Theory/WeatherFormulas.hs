@@ -15,18 +15,18 @@ weatherSen1 :: Giry Omega
 weatherSen1 = do
   h <- bernoulli (humidDetect data1)
   t <- normalDist (tempPredict data1)
-  return (h .== 1 `wedge` t .> 30.0)
+  return (wedge () (h .== 1) (t .> 30.0))
 
 -- | Weather scenario 2: "it is humid AND warm (t > 25)"
 weatherSen2 :: Giry Omega
 weatherSen2 = do
   h <- bernoulli (humidDetect data1)
   t <- normalDist (tempPredict data1)
-  return (h .== 1 `wedge` t .> 25.0)
+  return (wedge () (h .== 1) (t .> 25.0))
 
 -- | Weather scenario 3: "it is humid AND average (t > 0)"
 weatherSen3 :: Giry Omega
 weatherSen3 = do
   h <- bernoulli (humidDetect data3)
   t <- normalDist (tempPredict data3)
-  return (h .== 1 `wedge` t .> 0.0)
+  return (wedge () (h .== 1) (t .> 0.0))

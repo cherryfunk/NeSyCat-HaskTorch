@@ -63,6 +63,7 @@ library
     D_Grammatical.D_Theory.CountableFormulas,
     D_Grammatical.D_Theory.MnistFormulas,
     D_Grammatical.F_Interpretation.BinaryIntpTens,
+    D_Grammatical.F_Interpretation.BinaryIntpData,
 
     E_Inference.A_Category.Diff,
     E_Inference.B_Vocabulary.InferenceVocabTens,
@@ -70,7 +71,10 @@ library
     E_Inference.D_Theory.InferenceTheory,
     E_Inference.F_Interpretation.InferenceIntpTens,
     MNIST_Loader,
-    F_Benchmark.Metrics.Metrics
+    F_Benchmark.B_Vocabulary.BenchmarkVocab,
+    F_Benchmark.C_Inhabitation.BenchmarkInhabData,
+    F_Benchmark.D_Theory.BenchmarkTheory,
+    F_Benchmark.F_Interpretation.BenchmarkIntpData
   hs-source-dirs: ., C_Domain/F_Interpretation/data/mnist
   build-depends:
     base >=4.16,
@@ -86,6 +90,19 @@ library
 executable mnist-test
   main-is: MnistTrain.hs
   hs-source-dirs: Train
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
+executable binary-benchmark
+  main-is: BinaryBenchmark.hs
+  hs-source-dirs: F_Benchmark
+  ghc-options: -rtsopts
   build-depends:
     base,
     nesycat-hasktorch,

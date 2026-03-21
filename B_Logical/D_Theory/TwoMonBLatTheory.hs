@@ -1,3 +1,6 @@
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DefaultSignatures #-}
 
@@ -6,7 +9,10 @@ module B_Logical.D_Theory.TwoMonBLatTheory where
 import Data.Kind (Type)
 
 -- | Theory of a double monoid bounded lattice (2Mon-BLat), still without axioms.
-class TwoMonBLatTheory tau where
+--   Parameterized by the category (dom) and truth value type (tau).
+--   The functional dependency tau -> dom ensures each truth type
+--   is interpreted in exactly one category.
+class TwoMonBLatTheory (dom :: Type -> Type) tau | tau -> dom where
   -- | Logic parameters (Para morphism parameter space).
   --   Default: () (no parameters, e.g. classical real-valued logic).
   type ParamsLogic tau :: Type

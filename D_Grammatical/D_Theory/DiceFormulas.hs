@@ -15,11 +15,11 @@ import C_Domain.F_Interpretation.Dice
 dieSen1 :: Dist Omega
 dieSen1 = do
   x <- die
-  return (x .== 6 `wedge` b2o (even x))
+  return (wedge () (x .== 6) (b2o (even x)))
 
 -- | "The die shows 6" AND "the die is even" (independent draws)
 dieSen2 :: Dist Omega
 dieSen2 = do
   p <- do x <- die; return (x .== 6)
   q <- do x <- die; return (b2o (even x))
-  return (p `wedge` q)
+  return (wedge () p q)

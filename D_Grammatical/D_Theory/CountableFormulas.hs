@@ -18,7 +18,7 @@ countableSen1 :: Giry Omega
 countableSen1 = do
   x <- drawInt
   y <- drawStr
-  return (x .> 3 `wedge` b2o (isPrefixOf "TT" y))
+  return (wedge () (x .> 3) (b2o (isPrefixOf "TT" y)))
 
 -- | Lazy distribution: "x is even"
 countableSenLazy :: Giry Omega

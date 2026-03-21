@@ -15,6 +15,7 @@
 module D_Grammatical.D_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
+    binarySentenceM,
   )
 where
 
@@ -29,12 +30,12 @@ import Data.Functor.Identity (Identity, runIdentity)
 --
 --   Works for any category cat that has:
 --     * BinaryKlFun cat            (classifierA, labelA)
---     * TwoMonBLatTheory (Omega cat)  (wedge, vee, neg)
+--     * TwoMonBLatTheory cat (Omega cat)  (wedge, vee, neg)
 --     * Monad (M cat)
 binaryPredicate ::
   forall cat.
   ( BinaryKlFun cat,
-    TwoMonBLatTheory (Omega cat),
+    TwoMonBLatTheory cat (Omega cat),
     Monad (M cat)
   ) =>
   ParamsLogic (Omega cat) ->
@@ -52,7 +53,7 @@ binaryPredicate lp params pt = do
 binarySentence ::
   forall cat.
   ( BinaryKlFun cat,
-    TwoMonBLatTheory (Omega cat),
+    TwoMonBLatTheory cat (Omega cat),
     A2MonBLatTheory cat (Omega cat),
     M cat ~ Identity
   ) =>
@@ -62,3 +63,20 @@ binarySentence ::
   Omega cat
 binarySentence lp dom params =
   bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat lp params pt))
+
+-- | Monadic sentence: forall x. phi(x) when M cat is a proper monad (e.g. Dist).
+--   Evaluates the predicate for each point (each may be stochastic),
+--   then folds with wedge (conjunction) over all results.
+binarySentenceM ::
+  forall cat.
+  ( BinaryKlFun cat,
+    TwoMonBLatTheory cat (Omega cat),
+    Monad (M cat)
+  ) =>
+  ParamsLogic (Omega cat) ->
+  [Point cat] ->
+  ParamsDomain cat ->
+  M cat (Omega cat)
+binarySentenceM lp pts params = do
+  omegas <- mapM (binaryPredicate @cat lp params) pts
+  return (foldr (wedge lp) top omegas)

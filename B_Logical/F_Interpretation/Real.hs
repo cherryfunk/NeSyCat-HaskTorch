@@ -20,7 +20,7 @@ infix 4 .==, ./=, .<, .>, .<=, .>=
 -- | \$\Omega := \mathcal{I}(\tau) = \mathbb{R}$ (approximated by IEEE 754 Double)
 type Omega = Double
 
-instance TwoMonBLatTheory Omega where
+instance TwoMonBLatTheory DATA Omega where
   type ParamsLogic Omega = ()
 
   -- \| \$\mathcal{I}(\vdash)$ : Comparison

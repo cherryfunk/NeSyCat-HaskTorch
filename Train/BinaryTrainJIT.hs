@@ -13,7 +13,6 @@ import C_Domain.F_Interpretation.BinaryRealMLP (Binary_MLP, binarySpecReal, hThe
 import C_Domain.F_Interpretation.BinaryReal (setGlobalBinaryMLP)
 import qualified B_Logical.F_Interpretation.Tensor as TENS
 import D_Grammatical.F_Interpretation.BinaryIntpTens (binaryAxiomTens)
-import F_Benchmark.Metrics.Metrics (evaluateMetrics)
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..), replaceParameters, sample)
@@ -31,10 +30,7 @@ main = do
   (finalModel, trainData, trainLabels, testData, testLabels) <-
     trainBinaryRealJIT 1000 0.001 binaryAxiomTens
 
-  -- Evaluate: push back via sigmoid
-  evaluateMetrics
-    (Torch.sigmoid (hThetaReal finalModel trainData)) trainLabels
-    (Torch.sigmoid (hThetaReal finalModel testData)) testLabels
+  return ()
 
 -- | Generic param packing: works for ANY Parameterized model.
 packParams :: [Torch.Tensor] -> Torch.Tensor

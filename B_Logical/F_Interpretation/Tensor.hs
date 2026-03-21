@@ -41,7 +41,7 @@ type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 --  TwoMonBLat: Binary Logical Operations on Omega (R-valued)
 -- ============================================================
 
-instance TwoMonBLatTheory Omega where
+instance TwoMonBLatTheory TENS Omega where
   type ParamsLogic Omega = Torch.Tensor
 
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)

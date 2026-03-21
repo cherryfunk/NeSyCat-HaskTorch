@@ -14,4 +14,4 @@ crossingSen :: Dist Omega
 crossingSen = do
   l <- lightDetector
   d <- drivingDecision l
-  return (neg (d .== 1) `vee` l .== "Green")
+  return (vee () (neg (d .== 1)) (l .== "Green"))
