@@ -14,16 +14,13 @@
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
-    binarySentenceTens,
     bigWedgeKl,
   )
 where
 
-import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
-import Data.Functor.Identity (Identity, runIdentity)
 
 -- | Kleisli-lifted universal quantifier.
 --   Decomposes as: I(bigWedge)^M . com . Lambda(phi)
@@ -76,18 +73,5 @@ binarySentence ::
 binarySentence lp pts paramMLP =
   bigWedgeKl lp pts (binaryPredicate @cat @m lp paramMLP)
 
--- | TENS-specific sentence using the pure vectorized bigWedge.
---   For the geometry paradigm where m = Identity and the quantifier
---   operates on TensorBatch via batched LogSumExp (not point-by-point).
-binarySentenceTens ::
-  forall cat.
-  ( BinaryKlFun cat Identity,
-    TwoMonBLatTheory cat (Omega cat),
-    A2MonBLatTheory cat (Omega cat)
-  ) =>
-  ParamsLogic (Omega cat) ->
-  cat (Point cat) ->
-  ParamsMLP ->
-  Omega cat
-binarySentenceTens lp dom paramMLP =
-  bigWedge lp dom (\_ -> top) (\pt -> runIdentity (binaryPredicate @cat @Identity lp paramMLP pt))
+-- TODO: binarySentenceTens removed during GADT refactor.
+-- The TENS training pipeline uses TensReal functions directly.

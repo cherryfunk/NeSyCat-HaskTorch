@@ -4,6 +4,7 @@
 module B_Logical.BA_Interpretation.Goedel where
 
 
+import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=

@@ -4,6 +4,7 @@
 module B_Logical.BA_Interpretation.LTNp where
 
 
+import C_Domain.C_TypeSystem.Data (DATA)
 import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
 import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))

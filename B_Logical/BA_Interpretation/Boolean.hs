@@ -12,9 +12,6 @@ module B_Logical.BA_Interpretation.Boolean
     -- * Re-exported typeclass interface
     module B_Logical.B_Theory.TwoMonBLatTheory,
     module B_Logical.B_Theory.A2MonBLatTheory,
-    -- * Monadic quantifier helpers
-    bigWedgeM,
-    bigVeeM,
     -- * Comparison predicates
     (.==),
     (./=),
@@ -26,6 +23,7 @@ module B_Logical.BA_Interpretation.Boolean
   )
 where
 
+import C_Domain.C_TypeSystem.Data (DATA)
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 
@@ -58,27 +56,19 @@ instance TwoMonBLatTheory DATA Bool where
 -- A2MonBLatTheory instance: quantifiers over DATA domains
 ------------------------------------------------------
 
-instance A2MonBLatTheory DATA Bool where
-  bigVee _ d _guard phi = any phi (enumAll)
-  bigWedge _ d _guard phi = all phi (enumAll)
-  bigOplus d _guard phi = any phi (enumAll)
-  bigOtimes d _guard phi = all phi (enumAll)
+-- | Boolean quantifiers for Bool: enumerate {True, False}
+instance A2MonBLatTheory Bool DATA Bool where
+  bigVee _ _guard phi = any phi [True, False]
+  bigWedge _ _guard phi = all phi [True, False]
+  bigOplus _guard phi = any phi [True, False]
+  bigOtimes _guard phi = all phi [True, False]
 
-------------------------------------------------------
--- Monadic quantifier helpers
-------------------------------------------------------
-
--- | Monadic lift: $\bigwedge$ for predicates returning in a monad
-bigWedgeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
-bigWedgeM d phi = do
-  omegas <- mapM phi (enumAll)
-  return (and omegas)
-
--- | Monadic lift: $\bigvee$ for predicates returning in a monad
-bigVeeM :: (Monad m) => DATA a -> (a -> m Omega) -> m Omega
-bigVeeM d phi = do
-  omegas <- mapM phi (enumAll)
-  return (or omegas)
+-- | Boolean quantifiers for (): trivial
+instance A2MonBLatTheory () DATA Bool where
+  bigVee _ _guard phi = phi ()
+  bigWedge _ _guard phi = phi ()
+  bigOplus _guard phi = phi ()
+  bigOtimes _guard phi = phi ()
 
 ------------------------------------------------------
 -- Comparison predicates

@@ -1,17 +1,23 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 -- | Logical interpretation: Real-valued Logic ($\Omega = \mathbb{R}$)
 module B_Logical.BA_Interpretation.Real where
 
+import C_Domain.C_TypeSystem.Data (DATA)
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
+import Numeric.Natural (Natural)
 
-import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..), EnumAll (..))
+import C_Domain.BA_Interpretation.Supremum (HasSup (..), HasInf (..))
 import B_Logical.DA_Realization.ExpectGiry (HasExpectGiry (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
@@ -55,25 +61,37 @@ instance TwoMonBLatTheory DATA Omega where
 -- Quantifiers ($Q_a :: (a \to \Omega) \to \Omega$)
 ------------------------------------------------------
 
-instance A2MonBLatTheory DATA Omega where
-  -- \| \$\mathcal{I}(\bigvee)$ : Supremum
-  bigVee _ d _guard = sup
+-- Per-type quantifier instances for real-valued logic:
 
-  -- \| \$\mathcal{I}(\bigwedge)$ : Infimum
-  bigWedge _ d _guard = inf
+instance A2MonBLatTheory Double DATA Omega where
+  bigVee _ _guard phi = sup phi
+  bigWedge _ _guard phi = inf phi
+  bigOplus _guard phi = expectGiry (Uniform 0.0 1.0) phi
+  bigOtimes _guard phi = exp (bigOplus @Double @DATA @Omega _guard (log . phi))
 
-  -- \| \$\mathcal{I}(\bigoplus)$ : Infinitary Sum = $\mathbb{E}_\mu[\varphi]$ (integral w.r.t.\ canonical measure)
-  --   Each quantifier chooses its density per domain type (uniform for finite, etc.)
-  bigOplus Reals _guard phi = expectGiry (Uniform 0.0 1.0) phi
-  bigOplus (Finite xs) _guard phi = expectGiry (GFinUniform xs) phi
-  bigOplus Booleans _guard phi = expectGiry (GFinUniform [True, False]) phi
-  bigOplus (Prod d1 d2) _guard phi =
-    bigOplus d1 (\_ -> top) (\a -> bigOplus d2 (\_ -> top) (\b -> phi (a, b)))
-  bigOplus Naturals _guard phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
-  bigOplus d _ _ = error $ "bigOplus: no density chosen for this domain"
+instance A2MonBLatTheory Bool DATA Omega where
+  bigVee _ _guard phi = sup phi
+  bigWedge _ _guard phi = inf phi
+  bigOplus _guard phi = expectGiry (GFinUniform [True, False]) phi
+  bigOtimes _guard phi = exp (bigOplus @Bool @DATA @Omega _guard (log . phi))
 
-  -- \| \$\mathcal{I}(\bigotimes)$ : Infinitary Product = $\exp(\mathbb{E}_\mu[\log \circ \varphi])$ (product integral)
-  bigOtimes obj _guard phi = exp (bigOplus obj _guard (log . phi))
+instance A2MonBLatTheory Natural DATA Omega where
+  bigVee _ _guard phi = sup phi
+  bigWedge _ _guard phi = inf phi
+  bigOplus _guard phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
+  bigOtimes _guard phi = exp (bigOplus @Natural @DATA @Omega _guard (log . phi))
+
+instance A2MonBLatTheory () DATA Omega where
+  bigVee _ _guard phi = phi ()
+  bigWedge _ _guard phi = phi ()
+  bigOplus _guard phi = phi ()
+  bigOtimes _guard phi = phi ()
+
+instance (A2MonBLatTheory a DATA Omega, A2MonBLatTheory b DATA Omega) => A2MonBLatTheory (a, b) DATA Omega where
+  bigVee lp _guard phi = bigVee @a @DATA @Omega lp (\_ -> top) (\a -> bigVee @b @DATA @Omega lp (\_ -> top) (\b -> phi (a, b)))
+  bigWedge lp _guard phi = bigWedge @a @DATA @Omega lp (\_ -> top) (\a -> bigWedge @b @DATA @Omega lp (\_ -> top) (\b -> phi (a, b)))
+  bigOplus _guard phi = bigOplus @a @DATA @Omega (\_ -> top) (\a -> bigOplus @b @DATA @Omega (\_ -> top) (\b -> phi (a, b)))
+  bigOtimes _guard phi = exp (bigOplus @(a,b) @DATA @Omega (\_ -> top) (log . phi))
 
 ------------------------------------------------------
 -- General predicates

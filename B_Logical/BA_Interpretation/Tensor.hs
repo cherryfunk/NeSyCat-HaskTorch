@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -69,30 +70,10 @@ instance TwoMonBLatTheory TENS Omega where
 -- Guarded Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
-instance A2MonBLatTheory TENS Omega where
-  -- | Guarded forall: De Morgan dual of exists.
-  --   forall_{x|g} phi(x) = -exists_{x|g} (-phi(x))
-  bigWedge betaT dom guard phi = neg (bigVee betaT dom guard (neg . phi))
-
-  -- | Guarded exists (LogSumExp aggregation):
-  --   exists_{x|g} phi  =  (1/beta) . logsumexp(beta.phi + log(g)) - log(Sigma g)
-  --   The domain object carries the concrete batch (TensorBatch).
-  bigVee betaT (TensorBatch batch) guard phi =
-    let batchPt = UnsafeMkTensor batch
-        evals  = toDynamic (phi batchPt)
-        guards = toDynamic (guard batchPt)
-        logG   = logSigmoid guards
-        pphi   = (evals `Torch.mul` betaT) `Torch.add` logG
-        lse    = F.logsumexp pphi 0 False
-        sG     = Torch.sumAll (Torch.sigmoid guards)
-        res    = (lse `Torch.sub` Torch.log sG) `Torch.div` betaT
-     in UnsafeMkTensor (Torch.reshape [1] res)
-  bigVee _ TensorSpace _ _ = error "bigVee on abstract TensorSpace requires TensorBatch"
-  bigVee _ TensProd {} _ _ = error "bigVee over TensProd not yet supported"
-  bigVee _ TensUnit _ phi = phi ()
-
-  bigOplus = error "bigOplus over TENS not yet supported"
-  bigOtimes = error "bigOtimes over TENS not yet supported"
+-- TODO: A2MonBLatTheory instance for TENS removed during GADT refactor.
+-- The TENS training pipeline handles quantification (LogSumExp aggregation)
+-- directly in the training loop, not via the quantifier theory.
+-- This will be redesigned when batching is properly integrated.
 
 ------------------------------------------------------
 -- Internal Helpers

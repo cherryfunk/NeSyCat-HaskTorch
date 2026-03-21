@@ -1,24 +1,18 @@
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RankNTypes #-}
 
 module B_Logical.B_Theory.A2MonBLatTheory where
 
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
---   Extends 2Mon-BLat with four infinitary guarded quantifiers.
---   Each quantifier takes:
---     1. dom a   -- the domain (object of the category)
---     2. guard   -- subobject classifier (conditioning predicate)
---     3. phi     -- the formula to quantify over
---   The density is canonical: chosen by the quantifier for each domain type,
---   not passed as a parameter.
-class (TwoMonBLatTheory dom tau) => A2MonBLatTheory dom tau | tau -> dom where
-  -- Infinitary Lattice (guarded):
-  bigVee    :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
-  bigWedge  :: forall a. ParamsLogic tau -> dom a -> (a -> tau) -> (a -> tau) -> tau
-
-  -- Infinitary Monoids (guarded):
-  bigOplus  :: forall a. dom a -> (a -> tau) -> (a -> tau) -> tau
-  bigOtimes :: forall a. dom a -> (a -> tau) -> (a -> tau) -> tau
+--   Parameterized by (a, dom, tau):
+--     a   = what you quantify over (per-type dispatch, no dom a parameter)
+--     dom = category tag (DATA, TENS)
+--     tau = truth value type
+class (TwoMonBLatTheory dom tau) => A2MonBLatTheory a dom tau where
+  bigVee    :: ParamsLogic tau -> (a -> tau) -> (a -> tau) -> tau
+  bigWedge  :: ParamsLogic tau -> (a -> tau) -> (a -> tau) -> tau
+  bigOplus  :: (a -> tau) -> (a -> tau) -> tau
+  bigOtimes :: (a -> tau) -> (a -> tau) -> tau
