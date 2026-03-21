@@ -111,6 +111,19 @@ executable binary-benchmark
     time
   default-language: Haskell2010
 
+executable binary-benchmark-beta
+  main-is: BinaryBenchmarkBeta.hs
+  hs-source-dirs: F_Statistical
+  ghc-options: -rtsopts
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
 executable binary-test-real
   main-is: BinaryTrain.hs
   hs-source-dirs: _F_Training
