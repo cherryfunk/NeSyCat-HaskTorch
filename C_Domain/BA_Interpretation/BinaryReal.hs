@@ -21,14 +21,16 @@ module C_Domain.BA_Interpretation.BinaryReal
 where
 
 import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom, FrmwkMeas)
-import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
-import C_Domain.BC_Extension.BinaryDataExtension ()   -- instance BinarySorts FrmwkMeas
-import C_Domain.BC_Extension.BinaryTensExtension ()   -- instance BinarySorts FrmwkGeom
+-- instance BinarySorts FrmwkMeas
+-- instance BinarySorts FrmwkGeom
 import A_Categorical.DA_Realization.Dist (Dist (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
 import B_Logical.BA_Interpretation.Tensor hiding (Omega)
 import qualified B_Logical.BA_Interpretation.Tensor as TensLogic
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
+import C_Domain.BC_Extension.BinaryDataExtension ()
+import C_Domain.BC_Extension.BinaryTensExtension ()
+import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import Data.Functor.Identity (Identity (..))
 import Torch (asTensor)
 import qualified Torch
@@ -55,7 +57,9 @@ instance BinaryKlFun FrmwkMeas where
   classifierA :: ParamsMLP -> Point FrmwkMeas -> Dist (Omega FrmwkMeas)
   classifierA paramMLP pt =
     let ptTens = encPoint @FrmwkMeas @FrmwkGeom pt
-        logits = UnsafeMkTensor (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
+        logits =
+          UnsafeMkTensor
+            (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
      in decOmega @FrmwkMeas @FrmwkGeom logits
 
 -- ============================================================
@@ -63,7 +67,7 @@ instance BinaryKlFun FrmwkMeas where
 -- ============================================================
 
 instance BinaryFun FrmwkGeom where
-  -- | Label in FrmwkGeom: returns R logits (True = +logitScale, False = -logitScale).
+  -- \| Label in FrmwkGeom: returns R logits (True = +logitScale, False = -logitScale).
   labelA :: Point FrmwkGeom -> Omega FrmwkGeom
   labelA ptTensor =
     let pt = toDynamic ptTensor
@@ -96,10 +100,12 @@ instance BinaryKlFun FrmwkGeom where
 
 instance BinaryBridge FrmwkMeas FrmwkGeom where
   encPoint :: Point FrmwkMeas -> Point FrmwkGeom
-  encPoint (x1, x2) = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
+  encPoint (x1, x2) =
+    UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 
   decOmega :: Omega FrmwkGeom -> Dist (Omega FrmwkMeas)
   decOmega probs =
-    let val = Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
+    let val =
+          Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
         p = realToFrac (head (head val)) :: Double
      in FiniteSupp [(True, p), (False, 1.0 - p)]

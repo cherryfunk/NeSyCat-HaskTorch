@@ -15,5 +15,5 @@ import C_Domain.BA_Interpretation.BinaryReal ()
 import D_Grammatical.B_Theory.BinaryFormulas (binarySentence)
 
 -- | Binary axiom in FrmwkMeas (DATA + Dist).
-binaryAxiomData :: [Point FrmwkMeas] -> ParamsMLP -> Mon FrmwkMeas (Omega FrmwkMeas)
+binaryAxiomData :: [Point FrmwkMeas] -> ParamsMLP -> M FrmwkMeas (Omega FrmwkMeas)
 binaryAxiomData domain paramMLP = binarySentence @FrmwkMeas () domain paramMLP

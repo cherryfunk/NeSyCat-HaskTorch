@@ -15,10 +15,10 @@ import Data.Kind (Constraint, Type)
 --   the entire interpretation pipeline.
 --
 --   Cat frmwk : Type -> Constraint  (which types are objects)
---   Mon frmwk : Type -> Type        (the Kleisli monad)
+--   M frmwk   : Type -> Type        (the Kleisli monad)
 class Framework frmwk where
   type Cat frmwk :: Type -> Constraint
-  type Mon frmwk :: Type -> Type
+  type M frmwk :: Type -> Type
 
 -- | Higher-Order Categorical Theory Sum_alpha
 --

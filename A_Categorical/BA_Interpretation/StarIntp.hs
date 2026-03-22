@@ -28,11 +28,11 @@ data FrmwkMeas
 
 instance Framework FrmwkGeom where
   type Cat FrmwkGeom = DataObj  -- TODO: TensObj when ready
-  type Mon FrmwkGeom = Identity
+  type M FrmwkGeom = Identity
 
 instance Framework FrmwkMeas where
   type Cat FrmwkMeas = DataObj
-  type Mon FrmwkMeas = StarVocab.Dist
+  type M FrmwkMeas = StarVocab.Dist
 
 -- | The three semantic frameworks (legacy StarTheory interface):
 --     Set theory:     (Identity, DataObj)

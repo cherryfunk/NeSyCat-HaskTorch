@@ -60,7 +60,7 @@ instance TwoMonBLatTheory FrmwkMeas Bool where
 
 -- | Boolean quantifiers for Bool (FrmwkMeas: Mon = Dist)
 instance A2MonBLatTheory Bool FrmwkMeas Bool where
-  type Domain Bool = [Bool]
+  type Dom Bool = [Bool]
   bigWedge _ domain phi = do
     omegas <- mapM phi domain
     return (and omegas)
@@ -72,7 +72,7 @@ instance A2MonBLatTheory Bool FrmwkMeas Bool where
 
 -- | Boolean quantifiers for (Float, Float) -- training points
 instance A2MonBLatTheory (Float, Float) FrmwkMeas Bool where
-  type Domain (Float, Float) = [(Float, Float)]
+  type Dom (Float, Float) = [(Float, Float)]
   bigWedge _ domain phi = do
     omegas <- mapM phi domain
     return (and omegas)

@@ -26,12 +26,12 @@ binaryPredicate ::
   forall frmwk.
   ( BinaryKlFun frmwk,
     TwoMonBLatTheory frmwk (Omega frmwk),
-    Monad (Mon frmwk)
+    Monad (M frmwk)
   ) =>
   ParamsLogic (Omega frmwk) ->
   ParamsMLP ->
   Point frmwk ->
-  Mon frmwk (Omega frmwk)
+  M frmwk (Omega frmwk)
 binaryPredicate lp paramMLP pt = do
   pred <- classifierA @frmwk paramMLP pt
   let label = labelA @frmwk pt
@@ -45,13 +45,13 @@ binarySentence ::
   ( BinaryKlFun frmwk,
     TwoMonBLatTheory frmwk (Omega frmwk),
     A2MonBLatTheory a frmwk (Omega frmwk),
-    Monad (Mon frmwk),
+    Monad (M frmwk),
     a ~ Point frmwk
   ) =>
   ParamsLogic (Omega frmwk) ->
-  Domain a ->
+  Dom a ->
   ParamsMLP ->
-  Mon frmwk (Omega frmwk)
+  M frmwk (Omega frmwk)
 binarySentence lp domain paramMLP =
   bigWedge @a @frmwk @(Omega frmwk) lp domain
     (binaryPredicate @frmwk lp paramMLP)

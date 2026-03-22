@@ -72,7 +72,7 @@ instance TwoMonBLatTheory FrmwkGeom Omega where
 -- | FrmwkGeom quantifier: domain is a batch tensor.
 --   Applies predicate once (PyTorch broadcasts), then reduces.
 instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
-  type Domain (Tensor d dt s) = Torch.Tensor
+  type Dom (Tensor d dt s) = Torch.Tensor
 
   -- bigWedge = forall = smooth min = De Morgan of LogSumExp
   bigWedge betaT batchTensor phi =

@@ -13,9 +13,9 @@ import Data.Kind (Type)
 --
 -- Sorts  = {Point, Omega}
 -- Fun    = {labelA : Point -> Omega}
--- KlFun  = {classifierA : Theta -> Point -> Mon(Omega)}
+-- KlFun  = {classifierA : Theta -> Point -> M(Omega)}
 --
--- The monad comes from the framework (Mon frmwk).
+-- The monad comes from the framework (M frmwk).
 -- The parameter Theta (= ParamsMLP) is external (from Para), curried in.
 
 -- | BinarySorts: assigns sort names to concrete Haskell types.
@@ -27,13 +27,13 @@ class (Framework frmwk) => BinarySorts frmwk where
 class (BinarySorts frmwk) => BinaryFun frmwk where
   labelA :: Point frmwk -> Omega frmwk
 
--- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(Mon frmwk)).
+-- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(M frmwk)).
 --   The monad comes from the framework -- no separate m parameter.
-class (BinaryFun frmwk, Monad (Mon frmwk)) => BinaryKlFun frmwk where
-  classifierA :: ParamsMLP -> Point frmwk -> Mon frmwk (Omega frmwk)
+class (BinaryFun frmwk, Monad (M frmwk)) => BinaryKlFun frmwk where
+  classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)
 
 -- | Bridge for encoding/decoding between two framework interpretations.
---   The monad for decoding is the source framework's monad (Mon from).
+--   The monad for decoding is the source framework's monad (M from).
 class (BinarySorts from, BinarySorts to) => BinaryBridge from to where
   encPoint :: Point from -> Point to
-  decOmega :: Omega to -> Mon from (Omega from)
+  decOmega :: Omega to -> M from (Omega from)
