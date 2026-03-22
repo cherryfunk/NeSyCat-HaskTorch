@@ -19,5 +19,4 @@ import qualified Torch
 -- | Binary axiom in TENS + Identity.
 --   Uses binarySentence with bigWedge from the theory.
 binaryAxiomTens :: Torch.Tensor -> Torch.Tensor -> ParamsMLP -> Omega TENS
-binaryAxiomTens betaT dataTensor paramMLP =
-  binarySentence @TENS @(Point TENS) betaT dataTensor paramMLP
+binaryAxiomTens = binarySentence @TENS
