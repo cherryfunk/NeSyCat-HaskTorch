@@ -52,7 +52,7 @@ main = do
       testLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 labels))
 
   -- Train: optimize theta to satisfy the axiom
-  paramMLPOpti <- trainBinaryReal 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
+  paramMLPOpti <- trainBinaryReal 1000 0.001 1.0 beta trainData trainLabels binaryAxiomTens
 
   return ()
 
@@ -79,10 +79,10 @@ trainBinaryReal numEpochs learningRate lambda betaFixed trainData trainLabels kb
       lambdaTens = Torch.asTensor lambda
 
   (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
-    let dataLoss = if lambda == 0.0 then zeroTens
+    let dataLoss = if lambda == 1.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
-    let knowLoss = if lambda == 1.0 then zeroTens
+    let knowLoss = if lambda == 0.0 then zeroTens
                    else lossKnow (toDynamic (kbSatFormula betaT trainData model))
     let totalLoss = lossComb dataLoss knowLoss lambdaTens
     (newModel, newOpt) <- runStep model opt totalLoss lrTens

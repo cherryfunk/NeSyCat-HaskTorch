@@ -29,8 +29,9 @@ instance InferenceVocab Torch.Tensor where
         y1Log1P = (Torch.onesLike y `Torch.sub` y) `Torch.mul` log1P
      in negate (yLogP `Torch.add` y1Log1P)
 
-  -- \| convex(J_data, J_know, lambda) = lambda * J_data + (1-lambda) * J_know
+  -- \| convex(J_data, J_know, lambda) = (1-lambda) * J_data + lambda * J_know
+  --   lambda=0: pure data; lambda=1: pure axiom
   convex :: Torch.Tensor -> Torch.Tensor -> Torch.Tensor -> Torch.Tensor
   convex dataLoss knowLoss lambda =
     let oneMinusLambda = Torch.onesLike lambda `Torch.sub` lambda
-     in (lambda `Torch.mul` dataLoss) `Torch.add` (oneMinusLambda `Torch.mul` knowLoss)
+     in (oneMinusLambda `Torch.mul` dataLoss) `Torch.add` (lambda `Torch.mul` knowLoss)

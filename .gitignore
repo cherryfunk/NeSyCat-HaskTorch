@@ -5,4 +5,5 @@ others/
 *.o
 *.dyn_hi
 *.dyn_o
-.claude
+.claude_LTNtorch/
+_LTNtorch/

@@ -34,7 +34,7 @@ main = do
 
   -- Train with learnable beta
   (paramMLPOpti, learnedBeta, trainData, _, testData, _) <-
-    trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTens
+    trainBinaryBeta 1000 0.001 initBeta 1.0 binaryAxiomTens
   let learnedBetaVal = Torch.asValue learnedBeta :: Float
 
   -- Evaluate via classifierA @FrmwkMeas (pass theta* directly)
@@ -90,14 +90,14 @@ trainBinaryBeta numEpochs learningRate initBeta lambda kbSatFormula = do
   (paramMLPOpti, _, finalBetaInd) <-
     foldLoop (initModel, initOpt, betaInd) [1 .. numEpochs] $ \(model, opt, bInd) epoch -> do
       let betaVal = toDependent bInd
-      let dataLoss = if lambda == 0.0 then zeroTens
+      let dataLoss = if lambda == 1.0 then zeroTens
                      else let preds = Torch.sigmoid (hThetaReal model trainData)
                           in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
-      let knowLoss = if lambda == 1.0 then zeroTens
+      let knowLoss = if lambda == 0.0 then zeroTens
                      else lossKnow (toDynamic (kbSatFormula betaVal trainData model))
       let totalLoss = lossComb dataLoss knowLoss lambdaTens
       (newModel, newOpt) <- runStep model opt totalLoss lrTens
-      newBInd <- if lambda == 1.0 then return bInd
+      newBInd <- if lambda == 0.0 then return bInd
                  else stepBeta bInd totalLoss learningRate
       if epoch `mod` 100 == 0 || epoch == numEpochs || epoch == 1
         then do

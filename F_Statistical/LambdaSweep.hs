@@ -1,15 +1,17 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE TypeApplications #-}
 
--- | Benchmark executable for binary classification.
+-- | Lambda sweep benchmark for binary classification.
 --
---   1. Trains in TENS (produces theta*)
---   2. Evaluates classifierA @FrmwkMeas per test point -> Dist Bool -> Double
---   3. Compares to labelA @FrmwkMeas ground truth
---   4. Reports accuracy, confidence, F1 via BenchmarkTheory
+--   Sweeps lambda from 0.0 (pure data) to 1.0 (pure axiom) in steps of 0.25.
+--   Each setting is run 10 times with independent random datasets.
+--   Reports mean and std of test accuracy and F1 score.
 --
---   Usage:
---     cabal run binary-benchmark              -- default beta=1.0
---     cabal run binary-benchmark -- 1.5       -- single run with beta=1.5
+--   Convention: J = (1-lambda) * J_data + lambda * J_know
+--     lambda=0: pure data supervision
+--     lambda=1: pure axiom supervision (knowledge-driven)
+--
+--   Usage: cabal run lambda-sweep
 module Main where
 
 import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
@@ -24,7 +26,6 @@ import F_Statistical.B_Theory.BenchmarkTheory (BenchmarkFun (..))
 import F_Statistical.BA_Interpretation.BenchmarkIntpData ()
 
 import Data.Time.Clock (diffUTCTime, getCurrentTime)
-import System.Environment (getArgs)
 import Text.Printf (printf)
 import Torch (Parameterized (..), Randomizable (..))
 import qualified Torch
@@ -35,10 +36,56 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 main :: IO ()
 main = do
-  args <- getArgs
-  let beta = case args of { (x:_) -> read x; _ -> 1.0 :: Float }
+  let lambdas = [0.0, 0.25, 0.5, 0.75, 1.0] :: [Float]
+      nRuns   = 10 :: Int
+      beta    = 1.0 :: Float
 
-  -- Generate dataset (same circle-in-square)
+  putStrLn "=== Lambda Sweep: lambda=0 (pure data) to lambda=1 (pure axiom) ==="
+  putStrLn $ printf "  %d runs per setting, beta=%.1f, 1000 epochs, 50 train / 50 test" nRuns beta
+  putStrLn ""
+
+  startTime <- getCurrentTime
+
+  results <- mapM (\lam -> do
+    putStrLn $ printf "--- lambda=%.2f ---" lam
+    runs <- mapM (\i -> do
+      (accTest, f1Test) <- singleRun lam beta
+      if i `mod` 5 == 0
+        then putStrLn $ printf "  [%2d/%d] Acc=%.4f F1=%.4f" i nRuns accTest f1Test
+        else return ()
+      return (accTest, f1Test)
+      ) [1..nRuns]
+
+    let accs = map fst runs
+        f1s  = map snd runs
+        avgAcc = avg accs
+        stdAcc = std accs
+        avgF1  = avg f1s
+        stdF1  = std f1s
+    putStrLn $ printf "  => Acc=%.4f +/- %.4f  F1=%.4f +/- %.4f" avgAcc stdAcc avgF1 stdF1
+    putStrLn ""
+    return (lam, avgAcc, stdAcc, avgF1, stdF1)
+    ) lambdas
+
+  endTime <- getCurrentTime
+  let totalTime = realToFrac (diffUTCTime endTime startTime) :: Double
+
+  -- Print summary table
+  putStrLn "========================================"
+  putStrLn "Lambda Sweep Summary"
+  putStrLn "========================================"
+  putStrLn $ printf "%-8s  %-16s  %-16s" ("lambda" :: String) ("Test Accuracy" :: String) ("F1 Score" :: String)
+  putStrLn (replicate 44 '-')
+  mapM_ (\(lam, aAcc, sAcc, aF1, sF1) ->
+    putStrLn $ printf "%-8.2f  %.4f +/- %.4f  %.4f +/- %.4f" lam aAcc sAcc aF1 sF1
+    ) results
+  putStrLn (replicate 44 '-')
+  putStrLn $ printf "Total time: %.1fs" totalTime
+
+-- | Single training + evaluation run.
+singleRun :: Float -> Float -> IO (Double, Double)
+singleRun lambda beta = do
+  -- Generate dataset
   dataset <- Torch.toDevice (Device CPU 0) <$> Torch.randIO' [100, 2]
   let center = Torch.toDevice (Device CPU 0) (Torch.asTensor ([0.5, 0.5] :: [Float]))
       diffs = dataset - center
@@ -50,34 +97,20 @@ main = do
       trainLabels = Torch.reshape [50, 1] (Torch.sliceDim 0 0 50 1 labels)
       testData = Torch.sliceDim 0 0 50 1 (Torch.sliceDim 0 50 100 1 dataset)
 
-  -- Train in TENS -> theta*
-  paramMLPOpti <- trainBinary 1000 0.001 1.0 beta trainData trainLabels binaryAxiomTens
+  -- Train
+  paramMLPOpti <- trainBinary 1000 0.001 lambda beta trainData trainLabels binaryAxiomTens
 
-  -- Evaluate via classifierA @FrmwkMeas (pass theta* directly, no global state)
+  -- Evaluate via classifierA @FrmwkMeas
   let toPairs pts = [(predProb pt, labelA @FrmwkMeas pt) | pt <- pts]
         where predProb pt = pTrueDist (classifierA @FrmwkMeas paramMLPOpti pt)
-      -- Train + test points
-      trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point FrmwkMeas]
-      testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point FrmwkMeas]
-      trainPairs = toPairs trainPts
-      testPairs  = toPairs testPts
-      -- Accuracy: report both train and test
-      accTrain = accuracy trainPairs
+      testPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData :: [[Float]]) :: [Point FrmwkMeas]
+      testPairs = toPairs testPts
       accTest  = accuracy testPairs
-      -- F1/precision/recall/confidence: test only (standard practice)
-      f1   = f1Score testPairs
-      prec = precision testPairs
-      rec  = recall testPairs
-      (pPos, pNeg) = confidence testPairs
+      f1Test   = f1Score testPairs
 
-  putStrLn "Binary Benchmark (classifierA @FrmwkMeas):"
-  putStrLn $ printf "  Accuracy:        Train=%.4f  Test=%.4f" accTrain accTest
-  putStrLn $ printf "  F1 Score:        %.4f" f1
-  putStrLn $ printf "  Precision:       %.4f  Recall: %.4f" prec rec
-  putStrLn $ printf "  Confidence:      P+=%.4f  P-=%.4f" pPos pNeg
+  return (accTest, f1Test)
 
-
--- | Training loop (TENS only, produces theta*).
+-- | Training loop.
 trainBinary ::
   Int -> Float -> Float -> Float ->
   Torch.Tensor -> Torch.Tensor ->
@@ -92,8 +125,8 @@ trainBinary numEpochs learningRate lambda betaFixed trainData trainLabels kbSatF
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 
-  startTime <- getCurrentTime
-  (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) epoch -> do
+  (paramMLPOpti, _) <- foldLoop (initModel, initOpt) [1 .. numEpochs] $ \(model, opt) _ -> do
+    -- J = (1-lambda) * J_data + lambda * J_know
     let dataLoss = if lambda == 1.0 then zeroTens
                    else let preds = Torch.sigmoid (hThetaReal model trainData)
                         in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
@@ -101,19 +134,17 @@ trainBinary numEpochs learningRate lambda betaFixed trainData trainLabels kbSatF
                    else lossKnow (toDynamic (kbSatFormula betaT trainData model))
     let totalLoss = lossComb dataLoss knowLoss lambdaTens
     (newModel, newOpt) <- runStep model opt totalLoss lrTens
-    if epoch `mod` 100 == 0 || epoch == numEpochs || epoch == 1
-      then do
-        epochEnd <- getCurrentTime
-        let diffMs = (realToFrac (diffUTCTime epochEnd startTime) :: Double) * 1000
-        let totalVal = Torch.asValue totalLoss :: Float
-        putStrLn $ printf "[Epoch %3d/%d] J=%7.5f | %.2fms" epoch numEpochs totalVal diffMs
-      else return ()
     return (newModel, newOpt)
 
-  totalEnd <- getCurrentTime
-  let totalDiff = realToFrac (diffUTCTime totalEnd startTime) :: Double
-  putStrLn $ printf "[Training complete] %.2fs" totalDiff
   return paramMLPOpti
+
+-- Helpers
+avg :: [Double] -> Double
+avg xs = sum xs / fromIntegral (length xs)
+
+std :: [Double] -> Double
+std xs = let m = avg xs; n = fromIntegral (length xs)
+         in sqrt (sum (map (\x -> (x-m)*(x-m)) xs) / n)
 
 foldLoop :: a -> [b] -> (a -> b -> IO a) -> IO a
 foldLoop acc [] _ = return acc

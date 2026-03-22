@@ -32,7 +32,7 @@ import Torch.Typed.Tensor (Tensor (..), toDynamic)
 main :: IO ()
 main = do
   args <- getArgs
-  let lambda = case args of { (x:_) -> read x; _ -> 0.0 :: Float }
+  let lambda = case args of { (x:_) -> read x; _ -> 1.0 :: Float }
 
   -- Train: optimize theta and beta jointly
   (paramMLPOpti, learnedBeta, trainData, trainLabels, testData, testLabels) <-
@@ -107,23 +107,23 @@ trainBinaryRealBeta numEpochs learningRate initBeta lambda kbSatFormula = do
     foldLoop (initModel, initOpt, betaInd) [1 .. numEpochs] $ \(model, opt, bInd) epoch -> do
       let betaVal = toDependent bInd
 
-      -- J_data: pointwise cross-entropy (skipped when lambda=0)
-      let dataLoss = if lambda == 0.0 then zeroTens
+      -- J_data: pointwise cross-entropy (skipped when lambda=1)
+      let dataLoss = if lambda == 1.0 then zeroTens
                      else let preds = Torch.sigmoid (hThetaReal model trainData)
                           in Torch.sumAll (lossData preds trainLabels) `Torch.div` nTens
 
-      -- J_know: axiom satisfaction penalty (skipped when lambda=1)
-      let knowLoss = if lambda == 1.0 then zeroTens
+      -- J_know: axiom satisfaction penalty (skipped when lambda=0)
+      let knowLoss = if lambda == 0.0 then zeroTens
                      else lossKnow (toDynamic (kbSatFormula betaVal trainData model))
 
-      -- J = lambda * J_data + (1-lambda) * J_know
+      -- J = (1-lambda) * J_data + lambda * J_know
       let totalLoss = lossComb dataLoss knowLoss lambdaTens
 
       -- Step 1: Update theta (MLP weights) via Adam
       (newModel, newOpt) <- runStep model opt totalLoss lrTens
 
-      -- Step 2: Update beta via stepBeta (skipped when lambda=1: no axiom -> no gradient)
-      newBInd <- if lambda == 1.0 then return bInd
+      -- Step 2: Update beta via stepBeta (skipped when lambda=0: no axiom -> no gradient)
+      newBInd <- if lambda == 0.0 then return bInd
                  else stepBeta bInd totalLoss learningRate
 
       -- Metrics: only every 100 epochs

@@ -115,6 +115,32 @@ executable binary-benchmark-beta
     time
   default-language: Haskell2010
 
+executable beta-lambda-sweep
+  main-is: BetaLambdaSweep.hs
+  hs-source-dirs: F_Statistical
+  ghc-options: -rtsopts
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
+executable lambda-sweep
+  main-is: LambdaSweep.hs
+  hs-source-dirs: F_Statistical
+  ghc-options: -rtsopts
+  build-depends:
+    base,
+    nesycat-hasktorch,
+    mtl,
+    containers,
+    hasktorch,
+    time
+  default-language: Haskell2010
+
 executable binary-test-real
   main-is: BinaryTrain.hs
   hs-source-dirs: _F_Training
