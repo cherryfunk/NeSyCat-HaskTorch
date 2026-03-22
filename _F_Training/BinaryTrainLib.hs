@@ -84,7 +84,7 @@ trainBinary numEpochs learningRate lambda betaFixed ds = do
   startTime <- getCurrentTime
   let betaT = Torch.asTensor betaFixed
       lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
-      nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (50.0 :: Float))
+      nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (fromIntegral (head (Torch.shape td)) :: Float))
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 
@@ -141,7 +141,7 @@ trainBinaryBeta numEpochs learningRate initBeta lambda ds = do
 
   startTime <- getCurrentTime
   let lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
-      nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (50.0 :: Float))
+      nTens = Torch.toDevice (Device CPU 0) (Torch.asTensor (fromIntegral (head (Torch.shape td)) :: Float))
       zeroTens = Torch.asTensor (0.0 :: Float)
       lambdaTens = Torch.asTensor lambda
 

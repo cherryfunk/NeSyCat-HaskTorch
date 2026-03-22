@@ -15,5 +15,9 @@ import C_Domain.BA_Interpretation.BinaryReal ()
 import D_Grammatical.B_Theory.BinaryFormulas (binarySentence)
 
 -- | Binary axiom in FrmwkMeas (DATA + Dist).
+--   Evaluates the formula probabilistically (Mon = Dist).
+--   Not used in the benchmark (which trains via binaryAxiomTens in FrmwkGeom,
+--   then evaluates pointwise via classifierA @FrmwkMeas).
+--   Available for probabilistic reasoning about axiom satisfaction.
 binaryAxiomData :: [Point FrmwkMeas] -> ParamsMLP -> M FrmwkMeas (Omega FrmwkMeas)
 binaryAxiomData domain paramMLP = binarySentence @FrmwkMeas () domain paramMLP
