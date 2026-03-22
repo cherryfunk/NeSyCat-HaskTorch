@@ -4,19 +4,14 @@
 
 -- | The DATA type system (set/measure theory paradigm).
 --   DataObj type class replaces the old DATA GADT.
---   DATA remains as a phantom type for BinarySorts compatibility.
 module C_Domain.C_TypeSystem.Data
-  ( DATA,
-    DataObj (..),
+  ( DataObj (..),
     IntegrationStrategy (..),
     tableLookup,
   )
 where
 
 import Numeric.Natural (Natural)
-
--- | Phantom type tag for BinarySorts etc.
-data DATA a
 
 -- | Integration strategy per type.
 data IntegrationStrategy

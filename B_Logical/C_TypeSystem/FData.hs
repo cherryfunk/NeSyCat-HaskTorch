@@ -1,20 +1,23 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
-module B_Logical.C_TypeSystem.FData where
+-- | The logical type system for the set/probability paradigm.
+--   FDataObj = DataObj + exponentials (function spaces) + monadic types.
+module B_Logical.C_TypeSystem.FData
+  ( FDataObj,
+  )
+where
 
-import C_Domain.C_TypeSystem.Data (DATA)
+import C_Domain.C_TypeSystem.Data (DataObj)
 
--- | The category FDATA (cartesian closed extension of DATA)
--- FDATA = DATA + exponentials (function objects) + monadic objects.
---
--- DATA has finite products (Unit, Prod).
--- FDATA adds:
---   - Exponentials (function spaces a -> b), making it cartesian closed.
---   - Monadic types (m a), for Kleisli interpretation.
-data FDATA a where
-  -- | Embed any DATA object into FDATA.
-  Embed :: DATA a -> FDATA a
-  -- | Exponential object (function space).
-  Exp :: FDATA a -> FDATA b -> FDATA (a -> b)
-  -- | Monadic object (for Kleisli lifting).
-  Monadic :: (Monad m) => FDATA a -> FDATA (m a)
+-- | Objects of FDATA: the Cartesian closed, monad-closed extension of DATA.
+class FDataObj a
+
+-- | Embed any DataObj into FDataObj.
+instance (DataObj a) => FDataObj a
+
+-- | Exponential object (function space).
+instance (FDataObj a, FDataObj b) => FDataObj (a -> b)
+
+-- | Monadic object (for Kleisli lifting).
+instance (Monad m, FDataObj a) => FDataObj (m a)

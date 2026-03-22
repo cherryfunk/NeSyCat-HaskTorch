@@ -22,7 +22,7 @@ where
 
 import C_Domain.B_Theory.MnistTheory (ImagePairRow (..), MnistBridge (..), MnistTheory (..))
 import C_Domain.C_TypeSystem.Data (DATA)
-import C_Domain.C_TypeSystem.Tens (TENS (..))
+import C_Domain.C_TypeSystem.Tens ()
 import B_Logical.BA_Interpretation.Tensor hiding (Omega, TENS)
 import C_Domain.BA_Interpretation.MNIST_MLP (MLP, hTheta, mnistSpec)
 import A_Categorical.DA_Realization.Dist (Dist (..))

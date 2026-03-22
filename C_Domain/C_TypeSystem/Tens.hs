@@ -1,13 +1,16 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module C_Domain.C_TypeSystem.Tens where
+-- | The TENS type system (geometry paradigm).
+--   TensObj type class replaces the old TENS GADT.
+module C_Domain.C_TypeSystem.Tens
+  ( TensObj (..),
+  )
+where
 
 import Numeric.Natural (Natural)
 import qualified Torch
@@ -18,10 +21,10 @@ instance Eq (Tensor device dtype shape) where
   (==) :: Tensor device dtype shape -> Tensor device dtype shape -> Bool
   a == b = toDynamic a == toDynamic b
 
--- | Objects of TENS: the tensor category.
-data TENS a where
-  TensorSpace :: (Eq (Tensor d dt s)) => TENS (Tensor d dt s)
-  TensorBatch :: Torch.Tensor -> TENS (Tensor d dt s)
-  TensProd :: TENS a -> TENS b -> TENS (a, b) -- products
-  TensUnit :: TENS () -- terminal object
-  TensFin :: TENS Natural -- finite index sets
+-- | Type membership in the TENS type system.
+class TensObj a
+
+instance TensObj (Tensor d dt s)
+instance (TensObj a, TensObj b) => TensObj (a, b)
+instance TensObj ()
+instance TensObj Natural

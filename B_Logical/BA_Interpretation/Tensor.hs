@@ -1,12 +1,9 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 
 -- | Logical interpretation: Tensor-valued Logic on R (Omega = R^1, a tensor space).
 --
@@ -22,14 +19,12 @@ module B_Logical.BA_Interpretation.Tensor
   ( module B_Logical.BA_Interpretation.Tensor,
     module B_Logical.B_Theory.A2MonBLatTheory,
     module B_Logical.B_Theory.TwoMonBLatTheory,
-    module C_Domain.C_TypeSystem.Tens,
   )
 where
 
 import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom)
 import B_Logical.B_Theory.A2MonBLatTheory
 import B_Logical.B_Theory.TwoMonBLatTheory
-import C_Domain.C_TypeSystem.Tens (TENS (..))
 import Data.Functor.Identity (Identity (..), runIdentity)
 import qualified Torch
 import Torch.DType (DType (..))

@@ -51,8 +51,8 @@ library
     C_Domain.BA_Interpretation.Countable,
     C_Domain.BA_Interpretation.Crossing,
     C_Domain.BA_Interpretation.Dice,
-    C_Domain.BA_Interpretation.MNIST,
-    C_Domain.BA_Interpretation.MNIST_MLP,
+    -- C_Domain.BA_Interpretation.MNIST,  -- TODO: migrate to Framework
+    -- C_Domain.BA_Interpretation.MNIST_MLP,  -- TODO: migrate to Framework
     C_Domain.BA_Interpretation.Supremum,
     C_Domain.BA_Interpretation.Weather,
     D_Grammatical.B_Theory.FormulasTheory,
