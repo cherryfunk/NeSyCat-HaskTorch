@@ -28,6 +28,7 @@ where
 import B_Logical.B_Theory.A2MonBLatTheory
 import B_Logical.B_Theory.TwoMonBLatTheory
 import C_Domain.C_TypeSystem.Tens (TENS (..))
+import Data.Functor.Identity (Identity (..))
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))
@@ -73,25 +74,25 @@ instance TwoMonBLatTheory TENS Omega where
 
 -- | TENS quantifier: domain is a batch tensor.
 --   Applies predicate once (PyTorch broadcasts), then reduces.
-instance A2MonBLatTheory (Tensor d dt s) TENS Omega where
+instance A2MonBLatTheory (Tensor d dt s) TENS Omega Identity where
   type Domain (Tensor d dt s) = Torch.Tensor
 
   -- bigWedge = forall = smooth min = De Morgan of LogSumExp
   bigWedge betaT batchTensor phi =
-    let result = phi (UnsafeMkTensor batchTensor)
+    let result = runIdentity (phi (UnsafeMkTensor batchTensor))
         n = head (Torch.shape batchTensor)
         negResult = neg result
         lse = F.logsumexp (toDynamic negResult `Torch.mul` betaT) 0 False
         reduced = negate ((lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT)
-     in UnsafeMkTensor (Torch.reshape [1] reduced)
+     in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))
 
   -- bigVee = exists = LogSumExp
   bigVee betaT batchTensor phi =
-    let result = phi (UnsafeMkTensor batchTensor)
+    let result = runIdentity (phi (UnsafeMkTensor batchTensor))
         n = head (Torch.shape batchTensor)
         lse = F.logsumexp (toDynamic result `Torch.mul` betaT) 0 False
         reduced = (lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT
-     in UnsafeMkTensor (Torch.reshape [1] reduced)
+     in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))
   bigOplus _ _ = error "bigOplus over TENS not yet supported"
   bigOtimes _ _ = error "bigOtimes over TENS not yet supported"
 

@@ -63,34 +63,38 @@ instance TwoMonBLatTheory DATA Omega where
 
 -- Per-type quantifier instances for real-valued logic:
 
-instance A2MonBLatTheory Double DATA Omega where
-  type Domain Double = ()  -- continuous: domain is implicit (R)
-  bigVee _ _ phi = sup phi
-  bigWedge _ _ phi = inf phi
-  bigOplus _ phi = expectGiry (Uniform 0.0 1.0) phi
-  bigOtimes _ phi = exp (bigOplus @Double @DATA @Omega () (log . phi))
-
-instance A2MonBLatTheory Bool DATA Omega where
-  type Domain Bool = [Bool]
-  bigVee _ domain phi = sup phi
-  bigWedge _ domain phi = inf phi
-  bigOplus domain phi = expectGiry (GFinUniform domain) phi
-  bigOtimes domain phi = exp (bigOplus @Bool @DATA @Omega domain (log . phi))
-
-instance A2MonBLatTheory Natural DATA Omega where
-  type Domain Natural = ()  -- countable: domain is implicit (N)
-  bigVee _ _ phi = sup phi
-  bigWedge _ _ phi = inf phi
-  bigOplus _ phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
-  bigOtimes _ phi = exp (bigOplus @Natural @DATA @Omega () (log . phi))
-
-instance A2MonBLatTheory () DATA Omega where
-  type Domain () = [()]
-  bigVee _ domain phi = phi ()
-  bigWedge _ domain phi = phi ()
-  bigOplus domain phi = phi ()
-  bigOtimes domain phi = phi ()
-
+-- TEMPORARILY DISABLED
+-- instance A2MonBLatTheory Double DATA Omega where
+--   type Domain Double = ()  -- continuous: domain is implicit (R)
+--   bigVee _ _ phi = sup phi
+--   bigWedge _ _ phi = inf phi
+--   bigOplus _ phi = expectGiry (Uniform 0.0 1.0) phi
+--   bigOtimes _ phi = exp (bigOplus @Double @DATA @Omega () (log . phi))
+-- 
+-- TEMPORARILY DISABLED
+-- instance A2MonBLatTheory Bool DATA Omega where
+--   type Domain Bool = [Bool]
+--   bigVee _ domain phi = sup phi
+--   bigWedge _ domain phi = inf phi
+--   bigOplus domain phi = expectGiry (GFinUniform domain) phi
+--   bigOtimes domain phi = exp (bigOplus @Bool @DATA @Omega domain (log . phi))
+-- 
+-- TEMPORARILY DISABLED
+-- instance A2MonBLatTheory Natural DATA Omega where
+--   type Domain Natural = ()  -- countable: domain is implicit (N)
+--   bigVee _ _ phi = sup phi
+--   bigWedge _ _ phi = inf phi
+--   bigOplus _ phi = expectGiry (fmap fromIntegral (Geometric 0.5)) phi
+--   bigOtimes _ phi = exp (bigOplus @Natural @DATA @Omega () (log . phi))
+-- 
+-- TEMPORARILY DISABLED
+-- instance A2MonBLatTheory () DATA Omega where
+--   type Domain () = [()]
+--   bigVee _ domain phi = phi ()
+--   bigWedge _ domain phi = phi ()
+--   bigOplus domain phi = phi ()
+--   bigOtimes domain phi = phi ()
+-- 
 ------------------------------------------------------
 -- General predicates
 ------------------------------------------------------

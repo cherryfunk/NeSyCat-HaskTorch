@@ -4,9 +4,11 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Abstract binary classification formula.
 --   Uses bigWedge from A2MonBLatTheory for quantification.
+--   Works for any monad m (Identity, Dist, etc.).
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
@@ -17,7 +19,6 @@ import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
-import Data.Functor.Identity (Identity, runIdentity)
 
 -- | Abstract pointwise predicate for binary classification.
 binaryPredicate ::
@@ -36,19 +37,20 @@ binaryPredicate lp paramMLP pt = do
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
 -- | Sentence: forall x. phi(x) via bigWedge from the theory.
---   For Identity monad: unwrap to pure predicate, apply bigWedge directly.
---   The domain is passed through from the axiom file.
+--   Works for any monad m. The quantifier (bigWedge) handles
+--   both the monadic predicate and the reduction.
 binarySentence ::
-  forall cat a.
-  ( BinaryKlFun cat Identity,
+  forall cat m a.
+  ( BinaryKlFun cat m,
     TwoMonBLatTheory cat (Omega cat),
-    A2MonBLatTheory a cat (Omega cat),
+    A2MonBLatTheory a cat (Omega cat) m,
+    Monad m,
     a ~ Point cat
   ) =>
   ParamsLogic (Omega cat) ->
   Domain a ->
   ParamsMLP ->
-  Omega cat
+  m (Omega cat)
 binarySentence lp domain paramMLP =
-  bigWedge @a @cat @(Omega cat) lp domain
-    (\pt -> runIdentity (binaryPredicate @cat @Identity lp paramMLP pt))
+  bigWedge @a @cat @(Omega cat) @m lp domain
+    (binaryPredicate @cat @m lp paramMLP)

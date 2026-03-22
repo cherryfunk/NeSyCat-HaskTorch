@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
 -- | Logical interpretation: Classical Boolean Logic ($\Omega = \{\text{True}, \text{False}\}$)
@@ -23,6 +23,7 @@ module B_Logical.BA_Interpretation.Boolean
   )
 where
 
+import A_Categorical.DA_Realization.Dist (Dist)
 import C_Domain.C_TypeSystem.Data (DATA)
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
@@ -56,21 +57,29 @@ instance TwoMonBLatTheory DATA Bool where
 -- A2MonBLatTheory instance: quantifiers over DATA domains
 ------------------------------------------------------
 
--- | Boolean quantifiers for Bool
-instance A2MonBLatTheory Bool DATA Bool where
+-- | Boolean quantifiers for Bool + Dist (Kleisli)
+instance A2MonBLatTheory Bool DATA Bool Dist where
   type Domain Bool = [Bool]
-  bigVee _ domain phi = any phi domain
-  bigWedge _ domain phi = all phi domain
-  bigOplus domain phi = any phi domain
-  bigOtimes domain phi = all phi domain
+  bigWedge _ domain phi = do
+    omegas <- mapM phi domain
+    return (and omegas)
+  bigVee _ domain phi = do
+    omegas <- mapM phi domain
+    return (or omegas)
+  bigOplus domain phi = bigVee @Bool @DATA @Bool @Dist () domain phi
+  bigOtimes domain phi = bigWedge @Bool @DATA @Bool @Dist () domain phi
 
--- | Boolean quantifiers for ()
-instance A2MonBLatTheory () DATA Bool where
-  type Domain () = [()]
-  bigVee _ domain phi = all phi domain
-  bigWedge _ domain phi = all phi domain
-  bigOplus domain phi = all phi domain
-  bigOtimes domain phi = all phi domain
+-- | Boolean quantifiers for (Float, Float) + Dist — training points
+instance A2MonBLatTheory (Float, Float) DATA Bool Dist where
+  type Domain (Float, Float) = [(Float, Float)]
+  bigWedge _ domain phi = do
+    omegas <- mapM phi domain
+    return (and omegas)
+  bigVee _ domain phi = do
+    omegas <- mapM phi domain
+    return (or omegas)
+  bigOplus domain phi = bigVee @(Float,Float) @DATA @Bool @Dist () domain phi
+  bigOtimes domain phi = bigWedge @(Float,Float) @DATA @Bool @Dist () domain phi
 
 ------------------------------------------------------
 -- Comparison predicates

@@ -1,3 +1,4 @@
+{-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoStarIsType #-}
@@ -7,22 +8,23 @@ module A_Categorical.B_Theory.StarTheory
   )
 where
 
-import Data.Kind (Type)
+import Data.Kind (Constraint, Type)
 
 -- | Higher-Order Categorical Theory Sum_alpha
 --
--- The three monad roles correspond to the three paradigms of NeSyCat:
---   MonadSetTh  -- set theory
---   MonadMeasTh -- measure / probability theory
---   MonadGeomTh -- geometry / differential geometry
+-- Three paradigms, each with a monad and a category:
+--   Set theory:     (MonadSetTh,  CatSetTh)
+--   Measure theory: (MonadMeasTh, CatMeasTh)
+--   Geometry:       (MonadGeomTh, CatGeomTh)
 --
--- Natural transformations (eta, mu) are already given by Haskell's Monad class.
+-- The monad determines the Kleisli structure.
+-- The category (as a constraint) determines which types are objects.
 class StarTheory where
-  -- | Set theory monad.
-  type MonadSetTh :: Type -> Type
-
-  -- | Measure theory monad.
+  -- Monads
+  type MonadSetTh  :: Type -> Type
   type MonadMeasTh :: Type -> Type
-
-  -- | Geometry monad.
   type MonadGeomTh :: Type -> Type
+  -- Categories (as object membership constraints)
+  type CatSetTh    :: Type -> Constraint
+  type CatMeasTh   :: Type -> Constraint
+  type CatGeomTh   :: Type -> Constraint
