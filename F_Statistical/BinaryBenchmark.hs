@@ -3,8 +3,8 @@
 -- | Benchmark executable for binary classification.
 --
 --   1. Trains in TENS (produces theta*)
---   2. Evaluates classifierA @DATA per test point -> Dist Bool -> Double
---   3. Compares to labelA @DATA ground truth
+--   2. Evaluates classifierA @FrmwkMeas per test point -> Dist Bool -> Double
+--   3. Compares to labelA @FrmwkMeas ground truth
 --   4. Reports accuracy, confidence, F1 via BenchmarkTheory
 --
 --   Usage:
@@ -12,9 +12,8 @@
 --     cabal run binary-benchmark -- 1.5       -- single run with beta=1.5
 module Main where
 
-import A_Categorical.DA_Realization.Dist (Dist)
+import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
-import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
@@ -54,12 +53,12 @@ main = do
   -- Train in TENS -> theta*
   paramMLPOpti <- trainBinary 1000 0.001 0.0 beta trainData trainLabels binaryAxiomTens
 
-  -- Evaluate via classifierA @DATA (pass theta* directly, no global state)
-  let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA @Dist paramMLPOpti pt)
+  -- Evaluate via classifierA @FrmwkMeas (pass theta* directly, no global state)
+  let toPairs pts = [(predProb pt, labelA @FrmwkMeas pt) | pt <- pts]
+        where predProb pt = pTrueDist (classifierA @FrmwkMeas paramMLPOpti pt)
       -- Train + test points
-      trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
-      testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
+      trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point FrmwkMeas]
+      testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point FrmwkMeas]
       trainPairs = toPairs trainPts
       testPairs  = toPairs testPts
       -- Accuracy: report both train and test
@@ -71,7 +70,7 @@ main = do
       rec  = recall testPairs
       (pPos, pNeg) = confidence testPairs
 
-  putStrLn "Binary Benchmark (classifierA @DATA):"
+  putStrLn "Binary Benchmark (classifierA @FrmwkMeas):"
   putStrLn $ printf "  Accuracy:        Train=%.4f  Test=%.4f" accTrain accTest
   putStrLn $ printf "  F1 Score:        %.4f" f1
   putStrLn $ printf "  Precision:       %.4f  Recall: %.4f" prec rec

@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE InstanceSigs #-}
@@ -25,10 +26,11 @@ module B_Logical.BA_Interpretation.Tensor
   )
 where
 
+import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom)
 import B_Logical.B_Theory.A2MonBLatTheory
 import B_Logical.B_Theory.TwoMonBLatTheory
 import C_Domain.C_TypeSystem.Tens (TENS (..))
-import Data.Functor.Identity (Identity (..))
+import Data.Functor.Identity (Identity (..), runIdentity)
 import qualified Torch
 import Torch.DType (DType (..))
 import Torch.Device (DeviceType (..))
@@ -42,7 +44,7 @@ type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 --  TwoMonBLat: Binary Logical Operations on Omega (R-valued)
 -- ============================================================
 
-instance TwoMonBLatTheory TENS Omega where
+instance TwoMonBLatTheory FrmwkGeom Omega where
   type ParamsLogic Omega = Torch.Tensor
 
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
@@ -72,9 +74,9 @@ instance TwoMonBLatTheory TENS Omega where
 -- Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
--- | TENS quantifier: domain is a batch tensor.
+-- | FrmwkGeom quantifier: domain is a batch tensor.
 --   Applies predicate once (PyTorch broadcasts), then reduces.
-instance A2MonBLatTheory (Tensor d dt s) TENS Omega Identity where
+instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
   type Domain (Tensor d dt s) = Torch.Tensor
 
   -- bigWedge = forall = smooth min = De Morgan of LogSumExp
@@ -93,8 +95,8 @@ instance A2MonBLatTheory (Tensor d dt s) TENS Omega Identity where
         lse = F.logsumexp (toDynamic result `Torch.mul` betaT) 0 False
         reduced = (lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT
      in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))
-  bigOplus _ _ = error "bigOplus over TENS not yet supported"
-  bigOtimes _ _ = error "bigOtimes over TENS not yet supported"
+  bigOplus _ _ = error "bigOplus over FrmwkGeom not yet supported"
+  bigOtimes _ _ = error "bigOtimes over FrmwkGeom not yet supported"
 
 ------------------------------------------------------
 -- Internal Helpers

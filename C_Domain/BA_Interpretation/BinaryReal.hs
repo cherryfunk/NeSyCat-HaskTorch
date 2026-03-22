@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -9,24 +10,23 @@
 -- | Function implementations for Binary Classification.
 --
 --   This module provides:
---     1. BinaryFun DATA / TENS -- labelA for each type system
---     2. BinaryKlFun DATA Dist -- classifierA for DATA + Dist
---     3. BinaryKlFun TENS Identity -- classifierA for TENS + Identity
---     4. BinaryBridge DATA TENS Dist -- encPoint + decOmega
+--     1. BinaryFun FrmwkMeas / FrmwkGeom -- labelA for each framework
+--     2. BinaryKlFun FrmwkMeas -- classifierA (Mon = Dist)
+--     3. BinaryKlFun FrmwkGeom -- classifierA (Mon = Identity)
+--     4. BinaryBridge FrmwkMeas FrmwkGeom -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
   ( module C_Domain.B_Theory.BinaryTheory,
     module C_Domain.BA_Interpretation.BinaryRealMLP,
   )
 where
 
+import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom, FrmwkMeas)
 import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
-import C_Domain.BC_Extension.BinaryDataExtension ()   -- instance BinarySorts DATA
-import C_Domain.BC_Extension.BinaryTensExtension ()   -- instance BinarySorts TENS
+import C_Domain.BC_Extension.BinaryDataExtension ()   -- instance BinarySorts FrmwkMeas
+import C_Domain.BC_Extension.BinaryTensExtension ()   -- instance BinarySorts FrmwkGeom
 import A_Categorical.DA_Realization.Dist (Dist (..))
-import C_Domain.C_TypeSystem.Data (DATA)
-import C_Domain.C_TypeSystem.Tens (TENS (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
-import B_Logical.BA_Interpretation.Tensor hiding (Omega, TENS)
+import B_Logical.BA_Interpretation.Tensor hiding (Omega)
 import qualified B_Logical.BA_Interpretation.Tensor as TensLogic
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import Data.Functor.Identity (Identity (..))
@@ -37,34 +37,34 @@ import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
---  DATA: plain function symbols (BinaryFun)
+--  FrmwkMeas: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFun DATA where
-  labelA :: Point DATA -> Omega DATA
+instance BinaryFun FrmwkMeas where
+  labelA :: Point FrmwkMeas -> Omega FrmwkMeas
   labelA (x1, x2) =
     let dx = x1 - 0.5
         dy = x2 - 0.5
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  DATA + Dist: Kleisli function symbols (BinaryKlFun)
+--  FrmwkMeas: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun DATA Dist where
-  classifierA :: ParamsMLP -> Point DATA -> Dist (Omega DATA)
+instance BinaryKlFun FrmwkMeas where
+  classifierA :: ParamsMLP -> Point FrmwkMeas -> Dist (Omega FrmwkMeas)
   classifierA paramMLP pt =
-    let ptTens = encPoint @DATA @TENS @Dist pt
+    let ptTens = encPoint @FrmwkMeas @FrmwkGeom pt
         logits = UnsafeMkTensor (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
-     in decOmega @DATA @TENS @Dist logits
+     in decOmega @FrmwkMeas @FrmwkGeom logits
 
 -- ============================================================
---  TENS: plain function symbols (BinaryFun)
+--  FrmwkGeom: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFun TENS where
-  -- | Label in TENS: returns R logits (True = +logitScale, False = -logitScale).
-  labelA :: Point TENS -> Omega TENS
+instance BinaryFun FrmwkGeom where
+  -- | Label in FrmwkGeom: returns R logits (True = +logitScale, False = -logitScale).
+  labelA :: Point FrmwkGeom -> Omega FrmwkGeom
   labelA ptTensor =
     let pt = toDynamic ptTensor
         center = F.mulScalar (Torch.onesLike pt) (0.5 :: Float)
@@ -81,24 +81,24 @@ logitScale :: Float
 logitScale = 10.0
 
 -- ============================================================
---  TENS + Identity: Kleisli function symbols (BinaryKlFun)
+--  FrmwkGeom: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun TENS Identity where
-  classifierA :: ParamsMLP -> Point TENS -> Identity (Omega TENS)
+instance BinaryKlFun FrmwkGeom where
+  classifierA :: ParamsMLP -> Point FrmwkGeom -> Identity (Omega FrmwkGeom)
   classifierA paramMLP ptTensor = Identity $ do
     let logits = hThetaReal paramMLP (toDynamic ptTensor)
     UnsafeMkTensor logits
 
 -- ============================================================
---  BRIDGE: DATA <-> TENS (with Dist monad for decoding)
+--  BRIDGE: FrmwkMeas <-> FrmwkGeom (with Dist monad for decoding)
 -- ============================================================
 
-instance BinaryBridge DATA TENS Dist where
-  encPoint :: Point DATA -> Point TENS
+instance BinaryBridge FrmwkMeas FrmwkGeom where
+  encPoint :: Point FrmwkMeas -> Point FrmwkGeom
   encPoint (x1, x2) = UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 
-  decOmega :: Omega TENS -> Dist (Omega DATA)
+  decOmega :: Omega FrmwkGeom -> Dist (Omega FrmwkMeas)
   decOmega probs =
     let val = Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
         p = realToFrac (head (head val)) :: Double

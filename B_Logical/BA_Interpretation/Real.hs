@@ -11,7 +11,7 @@
 -- | Logical interpretation: Real-valued Logic ($\Omega = \mathbb{R}$)
 module B_Logical.BA_Interpretation.Real where
 
-import C_Domain.C_TypeSystem.Data (DATA)
+import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import A_Categorical.DA_Realization.Giry (Giry (..))
@@ -25,7 +25,7 @@ infix 4 .==, ./=, .<, .>, .<=, .>=
 -- | \$\Omega := \mathcal{I}(\tau) = \mathbb{R}$ (approximated by IEEE 754 Double)
 type Omega = Double
 
-instance TwoMonBLatTheory DATA Omega where
+instance TwoMonBLatTheory FrmwkMeas Omega where
   type ParamsLogic Omega = ()
 
   -- \| \$\mathcal{I}(\vdash)$ : Comparison

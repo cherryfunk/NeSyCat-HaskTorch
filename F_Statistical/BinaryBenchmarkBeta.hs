@@ -2,12 +2,11 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- | Benchmark for binary classification with learnable beta.
---   Trains jointly on theta and beta, then evaluates via classifierA @DATA.
+--   Trains jointly on theta and beta, then evaluates via classifierA @FrmwkMeas.
 module Main where
 
-import A_Categorical.DA_Realization.Dist (Dist)
+import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
 import B_Logical.DA_Realization.ExpectDist (pTrueDist)
-import C_Domain.C_TypeSystem.Data (DATA)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TENS
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
@@ -38,11 +37,11 @@ main = do
     trainBinaryBeta 1000 0.001 initBeta 0.0 binaryAxiomTens
   let learnedBetaVal = Torch.asValue learnedBeta :: Float
 
-  -- Evaluate via classifierA @DATA (pass theta* directly)
-  let toPairs pts = [(predProb pt, labelA @DATA pt) | pt <- pts]
-        where predProb pt = pTrueDist (classifierA @DATA @Dist paramMLPOpti pt)
-      trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point DATA]
-      testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point DATA]
+  -- Evaluate via classifierA @FrmwkMeas (pass theta* directly)
+  let toPairs pts = [(predProb pt, labelA @FrmwkMeas pt) | pt <- pts]
+        where predProb pt = pTrueDist (classifierA @FrmwkMeas paramMLPOpti pt)
+      trainPts = map (\[x1,x2] -> (x1,x2)) (Torch.asValue trainData :: [[Float]]) :: [Point FrmwkMeas]
+      testPts  = map (\[x1,x2] -> (x1,x2)) (Torch.asValue testData  :: [[Float]]) :: [Point FrmwkMeas]
       trainPairs = toPairs trainPts
       testPairs  = toPairs testPts
       accTrain = accuracy trainPairs

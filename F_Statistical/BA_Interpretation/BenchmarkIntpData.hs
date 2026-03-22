@@ -3,8 +3,8 @@
 -- | Benchmark interpretation for the DATA category.
 --   Connects theory roles to vocabulary symbols via inhabitation.
 --
---   Prediction = Double (expectation of Dist Bool from classifierA @DATA)
---   Label      = Bool   (from labelA @DATA)
+--   Prediction = Double (expectation of Dist Bool from classifierA @FrmwkMeas)
+--   Label      = Bool   (from labelA @FrmwkMeas)
 module F_Statistical.BA_Interpretation.BenchmarkIntpData
   ()
 where

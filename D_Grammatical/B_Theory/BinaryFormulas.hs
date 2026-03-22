@@ -8,13 +8,14 @@
 
 -- | Abstract binary classification formula.
 --   Uses bigWedge from A2MonBLatTheory for quantification.
---   Works for any monad m (Identity, Dist, etc.).
+--   Works for any framework (FrmwkGeom, FrmwkMeas, etc.).
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
   )
 where
 
+import A_Categorical.B_Theory.StarTheory (Framework (..))
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
@@ -22,35 +23,35 @@ import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 
 -- | Abstract pointwise predicate for binary classification.
 binaryPredicate ::
-  forall cat m.
-  ( BinaryKlFun cat m,
-    TwoMonBLatTheory cat (Omega cat),
-    Monad m
+  forall frmwk.
+  ( BinaryKlFun frmwk,
+    TwoMonBLatTheory frmwk (Omega frmwk),
+    Monad (Mon frmwk)
   ) =>
-  ParamsLogic (Omega cat) ->
+  ParamsLogic (Omega frmwk) ->
   ParamsMLP ->
-  Point cat ->
-  m (Omega cat)
+  Point frmwk ->
+  Mon frmwk (Omega frmwk)
 binaryPredicate lp paramMLP pt = do
-  pred <- classifierA @cat @m paramMLP pt
-  let label = labelA @cat pt
+  pred <- classifierA @frmwk paramMLP pt
+  let label = labelA @frmwk pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
 -- | Sentence: forall x. phi(x) via bigWedge from the theory.
---   Works for any monad m. The quantifier (bigWedge) handles
+--   Works for any framework. The quantifier (bigWedge) handles
 --   both the monadic predicate and the reduction.
 binarySentence ::
-  forall cat m a.
-  ( BinaryKlFun cat m,
-    TwoMonBLatTheory cat (Omega cat),
-    A2MonBLatTheory a cat (Omega cat) m,
-    Monad m,
-    a ~ Point cat
+  forall frmwk a.
+  ( BinaryKlFun frmwk,
+    TwoMonBLatTheory frmwk (Omega frmwk),
+    A2MonBLatTheory a frmwk (Omega frmwk),
+    Monad (Mon frmwk),
+    a ~ Point frmwk
   ) =>
-  ParamsLogic (Omega cat) ->
+  ParamsLogic (Omega frmwk) ->
   Domain a ->
   ParamsMLP ->
-  m (Omega cat)
+  Mon frmwk (Omega frmwk)
 binarySentence lp domain paramMLP =
-  bigWedge @a @cat @(Omega cat) @m lp domain
-    (binaryPredicate @cat @m lp paramMLP)
+  bigWedge @a @frmwk @(Omega frmwk) lp domain
+    (binaryPredicate @frmwk lp paramMLP)
