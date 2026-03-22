@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 
--- | Integration for the Giry monad — type class dispatch, no DATA GADT.
+-- | Integration for the Giry monad -- type class dispatch, no DATA GADT.
 module B_Logical.DA_Realization.ExpectGiry
   ( HasExpectGiry (..),
     pTrueGiry,

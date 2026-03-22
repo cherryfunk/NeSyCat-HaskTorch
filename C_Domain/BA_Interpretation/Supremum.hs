@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
--- | Supremum, Infimum, Enumeration — type class dispatch, no GADT.
+-- | Supremum, Infimum, Enumeration -- type class dispatch, no GADT.
 module C_Domain.BA_Interpretation.Supremum
   ( HasSup (..),
     HasInf (..),

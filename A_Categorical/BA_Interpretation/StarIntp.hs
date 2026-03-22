@@ -15,9 +15,10 @@ module A_Categorical.BA_Interpretation.StarIntp
   )
 where
 
-import A_Categorical.B_Theory.StarTheory (StarTheory (..), Framework (..))
+import A_Categorical.B_Theory.StarTheory (Framework (..), StarTheory (..))
 import qualified A_Categorical.D_Vocabulary.StarVocab as StarVocab
 import C_Domain.C_TypeSystem.Data (DataObj)
+import C_Domain.C_TypeSystem.Tens (TensObj)
 import Data.Functor.Identity (Identity)
 
 -- | Geometry paradigm: tensors + Identity monad.
@@ -27,7 +28,7 @@ data FrmwkGeom
 data FrmwkMeas
 
 instance Framework FrmwkGeom where
-  type Cat FrmwkGeom = DataObj  -- TODO: TensObj when ready
+  type Cat FrmwkGeom = TensObj
   type M FrmwkGeom = Identity
 
 instance Framework FrmwkMeas where
@@ -39,9 +40,9 @@ instance Framework FrmwkMeas where
 --     Measure theory: (Dist,     DataObj)
 --     Geometry:       (Identity, TensObj)  -- TensObj TODO
 instance StarTheory where
-  type MonadSetTh  = Identity
+  type MonadSetTh = Identity
   type MonadMeasTh = StarVocab.Dist
   type MonadGeomTh = Identity
-  type CatSetTh    = DataObj
-  type CatMeasTh   = DataObj
-  type CatGeomTh   = DataObj  -- TODO: TensObj when TENS GADT is replaced
+  type CatSetTh = DataObj
+  type CatMeasTh = DataObj
+  type CatGeomTh = DataObj -- TODO: TensObj when TENS GADT is replaced
