@@ -70,11 +70,13 @@ instance TwoMonBLatTheory FrmwkGeom Omega where
 ------------------------------------------------------
 
 -- | FrmwkGeom quantifier: domain is a batch tensor.
---   Applies predicate once (PyTorch broadcasts), then reduces.
+--   Product functor (-)^N applies predicate once (PyTorch broadcasts).
+--   Reduction via smooth sup/inf (LogSumExp) -- the geometry paradigm's
+--   analogue of the lattice quantifiers.
 instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
   type Dom (Tensor d dt s) = Torch.Tensor
 
-  -- bigWedge = forall = smooth min = De Morgan of LogSumExp
+  -- bigWedge = forall = smooth inf = De Morgan of LogSumExp
   bigWedge betaT batchTensor phi =
     let result = runIdentity (phi (UnsafeMkTensor batchTensor))
         n = head (Torch.shape batchTensor)

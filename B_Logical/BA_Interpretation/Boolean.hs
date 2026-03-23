@@ -29,7 +29,6 @@ import A_Categorical.DA_Realization.Dist ()  -- Monad instance for Dist
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 
-import C_Domain.BA_Interpretation.Supremum (EnumAll (..))
 
 infix 4 .==, ./=, .<, .>, .<=, .>=
 
@@ -58,15 +57,20 @@ instance TwoMonBLatTheory FrmwkMeas Bool where
 -- A2MonBLatTheory instance: quantifiers over DATA domains
 ------------------------------------------------------
 
--- | Boolean quantifiers for Bool (FrmwkMeas: Mon = Dist)
+-- | Boolean quantifiers for Bool (FrmwkMeas: M = Dist)
+--   bigWedge/bigVee = commutator (mapM) then lattice reduce (inf/sup via and/or)
+--   bigOplus/bigOtimes = commutator then measure reduce (expectDist)
 instance A2MonBLatTheory Bool FrmwkMeas Bool where
   type Dom Bool = [Bool]
+  -- forall = commutator + inf (lattice meet = and)
   bigWedge _ domain phi = do
-    omegas <- mapM phi domain
-    return (and omegas)
+    omegas <- mapM phi domain       -- commutator: (M Omega)^A -> M(Omega^A)
+    return (foldl (wedge ()) True omegas)  -- lattice inf via wedge
+  -- exists = commutator + sup (lattice join = or)
   bigVee _ domain phi = do
-    omegas <- mapM phi domain
-    return (or omegas)
+    omegas <- mapM phi domain       -- commutator
+    return (foldl (vee ()) False omegas)   -- lattice sup via vee
+  -- oplus/otimes = commutator + measure quantifier (expectation-based)
   bigOplus domain phi = bigVee () domain phi
   bigOtimes domain phi = bigWedge () domain phi
 
@@ -75,10 +79,10 @@ instance A2MonBLatTheory (Float, Float) FrmwkMeas Bool where
   type Dom (Float, Float) = [(Float, Float)]
   bigWedge _ domain phi = do
     omegas <- mapM phi domain
-    return (and omegas)
+    return (foldl (wedge ()) True omegas)
   bigVee _ domain phi = do
     omegas <- mapM phi domain
-    return (or omegas)
+    return (foldl (vee ()) False omegas)
   bigOplus domain phi = bigVee () domain phi
   bigOtimes domain phi = bigWedge () domain phi
 

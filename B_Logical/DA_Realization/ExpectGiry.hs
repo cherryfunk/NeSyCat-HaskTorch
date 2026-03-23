@@ -1,15 +1,17 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 
--- | Integration for the Giry monad -- type class dispatch, no DATA GADT.
+-- | Realization of QuantVocabGiry: expectation under the Giry monad.
+--   Per-type dispatch: finite types enumerate, countable types lazy-fold,
+--   continuous types use numerical integration.
 module B_Logical.DA_Realization.ExpectGiry
-  ( HasExpectGiry (..),
-    pTrueGiry,
+  ( pTrueGiry,
   )
 where
 
 import A_Categorical.D_Vocabulary.StarVocab (Giry (..))
 import A_Categorical.DA_Realization.Giry ()
+import B_Logical.D_Vocabulary.QuantifierVocab (QuantVocabGiry (..))
 import Numeric.Natural (Natural)
 import Numeric.Tools.Integration (QuadParam (..), defQuad, quadBestEst, quadRes, quadRomberg)
 import Statistics.Distribution (ContDistr (density, quantile), DiscreteDistr (probability), Mean (mean), Variance (stdDev))
@@ -22,9 +24,6 @@ import qualified Statistics.Distribution.Normal as N
 import qualified Statistics.Distribution.Poisson as Poi
 import qualified Statistics.Distribution.StudentT as T
 import qualified Statistics.Distribution.Uniform as U
-
-class HasExpectGiry a where
-  expectGiry :: Giry a -> (a -> Double) -> Double
 
 -- Finite types
 expectFinite :: Giry a -> (a -> Double) -> Double
@@ -44,15 +43,16 @@ expectCountable (Poisson lambda) f = chainedDiscreteStrategy [(k, probability (P
 expectCountable (Geometric p) f = chainedDiscreteStrategy [(k, probability (Geo.geometric0 p) k) | k <- [0 ..]] f
 expectCountable _ _ = error "expectGiry (countable): unsupported constructor"
 
-instance HasExpectGiry Bool where expectGiry = expectFinite
-instance HasExpectGiry () where expectGiry _ f = f ()
-instance HasExpectGiry Int where expectGiry = expectFinite
-instance HasExpectGiry Char where expectGiry = expectFinite
-instance (HasExpectGiry a, HasExpectGiry b) => HasExpectGiry (a, b) where expectGiry = expectFinite
-instance HasExpectGiry Integer where expectGiry = expectCountable
-instance HasExpectGiry Natural where expectGiry = expectCountable
+-- QuantVocabGiry instances (realization of the vocabulary)
+instance QuantVocabGiry Bool where expectGiry = expectFinite
+instance QuantVocabGiry () where expectGiry _ f = f ()
+instance QuantVocabGiry Int where expectGiry = expectFinite
+instance QuantVocabGiry Char where expectGiry = expectFinite
+instance (QuantVocabGiry a, QuantVocabGiry b) => QuantVocabGiry (a, b) where expectGiry = expectFinite
+instance QuantVocabGiry Integer where expectGiry = expectCountable
+instance QuantVocabGiry Natural where expectGiry = expectCountable
 
-instance HasExpectGiry Double where
+instance QuantVocabGiry Double where
   expectGiry (GPure x) f = f x
   expectGiry (GBind m k) f = evalBind m (\x -> expectGiry (k x) f)
   expectGiry (GFiniteSupp _) _ = error "Giry: FiniteSupp on Reals"

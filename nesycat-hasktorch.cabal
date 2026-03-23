@@ -22,8 +22,10 @@ library
     B_Logical.B_Theory.A2MonBLatTheory,
     B_Logical.C_TypeSystem.FData,
     B_Logical.C_TypeSystem.FTens,
+    B_Logical.D_Vocabulary.QuantifierVocab,
     B_Logical.BA_Interpretation.Tensor,
     B_Logical.BA_Interpretation.Boolean,
+    B_Logical.DA_Realization.Supremum,
     B_Logical.DA_Realization.ExpectDist,
     B_Logical.DA_Realization.ExpectGiry,
     -- Gamma: Domain
@@ -38,7 +40,6 @@ library
     C_Domain.BC_Extension.BinaryTensExtension,
     C_Domain.BA_Interpretation.BinaryReal,
     C_Domain.BA_Interpretation.BinaryRealMLP,
-    C_Domain.BA_Interpretation.Supremum,
     C_Domain.BA_Interpretation.Countable,
     C_Domain.BA_Interpretation.Crossing,
     C_Domain.BA_Interpretation.Dice,
