@@ -16,8 +16,6 @@ import Data.Kind (Type)
 
 -- | Guard: the subset that a guarded quantifier ranges over.
 --   Indexed by framework and element type.
---   FrmwkMeas: Guard = [a]  (finite subset as a list)
---   FrmwkGeom: Guard = Torch.Tensor  (batch tensor)
 type family Guard frmwk a :: Type
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
