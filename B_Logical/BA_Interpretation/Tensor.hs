@@ -66,29 +66,33 @@ instance TwoMonBLatTheory FrmwkGeom Omega where
   neg a = UnsafeMkTensor (negate (toDynamic a))
 
 ------------------------------------------------------
+-- Guard type instance: FrmwkGeom guards are batch tensors
+------------------------------------------------------
+
+type instance Guard FrmwkGeom (Tensor d dt s) = Torch.Tensor
+
+------------------------------------------------------
 -- Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
--- | FrmwkGeom quantifier: domain is a batch tensor.
+-- | FrmwkGeom quantifier: guard is a batch tensor.
 --   Product functor (-)^N applies predicate once (PyTorch broadcasts).
 --   Reduction via smooth sup/inf (LogSumExp) -- the geometry paradigm's
 --   analogue of the lattice quantifiers.
 instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
-  type Dom (Tensor d dt s) = Torch.Tensor
-
   -- bigWedge = forall = smooth inf = De Morgan of LogSumExp
-  bigWedge betaT batchTensor phi =
-    let result = runIdentity (phi (UnsafeMkTensor batchTensor))
-        n = head (Torch.shape batchTensor)
+  bigWedge betaT guard phi =
+    let result = runIdentity (phi (UnsafeMkTensor guard))
+        n = head (Torch.shape guard)
         negResult = neg result
         lse = F.logsumexp (toDynamic negResult `Torch.mul` betaT) 0 False
         reduced = negate ((lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT)
      in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))
 
   -- bigVee = exists = LogSumExp
-  bigVee betaT batchTensor phi =
-    let result = runIdentity (phi (UnsafeMkTensor batchTensor))
-        n = head (Torch.shape batchTensor)
+  bigVee betaT guard phi =
+    let result = runIdentity (phi (UnsafeMkTensor guard))
+        n = head (Torch.shape guard)
         lse = F.logsumexp (toDynamic result `Torch.mul` betaT) 0 False
         reduced = (lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT
      in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))

@@ -16,7 +16,7 @@ module D_Grammatical.B_Theory.BinaryFormulas
 where
 
 import A_Categorical.B_Theory.StarTheory (Framework (..))
-import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..))
+import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..), Guard)
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
@@ -37,9 +37,9 @@ binaryPredicate lp paramMLP pt = do
   let label = labelA @frmwk pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
--- | Sentence: forall x. phi(x) via bigWedge from the theory.
---   Works for any framework. The quantifier (bigWedge) handles
---   both the monadic predicate and the reduction.
+-- | Sentence: forall x in S. phi(x) — a guarded quantifier.
+--   The guard (Guard frmwk a) specifies the subset S to quantify over.
+--   The predicate (binaryPredicate) is pointwise on elements of type a.
 binarySentence ::
   forall frmwk a.
   ( BinaryKlFun frmwk,
@@ -49,9 +49,9 @@ binarySentence ::
     a ~ Point frmwk
   ) =>
   ParamsLogic (Omega frmwk) ->
-  Dom a ->
+  Guard frmwk a ->
   ParamsMLP ->
   M frmwk (Omega frmwk)
-binarySentence lp domain paramMLP =
-  bigWedge @a @frmwk @(Omega frmwk) lp domain
+binarySentence lp guard paramMLP =
+  bigWedge lp guard
     (binaryPredicate @frmwk lp paramMLP)

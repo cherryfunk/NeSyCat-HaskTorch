@@ -16,8 +16,6 @@ import D_Grammatical.B_Theory.BinaryFormulas (binarySentence)
 
 -- | Binary axiom in FrmwkMeas (DATA + Dist).
 --   Evaluates the formula probabilistically (Mon = Dist).
---   Not used in the benchmark (which trains via binaryAxiomTens in FrmwkGeom,
---   then evaluates pointwise via classifierA @FrmwkMeas).
---   Available for probabilistic reasoning about axiom satisfaction.
+--   Guard is [Point FrmwkMeas] = [(Float, Float)] — a finite subset of R^2.
 binaryAxiomData :: [Point FrmwkMeas] -> ParamsMLP -> M FrmwkMeas (Omega FrmwkMeas)
-binaryAxiomData domain paramMLP = binarySentence @FrmwkMeas () domain paramMLP
+binaryAxiomData guard paramMLP = binarySentence @FrmwkMeas () guard paramMLP

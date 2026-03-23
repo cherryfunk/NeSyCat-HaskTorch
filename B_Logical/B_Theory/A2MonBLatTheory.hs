@@ -4,23 +4,32 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module B_Logical.B_Theory.A2MonBLatTheory where
+module B_Logical.B_Theory.A2MonBLatTheory
+  ( A2MonBLatTheory (..),
+    Guard,
+  )
+where
 
 import A_Categorical.B_Theory.StarTheory (Framework (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import Data.Kind (Type)
 
+-- | Guard: the subset that a guarded quantifier ranges over.
+--   Indexed by framework and element type.
+--   FrmwkMeas: Guard = [a]  (finite subset as a list)
+--   FrmwkGeom: Guard = Torch.Tensor  (batch tensor)
+type family Guard frmwk a :: Type
+
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
---   Quantifiers are monadic: they take a Kleisli predicate (a -> M frmwk tau)
---   and return M frmwk tau. The monad comes from the framework.
---   For Identity monad (FrmwkGeom), this is pure computation.
---   For Dist (FrmwkMeas), this is the Kleisli lift (commutator + fold).
+--   Guarded quantifiers: given a pointwise predicate (a -> M frmwk tau)
+--   and a guard (Guard frmwk a) specifying the subset, quantify over
+--   that subset. The quantifier chooses the density; the expectation
+--   machinery (ExpectGiry/ExpectDist) provides the base measure per type.
 class
   (TwoMonBLatTheory frmwk tau, Framework frmwk, Monad (M frmwk)) =>
   A2MonBLatTheory a frmwk tau
   where
-  type Dom a :: Type
-  bigWedge :: ParamsLogic tau -> Dom a -> (a -> M frmwk tau) -> M frmwk tau
-  bigVee :: ParamsLogic tau -> Dom a -> (a -> M frmwk tau) -> M frmwk tau
-  bigOplus :: Dom a -> (a -> M frmwk tau) -> M frmwk tau
-  bigOtimes :: Dom a -> (a -> M frmwk tau) -> M frmwk tau
+  bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
+  bigVee :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
+  bigOplus :: Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
+  bigOtimes :: Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau

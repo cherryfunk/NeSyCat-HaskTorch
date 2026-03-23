@@ -20,6 +20,7 @@ instance DataObj Natural
 instance DataObj Integer
 instance DataObj Char
 instance DataObj Double
+instance DataObj Float
 instance DataObj Int
 instance DataObj ()
 instance (DataObj a, DataObj b) => DataObj (a, b)
