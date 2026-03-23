@@ -11,11 +11,14 @@ flowchart TD
     report-1[Sub-Agent: report-1]
     if-report{If/Else:<br/>Conditional Branch}
     update-docs[Sub-Agent: update-docs]
+    auto-commit[Sub-Agent: auto-commit]
     write-issues[Sub-Agent: write-issues]
+    gen-fix-plan[Sub-Agent: gen-fix-plan]
     write-issues-build[Sub-Agent: write-issues-build]
+    gen-fix-plan-build[Sub-Agent: gen-fix-plan-build]
+    build-fail-report[Sub-Agent: build-fail-report]
     end_ok([End])
     end_issues([End])
-    build-fail-report[Sub-Agent: build-fail-report]
     end_fail([End])
 
     start-1 --> build-1
@@ -27,10 +30,13 @@ flowchart TD
     report-1 --> if-report
     if-report -->|No bugs| update-docs
     if-report -->|Has issues| write-issues
-    update-docs --> end_ok
-    write-issues --> end_issues
+    update-docs --> auto-commit
+    auto-commit --> end_ok
+    write-issues --> gen-fix-plan
+    gen-fix-plan --> end_issues
     build-fail-report --> write-issues-build
-    write-issues-build --> end_fail
+    write-issues-build --> gen-fix-plan-build
+    gen-fix-plan-build --> end_fail
 ```
 
 ## Workflow Execution Guide
@@ -73,21 +79,13 @@ Run `cabal build all` in the NeSyCat-HaskTorch project directory. Report whether
 ```
 Run the NeSyCat-HaskTorch experiments and capture performance metrics.
 
-1. Run `cabal run binary-test-real -- +RTS -s` and capture:
-   - Final accuracy/scores from stdout
-   - Wall clock time and memory usage from RTS stats
+1. Run `cabal run binary-benchmark -- +RTS -s` and capture accuracy, F1, scores, wall clock time, peak memory.
 
-2. If `cabal run binary-test-jit-real` exists and builds, run it too.
+2. Run `cabal run binary-test-real -- +RTS -s` and capture final loss, wall clock time, peak memory.
 
-3. If `cabal run binary-test-real-beta` exists and builds, run it too.
+3. Run `cabal run binary-test-real-beta -- +RTS -s` and capture final loss, learned beta, wall clock time, peak memory.
 
-For each experiment, report:
-- Experiment name
-- Accuracy/classification scores
-- Training time (wall clock)
-- Peak memory usage
-
-Format results as a clear table. Flag any experiment that fails to run. Output EXPERIMENTS_PASS if all ran successfully, EXPERIMENTS_FAIL if any failed.
+For each experiment, report: experiment name, key scores, wall clock time, peak memory. Format as a table. Flag any NaN/Infinity as a BUG. Output EXPERIMENTS_PASS if all ran without crashing, EXPERIMENTS_FAIL if any crashed.
 ```
 
 #### layer-1(Sub-Agent: layer-1)
@@ -163,7 +161,7 @@ List EVERY issue found, categorized as:
 - **ALL_CLEAR**: ONLY if there are zero BLOCKING and zero BUG issues
 - **ISSUES_FOUND**: If ANY blocking or bug issues exist, even "known" ones
 
-A "known" bug is NOT the same as "acceptable". If JIT produces NaN, the verdict is ISSUES_FOUND. If orphaned modules exist, list them as DEBT. Never suppress or downplay findings — the whole point of this report is to surface problems, not hide them.
+A "known" bug is NOT the same as "acceptable". If any experiment produces NaN, the verdict is ISSUES_FOUND. If orphaned modules exist, list them as DEBT. Never suppress or downplay findings — the whole point of this report is to surface problems, not hide them.
 ```
 
 #### update-docs(Sub-Agent: update-docs)
@@ -194,8 +192,46 @@ Do the following:
    - Keep the document concise and accurate
 4. **Check each agent file** in `.claude/agents/` — update any that reference domains, modules, or structures that no longer exist
 5. **Delete `.claude/ISSUES.md`** if it exists — since there are no issues, the file should not be present.
+6. **Delete `.claude/FIX_PLAN.md`** if it exists — since there are no issues, no fix plan is needed.
 
 IMPORTANT: Only update what is factually wrong. Do not rewrite working descriptions, add unnecessary detail, or change the document's style. Preserve the author's voice and structure.
+```
+
+#### auto-commit(Sub-Agent: auto-commit)
+
+**Description**: Auto-commit verified changes to git
+
+**Model**: sonnet
+
+**Tools**: Bash, Read
+
+**Prompt**:
+
+```
+All verification checks passed and .claude/ docs have been updated. Commit the current state to git.
+
+1. Run `git status` to see all changes (staged, unstaged, untracked)
+2. Add specific changed files with `git add`:
+   - Any modified `.claude/*.md` files (CLAUDE.md, agents, etc.)
+   - Any modified source files (`.hs`, `.cabal`)
+   - Any deleted files
+   - Do NOT add `.claude/settings.local.json`, `.env`, or other local-only files
+3. Run `git diff --staged` to review what will be committed
+4. Create a commit with message format:
+   ```
+   verify: all checks passed
+   
+   Build: PASS
+   Experiments: PASS (list executables and final losses)
+   Layers: CONSISTENT
+   
+   Changes included in this commit:
+   - (list the actual file changes being committed)
+   ```
+5. Do NOT push to remote
+6. Print the commit hash and summary
+
+IMPORTANT: If `git status` shows no changes to commit, just print 'Nothing to commit — working tree clean' and exit without error.
 ```
 
 #### write-issues(Sub-Agent: write-issues)
@@ -238,6 +274,68 @@ Rules:
 - The file path is `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md`
 ```
 
+#### gen-fix-plan(Sub-Agent: gen-fix-plan)
+
+**Description**: Generate fix plan from ISSUES.md
+
+**Model**: opus
+
+**Tools**: Read, Write, Glob, Grep
+
+**Prompt**:
+
+```
+Read `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md` and generate a concrete fix plan for every issue listed.
+
+For each issue, analyze the relevant source code and produce:
+
+### For BLOCKING issues:
+- Exact error and root cause
+- File(s) to modify with line numbers
+- Proposed code change (show old → new)
+- Priority: CRITICAL
+
+### For BUG issues:
+- Root cause analysis (read the relevant source files)
+- File(s) to modify with line numbers
+- Proposed fix (show old → new code)
+- Impact assessment: what else might be affected
+- Priority: HIGH
+
+### For DEBT issues:
+- For each orphaned/unused module, decide:
+  - **DELETE** if truly dead code with no future purpose
+  - **KEEP** if it's aspirational scaffolding for future domains/features (explain why)
+  - **REFACTOR** if the code is valuable but needs to be connected
+- For each decision, list the exact files and .cabal entries to change
+- Priority: LOW
+
+Write the plan to `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/FIX_PLAN.md` with this structure:
+
+```markdown
+# Fix Plan
+
+_Generated: {today's date}_
+_Based on: .claude/ISSUES.md_
+
+## Priority 1: BLOCKING
+{fixes for blocking issues}
+
+## Priority 2: BUG
+{fixes for bug issues}
+
+## Priority 3: DEBT
+{fixes for debt issues, with DELETE/KEEP/REFACTOR decisions}
+
+## Estimated Changes
+- Files to modify: {count}
+- Files to delete: {count}
+- .cabal entries to update: {count}
+```
+
+Overwrite the file completely each time.
+```
+
 #### write-issues-build(Sub-Agent: write-issues-build)
 
 **Description**: Write build failure to .claude/ISSUES.md
@@ -274,6 +372,55 @@ None (build failed, layer check not run)
 Rules:
 - **Overwrite** the file completely each time
 - The file path is `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md`
+```
+
+#### gen-fix-plan-build(Sub-Agent: gen-fix-plan-build)
+
+**Description**: Generate fix plan for build failure
+
+**Model**: opus
+
+**Tools**: Read, Write, Glob, Grep
+
+**Prompt**:
+
+```
+Read `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md` and generate a concrete fix plan for the build failure.
+
+Analyze the build error:
+1. Read the failing source file(s)
+2. Identify the exact root cause
+3. Propose the minimal fix (show old → new code)
+4. Check if the fix might affect other modules
+
+Write the plan to `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/FIX_PLAN.md` with this structure:
+
+```markdown
+# Fix Plan
+
+_Generated: {today's date}_
+_Based on: .claude/ISSUES.md_
+
+## Priority 1: BLOCKING — Build Failure
+
+### Root Cause
+{analysis}
+
+### Fix
+**File**: {path}
+**Change**:
+```haskell
+-- OLD:
+{old code}
+-- NEW:
+{new code}
+```
+
+### Verification
+`cabal build all` should succeed after this change.
+```
+
+Overwrite the file completely each time.
 ```
 
 #### build-fail-report(Sub-Agent: build-fail-report)

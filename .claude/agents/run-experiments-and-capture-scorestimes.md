@@ -6,13 +6,13 @@ model: sonnet
 ---
 Run the NeSyCat-HaskTorch experiments and capture performance metrics.
 
-1. Run `cabal run binary-test-real -- +RTS -s` and capture:
+1. Run `cabal run binary-benchmark -- +RTS -s` and capture:
    - Final accuracy/scores from stdout
    - Wall clock time and memory usage from RTS stats
 
-2. If `cabal run binary-test-jit-real` exists and builds, run it too.
+2. Run `cabal run binary-test-real -- +RTS -s` and capture the same.
 
-3. If `cabal run binary-test-real-beta` exists and builds, run it too.
+3. Run `cabal run binary-test-real-beta -- +RTS -s` and capture the same.
 
 For each experiment, report:
 - Experiment name

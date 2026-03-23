@@ -15,7 +15,6 @@ cabal build all
 # Run the executables
 cabal run binary-benchmark        # Binary classification with benchmarks (accuracy, F1)
 cabal run binary-test-real        # Binary classification with TensReal logic
-cabal run binary-test-jit-real    # JIT-compiled variant (known NaN bug)
 cabal run binary-test-real-beta   # Beta-distribution variant
 
 # Run with RTS options (executables with -rtsopts)

@@ -35,4 +35,4 @@ List EVERY issue found, categorized as:
 - **ALL_CLEAR**: ONLY if there are zero BLOCKING and zero BUG issues
 - **ISSUES_FOUND**: If ANY blocking or bug issues exist, even "known" ones
 
-A "known" bug is NOT the same as "acceptable". If JIT produces NaN, the verdict is ISSUES_FOUND. If orphaned modules exist, list them as DEBT. Never suppress or downplay findings — the whole point of this report is to surface problems, not hide them.
+A "known" bug is NOT the same as "acceptable". If any experiment produces NaN, the verdict is ISSUES_FOUND. If orphaned modules exist, list them as DEBT. Never suppress or downplay findings — the whole point of this report is to surface problems, not hide them.
