@@ -29,12 +29,6 @@ library
     B_Logical.BA_Interpretation.Tensor,
     -- B_Logical.BA_Interpretation.TensReal,  -- merged into Tensor.hs
     B_Logical.BA_Interpretation.Boolean,
-    B_Logical.BA_Interpretation.Real,
-    -- B_Logical.BA_Interpretation.Goedel,  -- TODO: make proper A2MonBLatTheory instances
-    -- B_Logical.BA_Interpretation.Lukasiewicz,  -- TODO: make proper A2MonBLatTheory instances
-    -- B_Logical.BA_Interpretation.Product,  -- TODO: make proper A2MonBLatTheory instances
-    -- B_Logical.BA_Interpretation.SProd,  -- TODO: make proper A2MonBLatTheory instances
-    -- B_Logical.BA_Interpretation.LTNp,  -- TODO: make proper A2MonBLatTheory instances
     B_Logical.BA_Interpretation.JitCompile,
     C_Domain.B_Theory.BinaryTheory,
     C_Domain.BC_Extension.BinaryDataExtension,
