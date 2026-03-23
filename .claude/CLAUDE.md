@@ -12,12 +12,11 @@ Haskell implementation of the **NeSyCat** neurosymbolic framework using HaskTorc
 # Build the library and all executables
 cabal build all
 
-# Run the main executables
-cabal run nesycat-hasktorch       # Main (formula-based binary classification)
+# Run the executables
+cabal run binary-benchmark        # Binary classification with benchmarks (accuracy, F1)
 cabal run binary-test-real        # Binary classification with TensReal logic
-cabal run binary-test-jit-real    # JIT-compiled variant
+cabal run binary-test-jit-real    # JIT-compiled variant (known NaN bug)
 cabal run binary-test-real-beta   # Beta-distribution variant
-cabal run mnist-test              # MNIST classification
 
 # Run with RTS options (executables with -rtsopts)
 cabal run binary-test-real -- +RTS -s
@@ -32,26 +31,26 @@ The codebase mirrors the paper's layered categorical structure. Each top-level d
 | Sub-step | Role | What it defines |
 |----------|------|----------------|
 | **A_Category** | Category GADTs | GADT witnesses for the interpreting category (DATA, TENS) |
-| **B_Vocabulary** | Type universe | Which Haskell types/functors are valid at this layer |
-| **C_Inhabitation** | Υ functor | (reserved) Inhabitation functor mapping vocabularies into categories |
-| **D_Theory** | Abstract theory | Type classes declaring sort/function/relation symbols |
-| **E_Extension** | Theory → Vocab | Type family instances mapping abstract names → Haskell types |
-| **F_Interpretation** | Semantics | Concrete functions implementing the abstract operations |
-| **G_Parameters** | Learning | Training loops, optimization, parameter management |
+| **B_Theory** | Abstract theory | Type classes declaring sort/function/relation symbols |
+| **BA_Interpretation** | Semantics | Concrete functions implementing the abstract operations |
+| **BC_Extension** | Theory → Vocab | Type family instances mapping abstract names → Haskell types |
+| **C_TypeSystem** | Type universe | Which Haskell types/functors are valid at this layer |
+| **D_Vocabulary** | Vocabulary | Vocabulary types for the layer |
+| **DA_Realization** | Realization | Connects vocabulary to concrete implementations |
 
 ### Layers (top-level directories)
 
 - **`A_Categorical/`** — Alpha-level: the ambient 2-category (Hask). Defines monad theories (`Ident`, `Dist`, `Giry`) and their natural transformations (`eta`/`mu`). This is the categorical foundation that all other layers build on.
 
-- **`B_Logical/`** — Beta-level: logical connectives. The `TwoMonBLatTheory` class defines a double-monoid bounded lattice (∨, ∧, ⊕, ⊗ with bounds). Multiple interpretations exist: `Boolean`, `Real` (LogSumExp/TensReal), `Goedel`, `Lukasiewicz`, `Product`, `SProd`, `LTNp`. The `TENS` and `FDATA` modules are the two main tensor-based interpretations.
+- **`B_Logical/`** — Beta-level: logical connectives. The `TwoMonBLatTheory` class defines a double-monoid bounded lattice (∨, ∧, ⊕, ⊗ with bounds). Interpretations: `Boolean`, `Real` (LogSumExp/TensReal). The `TENS` and `FDATA` modules are the two main tensor-based interpretations.
 
-- **`C_Domain/`** — Gamma-level: domain-specific theories. Each problem domain (Binary, MNIST, Dice, Crossing, Weather, Countable) has its own theory declaring domain sorts and function symbols, plus extensions and interpretations using HaskTorch tensors.
+- **`C_Domain/`** — Gamma-level: domain-specific theories. Currently only the Binary domain exists, with its own theory declaring domain sorts and function symbols, plus extensions and interpretations using HaskTorch tensors.
 
-- **`D_Grammatical/`** — Delta-level: formulas/axioms. Combines logical connectives with domain interpretations to express axioms (e.g., `axiomReal` builds ∀-quantified classification constraints). Executables (`Main.hs`, `BinaryMainReal.hs`, `MNISTMain.hs`) live here.
+- **`D_Grammatical/`** — Delta-level: formulas/axioms. Combines logical connectives with domain interpretations to express axioms (e.g., `axiomReal` builds ∀-quantified classification constraints). Executables live here.
 
-- **`E_Benchmark/`** — Evaluation metrics (accuracy, F1, confidence).
+- **`E_Inferential/`** — Objective functions: `Softplus` (pen(sat) = -log(σ(sat))), `CrossEntropy`, `NegLog`, `OneMinus`, `Combined` (λ·J_data + (1-λ)·J_know).
 
-- **`E_Inference/`** — Objective functions: `Softplus` (pen(sat) = -log(σ(sat))), `CrossEntropy`, `NegLog`, `OneMinus`, `Combined` (λ·J_data + (1-λ)·J_know).
+- **`F_Statistical/`** — Evaluation metrics (accuracy, F1, confidence).
 
 ### Data flow
 

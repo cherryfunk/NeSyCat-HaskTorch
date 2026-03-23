@@ -16,7 +16,7 @@ Check the following:
 
 4. **Category connection**: Verify that A_Category modules (DATA, TENS GADTs) are referenced by the interpretations — i.e., the interpretations actually use the categorical witnesses.
 
-5. **Domain completeness**: For each domain in C_Domain (Binary, MNIST, Dice, Crossing, Weather, Countable), check which sub-pipeline steps (A through G) exist.
+5. **Domain completeness**: For each domain in C_Domain, check which sub-pipeline steps (A through G) exist. Do NOT hardcode domain names — discover them dynamically by scanning the actual directory structure.
 
 Scan the actual source files using Glob and Grep. Report a structured summary:
 - For each layer: which sub-steps exist, which are missing
