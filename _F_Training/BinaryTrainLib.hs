@@ -8,7 +8,6 @@
 module BinaryTrainLib
   ( trainBinary,
     trainBinaryBeta,
-    trainBinaryJIT,
     generateBinaryDataset,
     BinaryDataset (..),
   )
@@ -28,8 +27,7 @@ import Torch.Autograd (IndependentTensor (..), makeIndependent, toDependent)
 import Torch.Device (Device (..), DeviceType (..))
 import Torch.Optim (mkAdam, runStep)
 import Torch.Tensor (toDevice)
-import Torch.NN (HasForward (..))
-import Torch.Script (IValue (..), toScriptModule, trace)
+import Torch.NN ()
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- | A binary classification dataset (circle-in-square).
@@ -181,83 +179,6 @@ trainBinaryBeta numEpochs learningRate initBeta lambda ds = do
   putStrLn $ printf "[Training complete] %.2fs | learned beta=%.4f" totalDiff learnedBetaVal
 
   return (paramMLPOpti, learnedBeta)
-
--- | Train binary classification with JIT-compiled axiom graph.
---   Uses torch.jit.trace to compile the computation graph before training.
---   Returns optimized parameters theta*.
-trainBinaryJIT ::
-  Int ->    -- epochs
-  Float ->  -- learning rate
-  Float ->  -- beta (fixed)
-  BinaryDataset ->
-  IO ParamsMLP
-trainBinaryJIT numEpochs learningRate betaFixed ds = do
-  initModel <- toDevice (Device CPU 0) <$> Torch.sample binarySpecReal
-  let td = trainData ds
-      lrTens = Torch.toDevice (Device CPU 0) (Torch.asTensor learningRate)
-      betaT = Torch.asTensor betaFixed
-      paramShapes = map Torch.shape (map toDependent (Torch.flattenParameters initModel))
-      initOpt = mkAdam 0 0.9 0.999 (Torch.flattenParameters initModel)
-
-  putStrLn $
-    printf "[JIT Training] %d epochs, beta=%.2f, lr=%.4f"
-      numEpochs betaFixed learningRate
-
-  jitStart <- getCurrentTime
-
-  -- 1. Compile the computational graph
-  let initPacked = packParams (map toDependent (Torch.flattenParameters initModel))
-  rawMod <- trace "axiom" "forward"
-    (\[b, d, pp] -> do
-       let paramTensors = unpackParams paramShapes pp
-           model = Torch.replaceParameters initModel (map IndependentTensor paramTensors)
-           sat = binaryAxiomTens b d model
-           satDyn = toDynamic sat
-           loss = negate (Torch.log (Torch.sigmoid satDyn))
-       return [loss]
-    )
-    [betaT, td, initPacked]
-  scriptMod <- toScriptModule rawMod
-
-  traceEnd <- getCurrentTime
-  putStrLn $ printf "  [Trace time: %.2fs]" (realToFrac (diffUTCTime traceEnd jitStart) :: Double)
-
-  -- 2. Training loop using compiled graph
-  (finalParams, _) <- foldLoop (Torch.flattenParameters initModel, initOpt) [1..numEpochs] $ \(params, opt) epoch -> do
-    let paramTensors = map toDependent params
-        packedParams = packParams paramTensors
-        tempModel = Torch.replaceParameters initModel params
-        result = forward scriptMod [IVTensor betaT, IVTensor td, IVTensor packedParams]
-    jitLoss <- case result of
-      IVTensor t -> return t
-      IVTensorList (t:_) -> return t
-      _ -> error "JIT returned unexpected type"
-    (newModel, newOpt) <- runStep tempModel opt jitLoss lrTens
-    if epoch `mod` 100 == 0 || epoch == 1 || epoch == numEpochs
-      then do
-        now <- getCurrentTime
-        let lv = Torch.asValue jitLoss :: Float
-            ms = (realToFrac (diffUTCTime now jitStart) :: Double) * 1000
-        putStrLn $ printf "[Epoch %3d/%d] J=%7.5f | %.2fms" epoch numEpochs lv ms
-      else return ()
-    return (Torch.flattenParameters newModel, newOpt)
-
-  jitEnd <- getCurrentTime
-  putStrLn $ printf "[Training complete] %.2fs (incl. trace)" (realToFrac (diffUTCTime jitEnd jitStart) :: Double)
-
-  return (Torch.replaceParameters initModel finalParams)
-
-packParams :: [Torch.Tensor] -> Torch.Tensor
-packParams ts = Torch.cat (Torch.Dim 0) (map Torch.flattenAll ts)
-
-unpackParams :: [[Int]] -> Torch.Tensor -> [Torch.Tensor]
-unpackParams shapes packed = go 0 shapes
-  where
-    go _ [] = []
-    go offset (sh : rest) =
-      let sz = product sh
-          t = Torch.reshape sh $ Torch.sliceDim 0 offset (offset + sz) 1 packed
-       in t : go (offset + sz) rest
 
 -- | One beta-optimization step via manual SGD. Clamps beta > 0.01.
 stepBeta :: IndependentTensor -> Torch.Tensor -> Float -> IO IndependentTensor

@@ -91,19 +91,6 @@ executable binary-test-real
     time
   default-language: Haskell2010
 
-executable binary-test-jit-real
-  main-is: BinaryTrainJIT.hs
-  hs-source-dirs: _F_Training
-  ghc-options: -rtsopts
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    mtl,
-    containers,
-    hasktorch,
-    time
-  default-language: Haskell2010
-
 executable binary-test-real-beta
   main-is: BinaryTrainBeta.hs
   hs-source-dirs: _F_Training

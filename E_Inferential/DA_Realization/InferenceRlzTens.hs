@@ -10,7 +10,8 @@ import qualified Torch
 instance InferenceVocab Torch.Tensor where
   -- \| softplus(sat) = -log(sigma(sat))
   softplus :: Torch.Tensor -> Torch.Tensor
-  softplus sat = negate (Torch.log (Torch.sigmoid sat))
+  softplus sat = negate (logSigmoid sat)
+    where logSigmoid x = negate (Torch.log (Torch.exp (negate x) `Torch.add` Torch.onesLike x))
 
   -- \| oneMinus(oneTens, sat) = 1 - sat
   oneMinus :: Torch.Tensor -> Torch.Tensor -> Torch.Tensor

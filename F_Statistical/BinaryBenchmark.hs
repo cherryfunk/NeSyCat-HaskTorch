@@ -8,7 +8,6 @@
 --   Training modes:
 --     cabal run binary-benchmark                 -- fixed beta (default)
 --     cabal run binary-benchmark -- beta          -- learnable beta
---     cabal run binary-benchmark -- jit           -- JIT compiled
 module Main where
 
 -- Training (epsilon level) -- separate module
@@ -17,7 +16,6 @@ import BinaryTrainLib
     generateBinaryDataset,
     trainBinary,
     trainBinaryBeta,
-    trainBinaryJIT,
   )
 
 -- Domain theory (gamma level) -- classifierA, labelA
@@ -48,8 +46,6 @@ main = do
       (params, learnedBeta) <- trainBinaryBeta 1000 0.001 2.0 1.0 ds
       putStrLn $ printf "Learned beta: %.4f" (Torch.asValue learnedBeta :: Float)
       return params
-    "jit" ->
-      trainBinaryJIT 1000 0.001 1.75 ds
     _ ->
       trainBinary 1000 0.001 1.0 1.75 ds
 
