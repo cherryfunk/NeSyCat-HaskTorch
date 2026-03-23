@@ -1,5 +1,5 @@
 {
-  "id": "workflow-1774275343192",
+  "id": "workflow-1774287368936",
   "name": "nesycat-verify",
   "version": "1.0.0",
   "nodes": [
@@ -8,8 +8,8 @@
       "type": "start",
       "name": "start-1",
       "position": {
-        "x": 100,
-        "y": 300
+        "x": 210,
+        "y": 315
       },
       "data": {
         "label": "Start"
@@ -20,17 +20,17 @@
       "type": "subAgent",
       "name": "build-1",
       "position": {
-        "x": 400,
-        "y": 300
+        "x": 360,
+        "y": 315
       },
       "data": {
         "description": "Build the project with cabal",
         "prompt": "Run `cabal build all` in the NeSyCat-HaskTorch project directory. Report whether the build succeeds or fails. If it fails, capture the full error output including which module failed and the exact compiler error. Output a clear verdict: BUILD_PASS or BUILD_FAIL followed by details.",
         "model": "sonnet",
         "tools": "Bash, Read",
-        "outputPorts": 1,
         "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/build-the-project-with-cabal.md",
-        "commandScope": "project"
+        "commandScope": "project",
+        "outputPorts": 1
       }
     },
     {
@@ -61,17 +61,17 @@
       "type": "subAgent",
       "name": "experiment-1",
       "position": {
-        "x": 1000,
-        "y": 125
+        "x": 1020,
+        "y": 345
       },
       "data": {
         "description": "Run experiments and capture scores/times",
-        "prompt": "Run the NeSyCat-HaskTorch experiments and capture performance metrics.\n\n1. Run `cabal run binary-test-real -- +RTS -s` and capture:\n   - Final accuracy/scores from stdout\n   - Wall clock time and memory usage from RTS stats\n\n2. If `cabal run binary-test-jit-real` exists and builds, run it too.\n\n3. If `cabal run binary-test-real-beta` exists and builds, run it too.\n\nFor each experiment, report:\n- Experiment name\n- Accuracy/classification scores\n- Training time (wall clock)\n- Peak memory usage\n\nFormat results as a clear table. Flag any experiment that fails to run. Output EXPERIMENTS_PASS if all ran successfully, EXPERIMENTS_FAIL if any failed.",
+        "prompt": "Run the NeSyCat-HaskTorch experiments and capture performance metrics.\n\n1. Run `cabal run binary-benchmark -- +RTS -s` and capture accuracy, F1, scores, wall clock time, peak memory.\n\n2. Run `cabal run binary-test-real -- +RTS -s` and capture final loss, wall clock time, peak memory.\n\n3. Run `cabal run binary-test-real-beta -- +RTS -s` and capture final loss, learned beta, wall clock time, peak memory.\n\nFor each experiment, report: experiment name, key scores, wall clock time, peak memory. Format as a table. Flag any NaN/Infinity as a BUG. Output EXPERIMENTS_PASS if all ran without crashing, EXPERIMENTS_FAIL if any crashed.",
         "model": "sonnet",
         "tools": "Bash, Read",
-        "outputPorts": 1,
         "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/run-experiments-and-capture-scorestimes.md",
-        "commandScope": "project"
+        "commandScope": "project",
+        "outputPorts": 1
       }
     },
     {
@@ -79,17 +79,17 @@
       "type": "subAgent",
       "name": "layer-1",
       "position": {
-        "x": 1000,
-        "y": 475
+        "x": 1020,
+        "y": 165
       },
       "data": {
         "description": "Verify ABCDEFG layer consistency",
-        "prompt": "Verify the ABCDEFG pipeline consistency of the NeSyCat-HaskTorch project. The project has layers A_Categorical, B_Logical, C_Domain, D_Grammatical, and within each layer modules follow the A→B→C→D→E→F→G sub-pipeline.\n\nCheck the following:\n\n1. **Theory → Extension coverage**: For every type class declared in D_Theory modules, verify there is a corresponding E_Extension module with type family instances. List any theories without extensions.\n\n2. **Vocabulary → Realization coverage**: For every vocabulary type defined in B_Vocabulary modules, verify there is a realization (interpretation) that connects it. List any vocabularies without realizations.\n\n3. **Extension → Interpretation coverage**: For every E_Extension, verify there is a matching F_Interpretation module that provides concrete implementations. List any extensions without interpretations.\n\n4. **Category connection**: Verify that A_Category modules (DATA, TENS GADTs) are referenced by the interpretations — i.e., the interpretations actually use the categorical witnesses.\n\n5. **Domain completeness**: For each domain in C_Domain (Binary, MNIST, Dice, Crossing, Weather, Countable), check which sub-pipeline steps (A through G) exist.\n\nScan the actual source files using Glob and Grep. Report a structured summary:\n- For each layer: which sub-steps exist, which are missing\n- Any orphaned modules (exist but not connected)\n- Overall verdict: LAYERS_CONSISTENT or LAYERS_INCONSISTENT with specific gaps listed.",
+        "prompt": "Verify the ABCDEFG pipeline consistency of the NeSyCat-HaskTorch project. The project has layers A_Categorical, B_Logical, C_Domain, D_Grammatical, and within each layer modules follow the A→B→C→D→E→F→G sub-pipeline.\n\nCheck the following:\n\n1. **Theory → Extension coverage**: For every type class declared in D_Theory modules, verify there is a corresponding E_Extension module with type family instances. List any theories without extensions.\n\n2. **Vocabulary → Realization coverage**: For every vocabulary type defined in B_Vocabulary modules, verify there is a realization (interpretation) that connects it. List any vocabularies without realizations.\n\n3. **Extension → Interpretation coverage**: For every E_Extension, verify there is a matching F_Interpretation module that provides concrete implementations. List any extensions without interpretations.\n\n4. **Category connection**: Verify that A_Category modules (DATA, TENS GADTs) are referenced by the interpretations — i.e., the interpretations actually use the categorical witnesses.\n\n5. **Domain completeness**: For each domain in C_Domain, check which sub-pipeline steps (A through G) exist. Do NOT hardcode domain names — discover them dynamically by scanning the actual directory structure.\n\nScan the actual source files using Glob and Grep. Report a structured summary:\n- For each layer: which sub-steps exist, which are missing\n- Any orphaned modules (exist but not connected)\n- Overall verdict: LAYERS_CONSISTENT or LAYERS_INCONSISTENT with specific gaps listed.",
         "model": "opus",
         "tools": "Bash, Read, Glob, Grep",
-        "outputPorts": 1,
         "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/verify-abcdefg-layer-consistency.md",
-        "commandScope": "project"
+        "commandScope": "project",
+        "outputPorts": 1
       }
     },
     {
@@ -97,29 +97,148 @@
       "type": "subAgent",
       "name": "report-1",
       "position": {
-        "x": 1300,
-        "y": 300
+        "x": 1020,
+        "y": -15
       },
       "data": {
         "description": "Consolidate verification results into report",
-        "prompt": "Consolidate all verification results from the previous steps into a clear summary report.\n\nStructure the report as:\n\n## NeSyCat-HaskTorch Verification Report\n\n### 1. Build Status\n- PASS/FAIL + details\n\n### 2. Experiment Results\n- Table of experiment scores and times\n- Any regressions or failures noted\n\n### 3. Layer Consistency\n- ABCDEFG coverage per layer\n- Missing connections or gaps\n\n### Overall Verdict\n- ALL_CLEAR if everything passes\n- ISSUES_FOUND with a prioritized list of what needs attention\n\nBe concise but complete. This report should give the developer a quick yes/no on whether the project is healthy, with details only where something needs fixing.",
+        "prompt": "Consolidate all verification results from the previous steps into a clear summary report.\n\nStructure the report as:\n\n## NeSyCat-HaskTorch Verification Report\n\n### 1. Build Status\n- PASS/FAIL + details\n\n### 2. Experiment Results\n- Table of experiment scores and times\n- **ALWAYS report every issue, even known ones.** NaN losses, divergences, numerical instabilities, missing eval blocks — list them ALL every time. A known bug is still a bug.\n- Flag any regressions compared to expected behavior\n\n### 3. Layer Consistency\n- ABCDEFG coverage per layer\n- Missing connections or gaps\n- **ALWAYS list orphaned modules** (modules that exist but are never imported)\n- **ALWAYS list placeholder-only modules** (modules with no real code)\n\n### 4. Issue Registry\nList EVERY issue found, categorized as:\n- **BLOCKING**: Build failures, crashes, missing modules that break the pipeline\n- **BUG**: NaN losses, numerical instabilities, divergences, incorrect results\n- **DEBT**: Orphaned modules, unused code, placeholder files, stale references\n- **INFO**: Observations that aren't issues but worth noting\n\n### Overall Verdict\n- **ALL_CLEAR**: ONLY if there are zero BLOCKING and zero BUG issues\n- **ISSUES_FOUND**: If ANY blocking or bug issues exist, even \"known\" ones\n\nA \"known\" bug is NOT the same as \"acceptable\". If JIT produces NaN, the verdict is ISSUES_FOUND. If orphaned modules exist, list them as DEBT. Never suppress or downplay findings — the whole point of this report is to surface problems, not hide them.",
+        "model": "sonnet",
+        "tools": "Bash, Read",
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/consolidate-verification-results-into-report.md",
+        "commandScope": "project",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "if-report",
+      "type": "ifElse",
+      "name": "if-report",
+      "position": {
+        "x": 1380,
+        "y": 240
+      },
+      "data": {
+        "evaluationTarget": "Check the Issue Registry in the report. Look at BLOCKING and BUG categories specifically.",
+        "branches": [
+          {
+            "label": "No bugs",
+            "condition": "The report verdict is ALL_CLEAR AND there are zero BLOCKING issues AND zero BUG issues in the Issue Registry."
+          },
+          {
+            "label": "Has issues",
+            "condition": "The report verdict is ISSUES_FOUND OR there are any BLOCKING or BUG issues listed."
+          }
+        ],
+        "outputPorts": 2
+      }
+    },
+    {
+      "id": "update-docs",
+      "type": "subAgent",
+      "name": "update-docs",
+      "position": {
+        "x": 1710,
+        "y": 150
+      },
+      "data": {
+        "description": "Update .claude/ docs to match current project state",
+        "prompt": "Update the .claude/ documentation to accurately reflect the current state of the NeSyCat-HaskTorch project. You have the verification report from the previous steps as context.\n\nDo the following:\n\n1. **Read** the current `.claude/CLAUDE.md`\n2. **Scan** the actual project structure (directories, .cabal file, source files) to determine:\n   - Which executables actually exist and are runnable\n   - Which layers and domains currently exist\n   - Which logical interpretations are present\n   - The actual sub-pipeline naming convention (A_Category, B_Theory, BA_Interpretation, BC_Extension, C_TypeSystem, D_Vocabulary, DA_Realization) — NOT the idealized A-G names\n3. **Update CLAUDE.md** to match reality:\n   - Fix the Build & Run Commands section (only list executables that exist in the .cabal file)\n   - Fix the Architecture section (only list layers/domains that actually exist)\n   - Fix any references to removed modules or outdated structure\n   - Keep the document concise and accurate\n4. **Check each agent file** in `.claude/agents/` — update any that reference domains, modules, or structures that no longer exist\n5. **Delete `.claude/ISSUES.md`** if it exists — since there are no issues, the file should not be present.\n6. **Delete `.claude/FIX_PLAN.md`** if it exists — since there are no issues, no fix plan is needed.\n\nIMPORTANT: Only update what is factually wrong. Do not rewrite working descriptions, add unnecessary detail, or change the document's style. Preserve the author's voice and structure.",
+        "model": "opus",
+        "tools": "Bash, Read, Write, Edit, Glob, Grep",
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/update-claude-docs-to-match-current-project-state.md",
+        "commandScope": "project",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "auto-commit",
+      "type": "subAgent",
+      "name": "auto-commit",
+      "position": {
+        "x": 2070,
+        "y": 150
+      },
+      "data": {
+        "description": "Auto-commit verified changes to git",
+        "prompt": "All verification checks passed and .claude/ docs have been updated. Commit the current state to git.\n\n1. Run `git status` to see all changes (staged, unstaged, untracked)\n2. Add specific changed files with `git add`:\n   - Any modified `.claude/*.md` files (CLAUDE.md, agents, etc.)\n   - Any modified source files (`.hs`, `.cabal`)\n   - Any deleted files\n   - Do NOT add `.claude/settings.local.json`, `.env`, or other local-only files\n3. Run `git diff --staged` to review what will be committed\n4. Create a commit with message format:\n   ```\n   verify: all checks passed\n   \n   Build: PASS\n   Experiments: PASS (list executables and final losses)\n   Layers: CONSISTENT\n   \n   Changes included in this commit:\n   - (list the actual file changes being committed)\n   ```\n5. Do NOT push to remote\n6. Print the commit hash and summary\n\nIMPORTANT: If `git status` shows no changes to commit, just print 'Nothing to commit — working tree clean' and exit without error.",
         "model": "sonnet",
         "tools": "Bash, Read",
         "outputPorts": 1,
-        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/consolidate-verification-results-into-report.md",
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/auto-commit-verified-changes-to-git.md",
         "commandScope": "project"
       }
     },
     {
-      "id": "end-ok",
-      "type": "end",
-      "name": "end-ok",
+      "id": "write-issues",
+      "type": "subAgent",
+      "name": "write-issues",
       "position": {
-        "x": 1600,
-        "y": 300
+        "x": 1710,
+        "y": 420
       },
       "data": {
-        "label": "Done"
+        "description": "Write current issues to .claude/ISSUES.md",
+        "prompt": "Write the issue registry from the verification report to `.claude/ISSUES.md`.\n\nThe file should contain the FULL verification report's Issue Registry, structured as:\n\n```markdown\n# Current Issues\n\n_Last verified: {today's date}_\n\n## BLOCKING\n{list all blocking issues, or \"None\"}\n\n## BUG\n{list all bug issues with details}\n\n## DEBT\n{list all debt issues}\n\n## INFO\n{list all info items}\n```\n\nRules:\n- **Overwrite** the file completely each time — this is a snapshot, not a log\n- Include enough detail for each issue that someone reading it later understands what's wrong and where\n- Include the experiment scores/times table so regressions can be spotted across runs\n- The file path is `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md`",
+        "model": "sonnet",
+        "tools": "Write, Read",
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/write-current-issues-to-claudeissuesmd.md",
+        "commandScope": "project",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "gen-fix-plan",
+      "type": "subAgent",
+      "name": "gen-fix-plan",
+      "position": {
+        "x": 2070,
+        "y": 420
+      },
+      "data": {
+        "description": "Generate fix plan from ISSUES.md",
+        "prompt": "Read `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md` and generate a concrete fix plan for every issue listed.\n\nFor each issue, analyze the relevant source code and produce:\n\n### For BLOCKING issues:\n- Exact error and root cause\n- File(s) to modify with line numbers\n- Proposed code change (show old → new)\n- Priority: CRITICAL\n\n### For BUG issues:\n- Root cause analysis (read the relevant source files)\n- File(s) to modify with line numbers\n- Proposed fix (show old → new code)\n- Impact assessment: what else might be affected\n- Priority: HIGH\n\n### For DEBT issues:\n- For each orphaned/unused module, decide:\n  - **DELETE** if truly dead code with no future purpose\n  - **KEEP** if it's aspirational scaffolding for future domains/features (explain why)\n  - **REFACTOR** if the code is valuable but needs to be connected\n- For each decision, list the exact files and .cabal entries to change\n- Priority: LOW\n\nWrite the plan to `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/FIX_PLAN.md` with this structure:\n\n```markdown\n# Fix Plan\n\n_Generated: {today's date}_\n_Based on: .claude/ISSUES.md_\n\n## Priority 1: BLOCKING\n{fixes for blocking issues}\n\n## Priority 2: BUG\n{fixes for bug issues}\n\n## Priority 3: DEBT\n{fixes for debt issues, with DELETE/KEEP/REFACTOR decisions}\n\n## Estimated Changes\n- Files to modify: {count}\n- Files to delete: {count}\n- .cabal entries to update: {count}\n```\n\nOverwrite the file completely each time.",
+        "model": "opus",
+        "tools": "Read, Write, Glob, Grep",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/generate-fix-plan-from-issuesmd.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "write-issues-build",
+      "type": "subAgent",
+      "name": "write-issues-build",
+      "position": {
+        "x": 1020,
+        "y": 690
+      },
+      "data": {
+        "description": "Write build failure to .claude/ISSUES.md",
+        "prompt": "Write the build failure details to `.claude/ISSUES.md`.\n\nThe file should contain:\n\n```markdown\n# Current Issues\n\n_Last verified: {today's date}_\n\n## BLOCKING\n- **Build failure**: {include the full error details from the build failure analysis — module, error type, root cause, suggested fix}\n\n## BUG\nNone (build failed, experiments not run)\n\n## DEBT\nNone (build failed, layer check not run)\n\n## INFO\n- Build must be fixed before any other verification can proceed\n```\n\nRules:\n- **Overwrite** the file completely each time\n- The file path is `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md`",
+        "model": "sonnet",
+        "tools": "Write, Read",
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/write-build-failure-to-claudeissuesmd.md",
+        "commandScope": "project",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "gen-fix-plan-build",
+      "type": "subAgent",
+      "name": "gen-fix-plan-build",
+      "position": {
+        "x": 1395,
+        "y": 690
+      },
+      "data": {
+        "description": "Generate fix plan for build failure",
+        "prompt": "Read `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/ISSUES.md` and generate a concrete fix plan for the build failure.\n\nAnalyze the build error:\n1. Read the failing source file(s)\n2. Identify the exact root cause\n3. Propose the minimal fix (show old → new code)\n4. Check if the fix might affect other modules\n\nWrite the plan to `/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/FIX_PLAN.md` with this structure:\n\n```markdown\n# Fix Plan\n\n_Generated: {today's date}_\n_Based on: .claude/ISSUES.md_\n\n## Priority 1: BLOCKING — Build Failure\n\n### Root Cause\n{analysis}\n\n### Fix\n**File**: {path}\n**Change**:\n```haskell\n-- OLD:\n{old code}\n-- NEW:\n{new code}\n```\n\n### Verification\n`cabal build all` should succeed after this change.\n```\n\nOverwrite the file completely each time.",
+        "model": "opus",
+        "tools": "Read, Write, Glob, Grep",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/generate-fix-plan-for-build-failure.md",
+        "commandScope": "project"
       }
     },
     {
@@ -127,17 +246,41 @@
       "type": "subAgent",
       "name": "build-fail-report",
       "position": {
-        "x": 1000,
-        "y": 650
+        "x": 1020,
+        "y": 540
       },
       "data": {
         "description": "Analyze build failure and suggest fixes",
         "prompt": "The cabal build failed. Analyze the build error from the previous step.\n\n1. Identify the exact module and line causing the failure\n2. Read the failing source file to understand the context\n3. Diagnose the root cause (type error, missing import, missing instance, etc.)\n4. Suggest a concrete fix\n\nOutput a clear report with: failing module, error type, root cause, and suggested fix.",
         "model": "sonnet",
         "tools": "Bash, Read, Glob, Grep",
-        "outputPorts": 1,
         "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/analyze-build-failure-and-suggest-fixes.md",
-        "commandScope": "project"
+        "commandScope": "project",
+        "outputPorts": 1
+      }
+    },
+    {
+      "id": "end-ok",
+      "type": "end",
+      "name": "end-ok",
+      "position": {
+        "x": 2430,
+        "y": 150
+      },
+      "data": {
+        "label": "Done (Committed)"
+      }
+    },
+    {
+      "id": "end-issues",
+      "type": "end",
+      "name": "end-issues",
+      "position": {
+        "x": 2430,
+        "y": 420
+      },
+      "data": {
+        "label": "Done (Plan Ready)"
       }
     },
     {
@@ -145,11 +288,11 @@
       "type": "end",
       "name": "end-fail",
       "position": {
-        "x": 1300,
-        "y": 650
+        "x": 1755,
+        "y": 690
       },
       "data": {
-        "label": "Build Failed"
+        "label": "Build Failed (Plan Ready)"
       }
     }
   ],
@@ -199,19 +342,75 @@
     {
       "id": "c7",
       "from": "report-1",
-      "to": "end-ok",
+      "to": "if-report",
       "fromPort": "output",
       "toPort": "input"
     },
     {
       "id": "c8",
+      "from": "if-report",
+      "to": "update-docs",
+      "fromPort": "branch-0",
+      "toPort": "input"
+    },
+    {
+      "id": "c9",
+      "from": "if-report",
+      "to": "write-issues",
+      "fromPort": "branch-1",
+      "toPort": "input"
+    },
+    {
+      "id": "c10",
+      "from": "update-docs",
+      "to": "auto-commit",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c11",
+      "from": "auto-commit",
+      "to": "end-ok",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c12",
+      "from": "write-issues",
+      "to": "gen-fix-plan",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c13",
+      "from": "gen-fix-plan",
+      "to": "end-issues",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c14",
       "from": "build-fail-report",
+      "to": "write-issues-build",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c15",
+      "from": "write-issues-build",
+      "to": "gen-fix-plan-build",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c16",
+      "from": "gen-fix-plan-build",
       "to": "end-fail",
       "fromPort": "output",
       "toPort": "input"
     }
   ],
-  "createdAt": "2026-03-23T14:15:43.192Z",
-  "updatedAt": "2026-03-23T14:15:43.192Z",
+  "createdAt": "2026-03-23T17:36:08.936Z",
+  "updatedAt": "2026-03-23T17:36:08.936Z",
   "subAgentFlows": []
 }
