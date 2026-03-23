@@ -22,9 +22,6 @@ type family Guard frmwk a :: Type
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
 --   Guarded quantifiers: given a pointwise predicate (a -> M frmwk tau)
---   and a guard (Guard frmwk a) specifying the subset, quantify over
---   that subset. The quantifier chooses the density; the expectation
---   machinery (ExpectGiry/ExpectDist) provides the base measure per type.
 class
   (TwoMonBLatTheory frmwk tau, Framework frmwk, Monad (M frmwk)) =>
   A2MonBLatTheory a frmwk tau
