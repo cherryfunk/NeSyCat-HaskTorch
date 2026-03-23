@@ -1,0 +1,217 @@
+{
+  "id": "workflow-1774275343192",
+  "name": "nesycat-verify",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "name": "start-1",
+      "position": {
+        "x": 100,
+        "y": 300
+      },
+      "data": {
+        "label": "Start"
+      }
+    },
+    {
+      "id": "build-1",
+      "type": "subAgent",
+      "name": "build-1",
+      "position": {
+        "x": 400,
+        "y": 300
+      },
+      "data": {
+        "description": "Build the project with cabal",
+        "prompt": "Run `cabal build all` in the NeSyCat-HaskTorch project directory. Report whether the build succeeds or fails. If it fails, capture the full error output including which module failed and the exact compiler error. Output a clear verdict: BUILD_PASS or BUILD_FAIL followed by details.",
+        "model": "sonnet",
+        "tools": "Bash, Read",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/build-the-project-with-cabal.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "if-build",
+      "type": "ifElse",
+      "name": "if-build",
+      "position": {
+        "x": 700,
+        "y": 300
+      },
+      "data": {
+        "evaluationTarget": "Check if the build succeeded (BUILD_PASS) or failed (BUILD_FAIL)",
+        "branches": [
+          {
+            "label": "Build passed",
+            "condition": "Build output contains BUILD_PASS or completed successfully"
+          },
+          {
+            "label": "Build failed",
+            "condition": "Build output contains BUILD_FAIL or error"
+          }
+        ],
+        "outputPorts": 2
+      }
+    },
+    {
+      "id": "experiment-1",
+      "type": "subAgent",
+      "name": "experiment-1",
+      "position": {
+        "x": 1000,
+        "y": 125
+      },
+      "data": {
+        "description": "Run experiments and capture scores/times",
+        "prompt": "Run the NeSyCat-HaskTorch experiments and capture performance metrics.\n\n1. Run `cabal run binary-test-real -- +RTS -s` and capture:\n   - Final accuracy/scores from stdout\n   - Wall clock time and memory usage from RTS stats\n\n2. If `cabal run binary-test-jit-real` exists and builds, run it too.\n\n3. If `cabal run binary-test-real-beta` exists and builds, run it too.\n\nFor each experiment, report:\n- Experiment name\n- Accuracy/classification scores\n- Training time (wall clock)\n- Peak memory usage\n\nFormat results as a clear table. Flag any experiment that fails to run. Output EXPERIMENTS_PASS if all ran successfully, EXPERIMENTS_FAIL if any failed.",
+        "model": "sonnet",
+        "tools": "Bash, Read",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/run-experiments-and-capture-scorestimes.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "layer-1",
+      "type": "subAgent",
+      "name": "layer-1",
+      "position": {
+        "x": 1000,
+        "y": 475
+      },
+      "data": {
+        "description": "Verify ABCDEFG layer consistency",
+        "prompt": "Verify the ABCDEFG pipeline consistency of the NeSyCat-HaskTorch project. The project has layers A_Categorical, B_Logical, C_Domain, D_Grammatical, and within each layer modules follow the A→B→C→D→E→F→G sub-pipeline.\n\nCheck the following:\n\n1. **Theory → Extension coverage**: For every type class declared in D_Theory modules, verify there is a corresponding E_Extension module with type family instances. List any theories without extensions.\n\n2. **Vocabulary → Realization coverage**: For every vocabulary type defined in B_Vocabulary modules, verify there is a realization (interpretation) that connects it. List any vocabularies without realizations.\n\n3. **Extension → Interpretation coverage**: For every E_Extension, verify there is a matching F_Interpretation module that provides concrete implementations. List any extensions without interpretations.\n\n4. **Category connection**: Verify that A_Category modules (DATA, TENS GADTs) are referenced by the interpretations — i.e., the interpretations actually use the categorical witnesses.\n\n5. **Domain completeness**: For each domain in C_Domain (Binary, MNIST, Dice, Crossing, Weather, Countable), check which sub-pipeline steps (A through G) exist.\n\nScan the actual source files using Glob and Grep. Report a structured summary:\n- For each layer: which sub-steps exist, which are missing\n- Any orphaned modules (exist but not connected)\n- Overall verdict: LAYERS_CONSISTENT or LAYERS_INCONSISTENT with specific gaps listed.",
+        "model": "opus",
+        "tools": "Bash, Read, Glob, Grep",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/verify-abcdefg-layer-consistency.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "report-1",
+      "type": "subAgent",
+      "name": "report-1",
+      "position": {
+        "x": 1300,
+        "y": 300
+      },
+      "data": {
+        "description": "Consolidate verification results into report",
+        "prompt": "Consolidate all verification results from the previous steps into a clear summary report.\n\nStructure the report as:\n\n## NeSyCat-HaskTorch Verification Report\n\n### 1. Build Status\n- PASS/FAIL + details\n\n### 2. Experiment Results\n- Table of experiment scores and times\n- Any regressions or failures noted\n\n### 3. Layer Consistency\n- ABCDEFG coverage per layer\n- Missing connections or gaps\n\n### Overall Verdict\n- ALL_CLEAR if everything passes\n- ISSUES_FOUND with a prioritized list of what needs attention\n\nBe concise but complete. This report should give the developer a quick yes/no on whether the project is healthy, with details only where something needs fixing.",
+        "model": "sonnet",
+        "tools": "Bash, Read",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/consolidate-verification-results-into-report.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "end-ok",
+      "type": "end",
+      "name": "end-ok",
+      "position": {
+        "x": 1600,
+        "y": 300
+      },
+      "data": {
+        "label": "Done"
+      }
+    },
+    {
+      "id": "build-fail-report",
+      "type": "subAgent",
+      "name": "build-fail-report",
+      "position": {
+        "x": 1000,
+        "y": 650
+      },
+      "data": {
+        "description": "Analyze build failure and suggest fixes",
+        "prompt": "The cabal build failed. Analyze the build error from the previous step.\n\n1. Identify the exact module and line causing the failure\n2. Read the failing source file to understand the context\n3. Diagnose the root cause (type error, missing import, missing instance, etc.)\n4. Suggest a concrete fix\n\nOutput a clear report with: failing module, error type, root cause, and suggested fix.",
+        "model": "sonnet",
+        "tools": "Bash, Read, Glob, Grep",
+        "outputPorts": 1,
+        "commandFilePath": "/Users/cherryfunk/Repos/NeSyCat-HaskTorch/.claude/agents/analyze-build-failure-and-suggest-fixes.md",
+        "commandScope": "project"
+      }
+    },
+    {
+      "id": "end-fail",
+      "type": "end",
+      "name": "end-fail",
+      "position": {
+        "x": 1300,
+        "y": 650
+      },
+      "data": {
+        "label": "Build Failed"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "c1",
+      "from": "start-1",
+      "to": "build-1",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c2",
+      "from": "build-1",
+      "to": "if-build",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c3",
+      "from": "if-build",
+      "to": "experiment-1",
+      "fromPort": "branch-0",
+      "toPort": "input"
+    },
+    {
+      "id": "c4",
+      "from": "if-build",
+      "to": "build-fail-report",
+      "fromPort": "branch-1",
+      "toPort": "input"
+    },
+    {
+      "id": "c5",
+      "from": "experiment-1",
+      "to": "layer-1",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c6",
+      "from": "layer-1",
+      "to": "report-1",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c7",
+      "from": "report-1",
+      "to": "end-ok",
+      "fromPort": "output",
+      "toPort": "input"
+    },
+    {
+      "id": "c8",
+      "from": "build-fail-report",
+      "to": "end-fail",
+      "fromPort": "output",
+      "toPort": "input"
+    }
+  ],
+  "createdAt": "2026-03-23T14:15:43.192Z",
+  "updatedAt": "2026-03-23T14:15:43.192Z",
+  "subAgentFlows": []
+}

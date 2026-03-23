@@ -32,24 +32,12 @@ library
     C_Domain.C_TypeSystem.Data,
     C_Domain.C_TypeSystem.Tens,
     C_Domain.B_Theory.BinaryTheory,
-    C_Domain.B_Theory.DiceTheory,
-    C_Domain.B_Theory.CrossingTheory,
-    C_Domain.B_Theory.CountableTheory,
-    C_Domain.B_Theory.WeatherTheory,
     C_Domain.BC_Extension.BinaryDataExtension,
     C_Domain.BC_Extension.BinaryTensExtension,
     C_Domain.BA_Interpretation.BinaryReal,
     C_Domain.BA_Interpretation.BinaryRealMLP,
-    C_Domain.BA_Interpretation.Countable,
-    C_Domain.BA_Interpretation.Crossing,
-    C_Domain.BA_Interpretation.Dice,
-    C_Domain.BA_Interpretation.Weather,
     -- Delta: Grammatical
     D_Grammatical.B_Theory.BinaryFormulas,
-    D_Grammatical.B_Theory.DiceFormulas,
-    D_Grammatical.B_Theory.CrossingFormulas,
-    D_Grammatical.B_Theory.WeatherFormulas,
-    D_Grammatical.B_Theory.CountableFormulas,
     D_Grammatical.BA_Interpretation.BinaryIntpTens,
     D_Grammatical.BA_Interpretation.BinaryIntpData,
     -- Epsilon: Inferential
@@ -130,38 +118,3 @@ executable binary-test-real-beta
     statistics
   default-language: Haskell2010
 
-executable dice-test
-  main-is: DiceTrain.hs
-  hs-source-dirs: _F_Training
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    containers
-  default-language: Haskell2010
-
-executable crossing-test
-  main-is: CrossingTrain.hs
-  hs-source-dirs: _F_Training
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    containers
-  default-language: Haskell2010
-
-executable weather-test
-  main-is: WeatherTrain.hs
-  hs-source-dirs: _F_Training
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    containers
-  default-language: Haskell2010
-
-executable countable-test
-  main-is: CountableTrain.hs
-  hs-source-dirs: _F_Training
-  build-depends:
-    base,
-    nesycat-hasktorch,
-    containers
-  default-language: Haskell2010
