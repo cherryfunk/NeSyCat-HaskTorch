@@ -12,7 +12,6 @@ module C_Domain.C_TypeSystem.Tens
   )
 where
 
-import Numeric.Natural (Natural)
 import qualified Torch
 import Torch.Typed.Tensor (Tensor, toDynamic)
 
@@ -27,4 +26,3 @@ class TensObj a
 instance TensObj (Tensor d dt s)
 instance (TensObj a, TensObj b) => TensObj (a, b)
 instance TensObj ()
-instance TensObj Natural

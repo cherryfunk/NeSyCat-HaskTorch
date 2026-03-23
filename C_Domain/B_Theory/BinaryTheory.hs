@@ -28,12 +28,10 @@ class (BinarySorts frmwk) => BinaryFun frmwk where
   labelA :: Point frmwk -> Omega frmwk
 
 -- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(M frmwk)).
---   The monad comes from the framework -- no separate m parameter.
 class (BinaryFun frmwk, Monad (M frmwk)) => BinaryKlFun frmwk where
   classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)
 
 -- | Bridge for encoding/decoding between two framework interpretations.
---   The monad for decoding is the source framework's monad (M from).
 class (BinarySorts from, BinarySorts to) => BinaryBridge from to where
   encPoint :: Point from -> Point to
   decOmega :: Omega to -> M from (Omega from)

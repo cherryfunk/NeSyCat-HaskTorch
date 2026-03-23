@@ -1,55 +1,29 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 -- | The DATA type system (set/measure theory paradigm).
---   DataObj type class replaces the old DATA GADT.
+--   DataObj marks which Haskell types are objects of the domain category.
+--   Integration strategy is NOT a property of the type -- it belongs
+--   with the expectation (B_Logical/DA_Realization/ExpectGiry.hs).
 module C_Domain.C_TypeSystem.Data
-  ( DataObj (..),
-    IntegrationStrategy (..),
+  ( DataObj,
     tableLookup,
   )
 where
 
 import Numeric.Natural (Natural)
 
--- | Integration strategy per type.
-data IntegrationStrategy
-  = FiniteStrategy
-  | CountableStrategy
-  | ContinuousStrategy
-  | TrivialStrategy
-  deriving (Show, Eq)
-
 -- | Type membership in the DATA type system.
-class DataObj a where
-  integrationStrategy :: IntegrationStrategy
+class DataObj a
 
-instance DataObj Bool where integrationStrategy = FiniteStrategy
-
-instance DataObj Natural where integrationStrategy = CountableStrategy
-
-instance DataObj Integer where integrationStrategy = CountableStrategy
-
-instance DataObj Char where integrationStrategy = FiniteStrategy
-
-instance DataObj Double where integrationStrategy = ContinuousStrategy
-
-instance DataObj Int where integrationStrategy = FiniteStrategy
-
-instance DataObj () where integrationStrategy = TrivialStrategy
-
-instance
-  (DataObj a, DataObj b) =>
-  DataObj (a, b)
-  where
-  integrationStrategy = FiniteStrategy
-
-instance
-  (DataObj a) =>
-  DataObj [a]
-  where
-  integrationStrategy = CountableStrategy
+instance DataObj Bool
+instance DataObj Natural
+instance DataObj Integer
+instance DataObj Char
+instance DataObj Double
+instance DataObj Int
+instance DataObj ()
+instance (DataObj a, DataObj b) => DataObj (a, b)
+instance (DataObj a) => DataObj [a]
 
 -- | Generic table lookup.
 tableLookup :: (Eq k, Show k) => (row -> k) -> k -> [row] -> row
