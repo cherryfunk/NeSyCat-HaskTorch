@@ -140,7 +140,8 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
       data: {
         label: m.label,
         haskellSig: m.haskellSig,
-        haskellDef: m.haskellDef,
+        haskellClass: m.haskellClass,
+        instances: m.instances,
         mode: m.mode,
         accent: accentForMode(m.mode),
         inputs: m.inputs,

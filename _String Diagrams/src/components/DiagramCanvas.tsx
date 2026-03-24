@@ -104,7 +104,8 @@ function applyStoredPositions(nodes: Node[], diagramId: string): Node[] {
 interface SelectedMorphism {
   label: string
   haskellSig: string
-  haskellDef: string
+  haskellClass: string
+  instances: { framework: string; def: string }[]
   mode: string
 }
 
@@ -252,7 +253,8 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         setSelectedNode({
           label: data.label as string,
           haskellSig: data.haskellSig as string,
-          haskellDef: data.haskellDef as string,
+          haskellClass: data.haskellClass as string,
+          instances: data.instances as { framework: string; def: string }[],
           mode: data.mode as string,
         })
       }
@@ -340,7 +342,8 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         <NodeDetail
           label={selectedNode.label}
           haskellSig={selectedNode.haskellSig}
-          haskellDef={selectedNode.haskellDef}
+          haskellClass={selectedNode.haskellClass}
+          instances={selectedNode.instances}
           mode={selectedNode.mode}
           onClose={() => setSelectedNode(null)}
         />

@@ -1,43 +1,20 @@
 import theme, { panelStyle, buttonStyle } from '../lib/theme'
 
+interface Instance {
+  framework: string
+  def: string
+}
+
 interface NodeDetailProps {
   label: string
   haskellSig: string
-  haskellDef: string
+  haskellClass: string
+  instances: Instance[]
   mode: string
   onClose: () => void
 }
 
-function InfoRow({ label, value, mono, last }: { label: string; value: string; mono?: boolean; last?: boolean }) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        padding: '3px 0',
-        fontSize: 11,
-        borderBottom: last ? 'none' : `1px solid ${theme.glass.borderColor}`,
-      }}
-    >
-      <span style={{ color: theme.text.muted, textShadow: theme.text.shadowLight }}>{label}</span>
-      <span
-        style={{
-          color: theme.text.secondary,
-          textShadow: theme.text.shadowLight,
-          fontFamily: mono ? 'SF Mono, Menlo, monospace' : 'inherit',
-          fontSize: mono ? 9 : 11,
-          maxWidth: 180,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  )
-}
-
-export default function NodeDetail({ label, haskellSig, haskellDef, mode, onClose }: NodeDetailProps) {
+export default function NodeDetail({ label, haskellSig, haskellClass, instances, mode, onClose }: NodeDetailProps) {
   return (
     <div
       style={{
@@ -64,19 +41,20 @@ export default function NodeDetail({ label, haskellSig, haskellDef, mode, onClos
           gap: 8,
         }}
       >
-        <div
-          style={{
-            fontWeight: 700,
-            fontSize: 13,
-            color: theme.text.primary,
-            textShadow: theme.text.shadow,
-            flex: 1,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {label}
+        <div>
+          <div
+            style={{
+              fontWeight: 700,
+              fontSize: 13,
+              color: theme.text.primary,
+              textShadow: theme.text.shadow,
+            }}
+          >
+            {label}
+          </div>
+          <div style={{ fontSize: 10, color: theme.text.dimmed, marginTop: 2 }}>
+            {mode} &middot; class {haskellClass}
+          </div>
         </div>
         <button
           onClick={onClose}
@@ -93,19 +71,11 @@ export default function NodeDetail({ label, haskellSig, haskellDef, mode, onClos
         </button>
       </div>
 
-      {/* Info rows */}
-      <div style={{ padding: '8px 14px 6px' }}>
-        <InfoRow label="Mode" value={mode} last />
-      </div>
-
       {/* Type signature */}
-      <div style={{ padding: '8px 14px 6px', borderTop: `1px solid ${theme.glass.borderColor}` }}>
-        <div style={{ color: theme.text.dimmed, fontSize: 10, marginBottom: 4 }}>
-          Type signature
-        </div>
+      <div style={{ padding: '10px 14px', borderBottom: `1px solid ${theme.glass.borderColor}` }}>
         <pre
           style={{
-            color: `rgba(${theme.node.accentBlue}, 0.9)`,
+            color: `rgba(${mode === 'kleisli' ? theme.node.accentPurple : theme.node.accentBlue}, 0.9)`,
             fontSize: 10,
             lineHeight: 1.5,
             margin: 0,
@@ -117,24 +87,32 @@ export default function NodeDetail({ label, haskellSig, haskellDef, mode, onClos
         </pre>
       </div>
 
-      {/* Definition */}
-      <div style={{ padding: '8px 14px 10px', borderTop: `1px solid ${theme.glass.borderColor}` }}>
-        <div style={{ color: theme.text.dimmed, fontSize: 10, marginBottom: 4 }}>
-          Definition
-        </div>
-        <pre
+      {/* Instances */}
+      {instances.map((inst, i) => (
+        <div
+          key={i}
           style={{
-            color: theme.text.muted,
-            fontSize: 10,
-            lineHeight: 1.5,
-            margin: 0,
-            whiteSpace: 'pre-wrap',
-            fontFamily: 'SF Mono, Menlo, monospace',
+            padding: '8px 14px',
+            borderBottom: i < instances.length - 1 ? `1px solid ${theme.glass.borderColor}` : 'none',
           }}
         >
-          {haskellDef}
-        </pre>
-      </div>
+          <div style={{ color: theme.text.dimmed, fontSize: 9, marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
+            {inst.framework}
+          </div>
+          <pre
+            style={{
+              color: theme.text.muted,
+              fontSize: 10,
+              lineHeight: 1.5,
+              margin: 0,
+              whiteSpace: 'pre-wrap',
+              fontFamily: 'SF Mono, Menlo, monospace',
+            }}
+          >
+            {inst.def}
+          </pre>
+        </div>
+      ))}
     </div>
   )
 }

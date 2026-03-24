@@ -25,12 +25,18 @@ export const binarySentenceDiagram: StringDiagram = {
       id: 'binaryPredicate',
       label: 'binaryPredicate',
       haskellSig: 'binaryPredicate :: ParamsLogic (Omega frmwk) -> ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)',
-      haskellDef: `binaryPredicate lp paramMLP pt = do
+      haskellClass: 'BinaryKlFun frmwk, TwoMonBLatTheory frmwk (Omega frmwk)',
+      instances: [
+        {
+          framework: 'any frmwk',
+          def: `binaryPredicate lp paramMLP pt = do
   pred <- classifierA @frmwk paramMLP pt
   let label = labelA @frmwk pt
   return (wedge lp
     (implies lp label pred)
     (implies lp (neg label) (neg pred)))`,
+        },
+      ],
       mode: 'kleisli',
       inputs: [],
       outputs: [{ id: 'bp-out', label: 'Point -> M(Omega)', position: 'right' }],
@@ -43,22 +49,25 @@ export const binarySentenceDiagram: StringDiagram = {
       id: 'bigWedge',
       label: 'bigWedge',
       haskellSig: 'bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau',
-      haskellDef: `-- class A2MonBLatTheory a frmwk tau
-bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
-
--- Bool instance (MeasU):
-bigWedge _ guard phi = do
+      haskellClass: 'A2MonBLatTheory a frmwk tau',
+      instances: [
+        {
+          framework: 'Bool (MeasU)',
+          def: `bigWedge _ guard phi = do
   omegas <- mapM phi guard
-  return (foldl (wedge ()) True omegas)
-
--- Tensor instance (GeomU):
-bigWedge betaT guard phi =
+  return (foldl (wedge ()) True omegas)`,
+        },
+        {
+          framework: 'Tensor (GeomU)',
+          def: `bigWedge betaT guard phi =
   let result = runIdentity (phi (UnsafeMkTensor guard))
-      n = head (Torch.shape guard)
+      n = head (shape guard)
       negResult = neg result
       lse = logsumexp (toDynamic negResult * betaT) 0 False
-      reduced = negate ((lse - log(n)) / betaT)
+      reduced = negate ((lse - log n) / betaT)
    in Identity (UnsafeMkTensor (reshape [1] reduced))`,
+        },
+      ],
       mode: 'tarski',
       inputs: [
         { id: 'bw-in-guard', label: 'Guard', position: 'left' },
