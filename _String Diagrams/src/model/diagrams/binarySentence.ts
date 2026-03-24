@@ -2,7 +2,7 @@ import type { StringDiagram } from '../types'
 
 const haskellSource = `binarySentence lp guard paramMLP =
   bigWedge lp guard
-    (binaryPredicate @frmwk lp paramMLP)`
+    (binaryPredicate @U lp paramMLP)`
 
 export const binarySentenceDiagram: StringDiagram = {
   id: 'binarySentence',
@@ -24,14 +24,14 @@ export const binarySentenceDiagram: StringDiagram = {
     {
       id: 'binaryPredicate',
       label: 'binaryPredicate',
-      haskellSig: 'binaryPredicate :: ParamsLogic (Omega frmwk) -> ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)',
-      haskellClass: 'BinaryKlFun frmwk, TwoMonBLatTheory frmwk (Omega frmwk)',
+      haskellSig: 'binaryPredicate :: ParamsLogic (Omega U) -> ParamsMLP -> Point U -> M U (Omega U)',
+      haskellClass: 'BinaryKlFun U, TwoMonBLatTheory U (Omega U)',
       instances: [
         {
-          framework: 'any frmwk',
+          universe: 'any U',
           def: `binaryPredicate lp paramMLP pt = do
-  pred <- classifierA @frmwk paramMLP pt
-  let label = labelA @frmwk pt
+  pred <- classifierA @U paramMLP pt
+  let label = labelA @U pt
   return (wedge lp
     (implies lp label pred)
     (implies lp (neg label) (neg pred)))`,
@@ -48,17 +48,17 @@ export const binarySentenceDiagram: StringDiagram = {
     {
       id: 'bigWedge',
       label: 'bigWedge',
-      haskellSig: 'bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau',
-      haskellClass: 'A2MonBLatTheory a frmwk tau',
+      haskellSig: 'bigWedge :: ParamsLogic tau -> Guard U a -> (a -> M U tau) -> M U tau',
+      haskellClass: 'A2MonBLatTheory a U tau',
       instances: [
         {
-          framework: 'Bool (MeasU)',
+          universe: 'Bool (MeasU)',
           def: `bigWedge _ guard phi = do
   omegas <- mapM phi guard
   return (foldl (wedge ()) True omegas)`,
         },
         {
-          framework: 'Tensor (GeomU)',
+          universe: 'Tensor (GeomU)',
           def: `bigWedge betaT guard phi =
   let result = runIdentity (phi (UnsafeMkTensor guard))
       n = head (shape guard)

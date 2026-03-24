@@ -1,8 +1,8 @@
 import type { StringDiagram } from '../types'
 
 const haskellSource = `binaryPredicate lp paramMLP pt = do
-  pred <- classifierA @frmwk paramMLP pt
-  let label = labelA @frmwk pt
+  pred <- classifierA @U paramMLP pt
+  let label = labelA @U pt
   return (wedge lp
     (implies lp label pred)
     (implies lp (neg label) (neg pred))
@@ -28,18 +28,18 @@ export const binaryPredicateDiagram: StringDiagram = {
     {
       id: 'labelA',
       label: 'labelA',
-      haskellSig: 'labelA :: Point frmwk -> Omega frmwk',
-      haskellClass: 'BinaryFun frmwk',
+      haskellSig: 'labelA :: Point U -> Omega U',
+      haskellClass: 'BinaryFun U',
       instances: [
         {
-          framework: 'MeasU',
+          universe: 'MeasU',
           def: `labelA (x1, x2) =
   let dx = x1 - 0.5
       dy = x2 - 0.5
    in dx * dx + dy * dy < 0.09`,
         },
         {
-          framework: 'GeomU',
+          universe: 'GeomU',
           def: `labelA ptTensor =
   let pt = toDynamic ptTensor
       center = mulScalar (onesLike pt) 0.5
@@ -58,11 +58,11 @@ export const binaryPredicateDiagram: StringDiagram = {
     {
       id: 'classifierA',
       label: 'classifierA',
-      haskellSig: 'classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)',
-      haskellClass: 'BinaryKlFun frmwk',
+      haskellSig: 'classifierA :: ParamsMLP -> Point U -> M U (Omega U)',
+      haskellClass: 'BinaryKlFun U',
       instances: [
         {
-          framework: 'MeasU',
+          universe: 'MeasU',
           def: `classifierA paramMLP pt =
   let ptTens = encPoint @MeasU @GeomU pt
       logits = UnsafeMkTensor
@@ -70,7 +70,7 @@ export const binaryPredicateDiagram: StringDiagram = {
    in decOmega @MeasU @GeomU logits`,
         },
         {
-          framework: 'GeomU',
+          universe: 'GeomU',
           def: `classifierA paramMLP ptTensor =
   Identity (UnsafeMkTensor (hThetaReal paramMLP (toDynamic ptTensor)))`,
         },
@@ -88,10 +88,10 @@ export const binaryPredicateDiagram: StringDiagram = {
       id: 'neg-label',
       label: 'neg',
       haskellSig: 'neg :: tau -> tau',
-      haskellClass: 'TwoMonBLatTheory frmwk tau',
+      haskellClass: 'TwoMonBLatTheory U tau',
       instances: [
-        { framework: 'Bool', def: 'neg = not' },
-        { framework: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
+        { universe: 'Bool', def: 'neg = not' },
+        { universe: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
       ],
       mode: 'tarski',
       inputs: [{ id: 'neg-label-in', label: 'Omega', position: 'left' }],
@@ -101,10 +101,10 @@ export const binaryPredicateDiagram: StringDiagram = {
       id: 'neg-pred',
       label: 'neg',
       haskellSig: 'neg :: tau -> tau',
-      haskellClass: 'TwoMonBLatTheory frmwk tau',
+      haskellClass: 'TwoMonBLatTheory U tau',
       instances: [
-        { framework: 'Bool', def: 'neg = not' },
-        { framework: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
+        { universe: 'Bool', def: 'neg = not' },
+        { universe: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
       ],
       mode: 'tarski',
       inputs: [{ id: 'neg-pred-in', label: 'Omega', position: 'left' }],
@@ -114,10 +114,10 @@ export const binaryPredicateDiagram: StringDiagram = {
       id: 'implies-1',
       label: 'implies',
       haskellSig: 'implies :: ParamsLogic tau -> tau -> tau -> tau',
-      haskellClass: 'TwoMonBLatTheory frmwk tau',
+      haskellClass: 'TwoMonBLatTheory U tau',
       instances: [
-        { framework: 'default', def: 'implies lp a b = vee lp (neg a) b' },
-        { framework: 'Bool', def: 'implies _ a b = not a || b' },
+        { universe: 'default', def: 'implies lp a b = vee lp (neg a) b' },
+        { universe: 'Bool', def: 'implies _ a b = not a || b' },
       ],
       mode: 'tarski',
       inputs: [
@@ -133,10 +133,10 @@ export const binaryPredicateDiagram: StringDiagram = {
       id: 'implies-2',
       label: 'implies',
       haskellSig: 'implies :: ParamsLogic tau -> tau -> tau -> tau',
-      haskellClass: 'TwoMonBLatTheory frmwk tau',
+      haskellClass: 'TwoMonBLatTheory U tau',
       instances: [
-        { framework: 'default', def: 'implies lp a b = vee lp (neg a) b' },
-        { framework: 'Bool', def: 'implies _ a b = not a || b' },
+        { universe: 'default', def: 'implies lp a b = vee lp (neg a) b' },
+        { universe: 'Bool', def: 'implies _ a b = not a || b' },
       ],
       mode: 'tarski',
       inputs: [
@@ -152,10 +152,10 @@ export const binaryPredicateDiagram: StringDiagram = {
       id: 'wedge',
       label: 'wedge',
       haskellSig: 'wedge :: ParamsLogic tau -> tau -> tau -> tau',
-      haskellClass: 'TwoMonBLatTheory frmwk tau',
+      haskellClass: 'TwoMonBLatTheory U tau',
       instances: [
-        { framework: 'default', def: 'wedge lp a b = neg (vee lp (neg a) (neg b))' },
-        { framework: 'Bool', def: 'wedge _ = (&&)' },
+        { universe: 'default', def: 'wedge lp a b = neg (vee lp (neg a) (neg b))' },
+        { universe: 'Bool', def: 'wedge _ = (&&)' },
       ],
       mode: 'tarski',
       inputs: [
@@ -173,8 +173,8 @@ export const binaryPredicateDiagram: StringDiagram = {
       haskellSig: 'return :: Monad m => a -> m a',
       haskellClass: 'Monad m',
       instances: [
-        { framework: 'Identity', def: 'return = Identity' },
-        { framework: 'Dist', def: 'return = certainly' },
+        { universe: 'Identity', def: 'return = Identity' },
+        { universe: 'Dist', def: 'return = certainly' },
       ],
       mode: 'kleisli',
       inputs: [{ id: 'return-in', label: 'Omega', position: 'left' }],

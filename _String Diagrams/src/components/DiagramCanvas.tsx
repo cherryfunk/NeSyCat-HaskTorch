@@ -105,7 +105,7 @@ interface SelectedMorphism {
   label: string
   haskellSig: string
   haskellClass: string
-  instances: { framework: string; def: string }[]
+  instances: { universe: string; def: string }[]
   mode: string
 }
 
@@ -254,7 +254,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
           label: data.label as string,
           haskellSig: data.haskellSig as string,
           haskellClass: data.haskellClass as string,
-          instances: data.instances as { framework: string; def: string }[],
+          instances: data.instances as { universe: string; def: string }[],
           mode: data.mode as string,
         })
       }

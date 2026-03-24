@@ -1,7 +1,7 @@
 import theme, { panelStyle, buttonStyle } from '../lib/theme'
 
 interface Instance {
-  framework: string
+  universe: string
   def: string
 }
 
@@ -97,7 +97,7 @@ export default function NodeDetail({ label, haskellSig, haskellClass, instances,
           }}
         >
           <div style={{ color: theme.text.dimmed, fontSize: 9, marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>
-            {inst.framework}
+            {inst.universe}
           </div>
           <pre
             style={{

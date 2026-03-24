@@ -11,7 +11,7 @@ export interface MorphismDef {
   label: string
   haskellSig: string
   haskellClass: string
-  instances: { framework: string; def: string }[]
+  instances: { universe: string; def: string }[]
   mode: MorphismMode
   inputs: PortDef[]
   outputs: PortDef[]
