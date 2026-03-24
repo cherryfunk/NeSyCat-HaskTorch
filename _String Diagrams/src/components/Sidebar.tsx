@@ -1,17 +1,15 @@
-import { useState } from 'react'
 import type { StringDiagram } from '../model/types'
-import theme, { panelStyle } from '../lib/theme'
+import theme, { panelStyle, glassBlur } from '../lib/theme'
 
 interface Props {
   diagrams: StringDiagram[]
   activeDiagram: string
   onSelect: (id: string) => void
+  open: boolean
+  onToggle: () => void
 }
 
-export default function Sidebar({ diagrams, activeDiagram, onSelect }: Props) {
-  const [open, setOpen] = useState(true)
-  const width = 240
-
+export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onToggle }: Props) {
   return (
     <>
       {/* Sidebar panel */}
@@ -20,107 +18,121 @@ export default function Sidebar({ diagrams, activeDiagram, onSelect }: Props) {
           position: 'absolute',
           top: 0,
           left: 0,
-          width,
+          width: 240,
           height: '100%',
           ...panelStyle(),
-          transform: open ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.25s ease',
-          zIndex: 10,
+          borderTop: 'none',
+          borderBottom: 'none',
+          borderLeft: 'none',
           display: 'flex',
           flexDirection: 'column',
+          zIndex: 10,
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.25s ease',
         }}
       >
         {/* Header */}
-        <div style={{ padding: '16px 16px 12px' }}>
-          <div style={{ color: theme.text.primary, fontSize: 14, fontWeight: 600 }}>
-            String Diagrams
+        <div
+          style={{
+            padding: '14px 16px',
+            borderBottom: `1px solid ${theme.glass.borderColor}`,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: theme.text.primary, textShadow: theme.text.shadow }}>
+              String Diagrams
+            </div>
+            <div style={{ fontSize: 10, fontWeight: 400, color: theme.text.dimmed, marginTop: 2 }}>
+              NeSyCat categorical logic
+            </div>
           </div>
-          <div style={{ color: theme.text.dimmed, fontSize: 11, marginTop: 2 }}>
-            NeSyCat categorical logic
-          </div>
+        </div>
+
+        {/* Section label */}
+        <div
+          style={{
+            padding: '10px 12px 6px',
+            fontSize: 10,
+            fontWeight: 600,
+            color: theme.text.dimmed,
+            textTransform: 'uppercase' as const,
+            letterSpacing: '0.05em',
+          }}
+        >
+          Diagrams
         </div>
 
         {/* Diagram list */}
-        <div style={{ flex: 1, overflow: 'auto', padding: '0 8px' }}>
+        <div style={{ flex: 1, overflow: 'auto' }}>
           {diagrams.map((d) => {
             const isActive = d.id === activeDiagram
             return (
-              <button
+              <div
                 key={d.id}
                 onClick={() => onSelect(d.id)}
                 style={{
-                  display: 'block',
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '10px 12px',
-                  marginBottom: 4,
-                  borderRadius: 6,
-                  border: 'none',
+                  padding: '10px 16px',
                   cursor: 'pointer',
-                  background: isActive
-                    ? `rgba(${theme.node.accentIndigo}, 0.15)`
-                    : 'transparent',
+                  background: isActive ? `rgba(${theme.node.accentIndigo},0.15)` : 'transparent',
                   borderLeft: isActive
-                    ? `3px solid rgba(${theme.node.accentIndigo}, 0.8)`
+                    ? `3px solid rgba(${theme.node.accentIndigo},0.8)`
                     : '3px solid transparent',
+                  transition: 'all 0.15s ease',
                 }}
               >
-                <div style={{ color: theme.text.secondary, fontSize: 12, fontWeight: 500 }}>
+                <div
+                  style={{
+                    fontWeight: 500,
+                    fontSize: 13,
+                    color: isActive ? theme.text.primary : theme.text.secondary,
+                    textShadow: theme.text.shadowLight,
+                  }}
+                >
                   {d.title}
                 </div>
-                <div style={{ color: theme.text.dimmed, fontSize: 10, marginTop: 2 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: theme.text.dimmed,
+                    marginTop: 3,
+                  }}
+                >
                   {d.description}
                 </div>
-              </button>
+              </div>
             )
           })}
         </div>
-
-        {/* Haskell source for active diagram */}
-        <div style={{ padding: '12px 16px', borderTop: `1px solid ${theme.glass.borderColor}` }}>
-          <div style={{ color: theme.text.dimmed, fontSize: 10, marginBottom: 4 }}>
-            Haskell source
-          </div>
-          <pre
-            style={{
-              color: theme.text.muted,
-              fontSize: 10,
-              lineHeight: 1.5,
-              margin: 0,
-              whiteSpace: 'pre-wrap',
-              fontFamily: 'SF Mono, Menlo, monospace',
-            }}
-          >
-            {diagrams.find((d) => d.id === activeDiagram)?.haskellSource}
-          </pre>
-        </div>
       </div>
 
-      {/* Toggle button */}
+      {/* Toggle ribbon button -- slides with the sidebar */}
       <button
-        onClick={() => setOpen(!open)}
+        onClick={onToggle}
         style={{
           position: 'absolute',
           top: '50%',
-          left: open ? width : 0,
+          left: open ? 240 : 0,
           transform: 'translateY(-50%)',
-          transition: 'left 0.25s ease',
           zIndex: 11,
-          width: 20,
-          height: 48,
-          borderRadius: '0 6px 6px 0',
+          background: theme.glass.panelBg,
+          ...glassBlur(),
           border: `1px solid ${theme.glass.borderColor}`,
           borderLeft: 'none',
-          background: theme.glass.panelBg,
-          color: theme.text.muted,
+          borderRadius: '0 8px 8px 0',
+          color: theme.text.secondary,
           cursor: 'pointer',
+          padding: '20px 6px',
+          fontSize: 18,
+          lineHeight: 1,
+          transition: 'left 0.25s ease',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 12,
         }}
       >
-        {open ? '<' : '>'}
+        {open ? '\u2039' : '\u203A'}
       </button>
     </>
   )

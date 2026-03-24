@@ -11,9 +11,9 @@ export const binarySentenceDiagram: StringDiagram = {
   haskellSource,
 
   inputs: [
-    { id: 'in-lp', label: 'ParamsLogic', wireType: 'ParamsLogic' },
-    { id: 'in-guard', label: 'Guard', wireType: 'Guard' },
-    { id: 'in-mlp', label: 'ParamsMLP', wireType: 'ParamsMLP' },
+    { id: 'in-lp', label: 'ParamsLogic', wireType: 'ParamsLogic', side: 'top' },
+    { id: 'in-guard', label: 'Guard', wireType: 'Guard', side: 'left' },
+    { id: 'in-mlp', label: 'ParamsMLP', wireType: 'ParamsMLP', side: 'top' },
   ],
 
   outputs: [
@@ -24,58 +24,61 @@ export const binarySentenceDiagram: StringDiagram = {
     {
       id: 'binaryPredicate',
       label: 'binaryPredicate',
-      haskellSig: 'ParamsLogic -> ParamsMLP -> Point -> M(Omega)',
-      category: 'kleisli',
-      inputs: [
-        { id: 'bp-in-lp', label: 'ParamsLogic', position: 'left' },
-        { id: 'bp-in-mlp', label: 'ParamsMLP', position: 'left' },
-      ],
+      haskellSig: 'binaryPredicate :: ParamsLogic (Omega frmwk) -> ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)',
+      haskellDef: `binaryPredicate lp paramMLP pt = do
+  pred <- classifierA @frmwk paramMLP pt
+  let label = labelA @frmwk pt
+  return (wedge lp
+    (implies lp label pred)
+    (implies lp (neg label) (neg pred)))`,
+      mode: 'kleisli',
+      inputs: [],
       outputs: [{ id: 'bp-out', label: 'Point -> M(Omega)', position: 'right' }],
+      paramInputs: [
+        { id: 'bp-in-lp', label: 'ParamsLogic', position: 'top' },
+        { id: 'bp-in-mlp', label: 'ParamsMLP', position: 'top' },
+      ],
     },
     {
       id: 'bigWedge',
       label: 'bigWedge',
-      haskellSig: 'ParamsLogic -> Guard -> (a -> M Omega) -> M Omega',
-      category: 'logic',
+      haskellSig: 'bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau',
+      haskellDef: `-- class A2MonBLatTheory a frmwk tau
+bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
+
+-- Bool instance (MeasU):
+bigWedge _ guard phi = do
+  omegas <- mapM phi guard
+  return (foldl (wedge ()) True omegas)
+
+-- Tensor instance (GeomU):
+bigWedge betaT guard phi =
+  let result = runIdentity (phi (UnsafeMkTensor guard))
+      n = head (Torch.shape guard)
+      negResult = neg result
+      lse = logsumexp (toDynamic negResult * betaT) 0 False
+      reduced = negate ((lse - log(n)) / betaT)
+   in Identity (UnsafeMkTensor (reshape [1] reduced))`,
+      mode: 'tarski',
       inputs: [
-        { id: 'bw-in-lp', label: 'ParamsLogic', position: 'left' },
         { id: 'bw-in-guard', label: 'Guard', position: 'left' },
         { id: 'bw-in-pred', label: 'Point -> M(Omega)', position: 'left' },
       ],
       outputs: [{ id: 'bw-out', label: 'M(Omega)', position: 'right' }],
-    },
-  ],
-
-  copies: [
-    {
-      id: 'copy-lp',
-      wireType: 'ParamsLogic',
-      input: { id: 'copy-lp-in', label: 'ParamsLogic', position: 'left' },
-      outputs: [
-        { id: 'copy-lp-out-1', label: 'ParamsLogic', position: 'right' },
-        { id: 'copy-lp-out-2', label: 'ParamsLogic', position: 'right' },
+      paramInputs: [
+        { id: 'bw-in-lp', label: 'ParamsLogic', position: 'top' },
       ],
     },
   ],
 
+  copies: [],
+
   wires: [
-    // ParamsLogic -> copy
-    { id: 'w-lp-copy', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'copy-lp', targetPort: 'copy-lp-in', wireType: 'ParamsLogic', isMonadic: false },
-
-    // copy-lp -> binaryPredicate, bigWedge
-    { id: 'w-lp-bp', sourceBox: 'copy-lp', sourcePort: 'copy-lp-out-1', targetBox: 'binaryPredicate', targetPort: 'bp-in-lp', wireType: 'ParamsLogic', isMonadic: false },
-    { id: 'w-lp-bw', sourceBox: 'copy-lp', sourcePort: 'copy-lp-out-2', targetBox: 'bigWedge', targetPort: 'bw-in-lp', wireType: 'ParamsLogic', isMonadic: false },
-
-    // ParamsMLP -> binaryPredicate
+    { id: 'w-lp-bp', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'binaryPredicate', targetPort: 'bp-in-lp', wireType: 'ParamsLogic', isMonadic: false },
+    { id: 'w-lp-bw', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'bigWedge', targetPort: 'bw-in-lp', wireType: 'ParamsLogic', isMonadic: false },
     { id: 'w-mlp-bp', sourceBox: 'in-mlp', sourcePort: 'in-mlp', targetBox: 'binaryPredicate', targetPort: 'bp-in-mlp', wireType: 'ParamsMLP', isMonadic: false },
-
-    // Guard -> bigWedge
     { id: 'w-guard-bw', sourceBox: 'in-guard', sourcePort: 'in-guard', targetBox: 'bigWedge', targetPort: 'bw-in-guard', wireType: 'Guard', isMonadic: false },
-
-    // binaryPredicate -> bigWedge
     { id: 'w-bp-bw', sourceBox: 'binaryPredicate', sourcePort: 'bp-out', targetBox: 'bigWedge', targetPort: 'bw-in-pred', wireType: 'Point -> M(Omega)', isMonadic: false },
-
-    // bigWedge -> output
-    { id: 'w-bw-out', sourceBox: 'bigWedge', sourcePort: 'bw-out', targetBox: 'out-omega', targetPort: 'out-omega', wireType: 'M(Omega)', isMonadic: true },
+    { id: 'w-bw-out', sourceBox: 'bigWedge', sourcePort: 'bw-out', targetBox: 'out-omega', targetPort: 'out-omega', wireType: 'M(Omega)', isMonadic: false },
   ],
 }

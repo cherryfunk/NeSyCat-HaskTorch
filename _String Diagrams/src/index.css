@@ -42,7 +42,7 @@ html, body, #root {
   background: var(--glass-button-bg) !important;
 }
 
-/* Minimap */
+/* Minimap - match panel style */
 .react-flow__minimap {
   background: var(--glass-panel-bg) !important;
   border: 1px solid var(--glass-border) !important;
@@ -71,6 +71,50 @@ html, body, #root {
 }
 .minimap-hover:hover .react-flow__minimap {
   opacity: 1 !important;
+}
+
+/* Toolbar buttons */
+.sd-toolbar-group {
+  display: flex;
+  align-items: center;
+  background: var(--glass-panel-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sd-toolbar-btn {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0 7px;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.sd-toolbar-btn:hover {
+  background: var(--glass-button-bg);
+}
+
+/* Hover expand: collapsed shown by default, expanded on hover */
+.sd-toolbar-hover .sd-toolbar-expanded {
+  display: none;
+}
+.sd-toolbar-hover .sd-toolbar-collapsed {
+  display: block;
+}
+.sd-toolbar-hover:hover .sd-toolbar-expanded {
+  display: block;
+}
+.sd-toolbar-hover:hover .sd-toolbar-collapsed {
+  display: none;
 }
 
 /* Scrollbar */

@@ -15,9 +15,9 @@ export const binaryPredicateDiagram: StringDiagram = {
   haskellSource,
 
   inputs: [
-    { id: 'in-pt', label: 'Point', wireType: 'Point' },
-    { id: 'in-mlp', label: 'ParamsMLP', wireType: 'ParamsMLP' },
-    { id: 'in-lp', label: 'ParamsLogic', wireType: 'ParamsLogic' },
+    { id: 'in-pt', label: 'Point', wireType: 'Point', side: 'left' },
+    { id: 'in-mlp', label: 'ParamsMLP', wireType: 'ParamsMLP', side: 'top' },
+    { id: 'in-lp', label: 'ParamsLogic', wireType: 'ParamsLogic', side: 'top' },
   ],
 
   outputs: [
@@ -28,156 +28,178 @@ export const binaryPredicateDiagram: StringDiagram = {
     {
       id: 'labelA',
       label: 'labelA',
-      haskellSig: 'Point -> Omega',
-      category: 'pure',
+      haskellSig: 'labelA :: Point frmwk -> Omega frmwk',
+      haskellDef: `-- class BinaryFun frmwk
+labelA :: Point frmwk -> Omega frmwk
+
+-- MeasU instance:
+labelA (x1, x2) =
+  let dx = x1 - 0.5
+      dy = x2 - 0.5
+   in dx * dx + dy * dy < 0.09`,
+      mode: 'tarski',
       inputs: [{ id: 'labelA-in-pt', label: 'Point', position: 'left' }],
       outputs: [{ id: 'labelA-out', label: 'Omega', position: 'right' }],
     },
     {
       id: 'classifierA',
       label: 'classifierA',
-      haskellSig: 'ParamsMLP -> Point -> M(Omega)',
-      category: 'kleisli',
+      haskellSig: 'classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)',
+      haskellDef: `-- class BinaryKlFun frmwk
+classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)
+
+-- GeomU instance:
+classifierA paramMLP ptTensor =
+  Identity (UnsafeMkTensor (hThetaReal paramMLP (toDynamic ptTensor)))`,
+      mode: 'kleisli',
       inputs: [
-        { id: 'classA-in-mlp', label: 'ParamsMLP', position: 'left' },
         { id: 'classA-in-pt', label: 'Point', position: 'left' },
       ],
       outputs: [{ id: 'classA-out', label: 'Omega', position: 'right' }],
+      paramInputs: [
+        { id: 'classA-in-mlp', label: 'ParamsMLP', position: 'top' },
+      ],
     },
     {
       id: 'neg-label',
       label: 'neg',
-      haskellSig: 'Omega -> Omega',
-      category: 'logic',
+      haskellSig: 'neg :: tau -> tau',
+      haskellDef: `-- class TwoMonBLatTheory frmwk tau
+neg :: tau -> tau
+
+-- Bool instance:
+neg = not
+
+-- Tensor instance:
+neg a = UnsafeMkTensor (negate (toDynamic a))`,
+      mode: 'tarski',
       inputs: [{ id: 'neg-label-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'neg-label-out', label: 'Omega', position: 'right' }],
     },
     {
       id: 'neg-pred',
       label: 'neg',
-      haskellSig: 'Omega -> Omega',
-      category: 'logic',
+      haskellSig: 'neg :: tau -> tau',
+      haskellDef: `-- class TwoMonBLatTheory frmwk tau
+neg :: tau -> tau
+
+-- Bool instance:
+neg = not
+
+-- Tensor instance:
+neg a = UnsafeMkTensor (negate (toDynamic a))`,
+      mode: 'tarski',
       inputs: [{ id: 'neg-pred-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'neg-pred-out', label: 'Omega', position: 'right' }],
     },
     {
       id: 'implies-1',
       label: 'implies',
-      haskellSig: 'ParamsLogic -> Omega -> Omega -> Omega',
-      category: 'logic',
+      haskellSig: 'implies :: ParamsLogic tau -> tau -> tau -> tau',
+      haskellDef: `-- class TwoMonBLatTheory frmwk tau
+implies :: ParamsLogic tau -> tau -> tau -> tau
+
+-- default:
+implies lp a b = vee lp (neg a) b
+
+-- Bool instance:
+implies _ a b = not a || b`,
+      mode: 'tarski',
       inputs: [
-        { id: 'imp1-in-lp', label: 'ParamsLogic', position: 'left' },
         { id: 'imp1-in-a', label: 'Omega', position: 'left' },
         { id: 'imp1-in-b', label: 'Omega', position: 'left' },
       ],
       outputs: [{ id: 'imp1-out', label: 'Omega', position: 'right' }],
+      paramInputs: [
+        { id: 'imp1-in-lp', label: 'ParamsLogic', position: 'top' },
+      ],
     },
     {
       id: 'implies-2',
       label: 'implies',
-      haskellSig: 'ParamsLogic -> Omega -> Omega -> Omega',
-      category: 'logic',
+      haskellSig: 'implies :: ParamsLogic tau -> tau -> tau -> tau',
+      haskellDef: `-- class TwoMonBLatTheory frmwk tau
+implies :: ParamsLogic tau -> tau -> tau -> tau
+
+-- default:
+implies lp a b = vee lp (neg a) b
+
+-- Bool instance:
+implies _ a b = not a || b`,
+      mode: 'tarski',
       inputs: [
-        { id: 'imp2-in-lp', label: 'ParamsLogic', position: 'left' },
         { id: 'imp2-in-a', label: 'Omega', position: 'left' },
         { id: 'imp2-in-b', label: 'Omega', position: 'left' },
       ],
       outputs: [{ id: 'imp2-out', label: 'Omega', position: 'right' }],
+      paramInputs: [
+        { id: 'imp2-in-lp', label: 'ParamsLogic', position: 'top' },
+      ],
     },
     {
       id: 'wedge',
       label: 'wedge',
-      haskellSig: 'ParamsLogic -> Omega -> Omega -> Omega',
-      category: 'logic',
+      haskellSig: 'wedge :: ParamsLogic tau -> tau -> tau -> tau',
+      haskellDef: `-- class TwoMonBLatTheory frmwk tau
+wedge :: ParamsLogic tau -> tau -> tau -> tau
+
+-- default (De Morgan):
+wedge lp a b = neg (vee lp (neg a) (neg b))
+
+-- Bool instance:
+wedge _ = (&&)`,
+      mode: 'tarski',
       inputs: [
-        { id: 'wedge-in-lp', label: 'ParamsLogic', position: 'left' },
         { id: 'wedge-in-a', label: 'Omega', position: 'left' },
         { id: 'wedge-in-b', label: 'Omega', position: 'left' },
       ],
       outputs: [{ id: 'wedge-out', label: 'Omega', position: 'right' }],
+      paramInputs: [
+        { id: 'wedge-in-lp', label: 'ParamsLogic', position: 'top' },
+      ],
     },
     {
       id: 'return',
       label: 'return',
-      haskellSig: 'Omega -> M(Omega)',
-      category: 'kleisli',
+      haskellSig: 'return :: Monad m => a -> m a',
+      haskellDef: `-- class Monad m
+return :: a -> m a
+
+-- lifts pure Omega into M frmwk (Omega frmwk)
+-- Identity: return = Identity
+-- Dist: return = certainly`,
+      mode: 'kleisli',
       inputs: [{ id: 'return-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'return-out', label: 'M(Omega)', position: 'right' }],
     },
   ],
 
-  copies: [
-    {
-      id: 'copy-pt',
-      wireType: 'Point',
-      input: { id: 'copy-pt-in', label: 'Point', position: 'left' },
-      outputs: [
-        { id: 'copy-pt-out-1', label: 'Point', position: 'right' },
-        { id: 'copy-pt-out-2', label: 'Point', position: 'right' },
-      ],
-    },
-    {
-      id: 'copy-label',
-      wireType: 'Omega',
-      input: { id: 'copy-label-in', label: 'Omega', position: 'left' },
-      outputs: [
-        { id: 'copy-label-out-1', label: 'Omega', position: 'right' },
-        { id: 'copy-label-out-2', label: 'Omega', position: 'right' },
-      ],
-    },
-    {
-      id: 'copy-pred',
-      wireType: 'Omega',
-      input: { id: 'copy-pred-in', label: 'Omega', position: 'left' },
-      outputs: [
-        { id: 'copy-pred-out-1', label: 'Omega', position: 'right' },
-        { id: 'copy-pred-out-2', label: 'Omega', position: 'right' },
-      ],
-    },
-    {
-      id: 'copy-lp',
-      wireType: 'ParamsLogic',
-      input: { id: 'copy-lp-in', label: 'ParamsLogic', position: 'left' },
-      outputs: [
-        { id: 'copy-lp-out-1', label: 'ParamsLogic', position: 'right' },
-        { id: 'copy-lp-out-2', label: 'ParamsLogic', position: 'right' },
-        { id: 'copy-lp-out-3', label: 'ParamsLogic', position: 'right' },
-      ],
-    },
-  ],
+  copies: [],
 
   wires: [
-    // Input -> copy nodes
-    { id: 'w-pt-copy', sourceBox: 'in-pt', sourcePort: 'in-pt', targetBox: 'copy-pt', targetPort: 'copy-pt-in', wireType: 'Point', isMonadic: false },
-    { id: 'w-lp-copy', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'copy-lp', targetPort: 'copy-lp-in', wireType: 'ParamsLogic', isMonadic: false },
+    // Point -> labelA and classifierA
+    { id: 'w-pt-labelA', sourceBox: 'in-pt', sourcePort: 'in-pt', targetBox: 'labelA', targetPort: 'labelA-in-pt', wireType: 'Point', isMonadic: false },
+    { id: 'w-pt-classA', sourceBox: 'in-pt', sourcePort: 'in-pt', targetBox: 'classifierA', targetPort: 'classA-in-pt', wireType: 'Point', isMonadic: false },
+
+    // ParamsMLP -> classifierA (from top)
     { id: 'w-mlp-classA', sourceBox: 'in-mlp', sourcePort: 'in-mlp', targetBox: 'classifierA', targetPort: 'classA-in-mlp', wireType: 'ParamsMLP', isMonadic: false },
 
-    // copy-pt -> labelA, classifierA
-    { id: 'w-pt-labelA', sourceBox: 'copy-pt', sourcePort: 'copy-pt-out-1', targetBox: 'labelA', targetPort: 'labelA-in-pt', wireType: 'Point', isMonadic: false },
-    { id: 'w-pt-classA', sourceBox: 'copy-pt', sourcePort: 'copy-pt-out-2', targetBox: 'classifierA', targetPort: 'classA-in-pt', wireType: 'Point', isMonadic: false },
+    // ParamsLogic -> implies-1, implies-2, wedge (from top)
+    { id: 'w-lp-imp1', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'implies-1', targetPort: 'imp1-in-lp', wireType: 'ParamsLogic', isMonadic: false },
+    { id: 'w-lp-imp2', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'implies-2', targetPort: 'imp2-in-lp', wireType: 'ParamsLogic', isMonadic: false },
+    { id: 'w-lp-wedge', sourceBox: 'in-lp', sourcePort: 'in-lp', targetBox: 'wedge', targetPort: 'wedge-in-lp', wireType: 'ParamsLogic', isMonadic: false },
 
-    // labelA -> copy-label
-    { id: 'w-labelA-copy', sourceBox: 'labelA', sourcePort: 'labelA-out', targetBox: 'copy-label', targetPort: 'copy-label-in', wireType: 'Omega', isMonadic: false },
+    // labelA -> implies-1 and neg-label
+    { id: 'w-label-imp1', sourceBox: 'labelA', sourcePort: 'labelA-out', targetBox: 'implies-1', targetPort: 'imp1-in-a', wireType: 'Omega', isMonadic: false },
+    { id: 'w-label-neg', sourceBox: 'labelA', sourcePort: 'labelA-out', targetBox: 'neg-label', targetPort: 'neg-label-in', wireType: 'Omega', isMonadic: false },
 
-    // classifierA -> copy-pred
-    { id: 'w-classA-copy', sourceBox: 'classifierA', sourcePort: 'classA-out', targetBox: 'copy-pred', targetPort: 'copy-pred-in', wireType: 'Omega', isMonadic: true },
-
-    // copy-label -> implies-1 (label), neg-label
-    { id: 'w-label-imp1', sourceBox: 'copy-label', sourcePort: 'copy-label-out-1', targetBox: 'implies-1', targetPort: 'imp1-in-a', wireType: 'Omega', isMonadic: false },
-    { id: 'w-label-neg', sourceBox: 'copy-label', sourcePort: 'copy-label-out-2', targetBox: 'neg-label', targetPort: 'neg-label-in', wireType: 'Omega', isMonadic: false },
-
-    // copy-pred -> implies-1 (pred), neg-pred
-    { id: 'w-pred-imp1', sourceBox: 'copy-pred', sourcePort: 'copy-pred-out-1', targetBox: 'implies-1', targetPort: 'imp1-in-b', wireType: 'Omega', isMonadic: false },
-    { id: 'w-pred-neg', sourceBox: 'copy-pred', sourcePort: 'copy-pred-out-2', targetBox: 'neg-pred', targetPort: 'neg-pred-in', wireType: 'Omega', isMonadic: false },
+    // classifierA -> implies-1 and neg-pred
+    { id: 'w-pred-imp1', sourceBox: 'classifierA', sourcePort: 'classA-out', targetBox: 'implies-1', targetPort: 'imp1-in-b', wireType: 'Omega', isMonadic: false },
+    { id: 'w-pred-neg', sourceBox: 'classifierA', sourcePort: 'classA-out', targetBox: 'neg-pred', targetPort: 'neg-pred-in', wireType: 'Omega', isMonadic: false },
 
     // neg -> implies-2
     { id: 'w-neg-label-imp2', sourceBox: 'neg-label', sourcePort: 'neg-label-out', targetBox: 'implies-2', targetPort: 'imp2-in-a', wireType: 'Omega', isMonadic: false },
     { id: 'w-neg-pred-imp2', sourceBox: 'neg-pred', sourcePort: 'neg-pred-out', targetBox: 'implies-2', targetPort: 'imp2-in-b', wireType: 'Omega', isMonadic: false },
-
-    // copy-lp -> implies-1, implies-2, wedge
-    { id: 'w-lp-imp1', sourceBox: 'copy-lp', sourcePort: 'copy-lp-out-1', targetBox: 'implies-1', targetPort: 'imp1-in-lp', wireType: 'ParamsLogic', isMonadic: false },
-    { id: 'w-lp-imp2', sourceBox: 'copy-lp', sourcePort: 'copy-lp-out-2', targetBox: 'implies-2', targetPort: 'imp2-in-lp', wireType: 'ParamsLogic', isMonadic: false },
-    { id: 'w-lp-wedge', sourceBox: 'copy-lp', sourcePort: 'copy-lp-out-3', targetBox: 'wedge', targetPort: 'wedge-in-lp', wireType: 'ParamsLogic', isMonadic: false },
 
     // implies -> wedge
     { id: 'w-imp1-wedge', sourceBox: 'implies-1', sourcePort: 'imp1-out', targetBox: 'wedge', targetPort: 'wedge-in-a', wireType: 'Omega', isMonadic: false },
@@ -187,6 +209,6 @@ export const binaryPredicateDiagram: StringDiagram = {
     { id: 'w-wedge-return', sourceBox: 'wedge', sourcePort: 'wedge-out', targetBox: 'return', targetPort: 'return-in', wireType: 'Omega', isMonadic: false },
 
     // return -> output
-    { id: 'w-return-out', sourceBox: 'return', sourcePort: 'return-out', targetBox: 'out-omega', targetPort: 'out-omega', wireType: 'M(Omega)', isMonadic: true },
+    { id: 'w-return-out', sourceBox: 'return', sourcePort: 'return-out', targetBox: 'out-omega', targetPort: 'out-omega', wireType: 'M(Omega)', isMonadic: false },
   ],
 }

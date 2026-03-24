@@ -1,18 +1,20 @@
 export interface PortDef {
   id: string
   label: string
-  position: 'left' | 'right'
+  position: 'left' | 'right' | 'top' | 'bottom'
 }
 
-export type MorphismCategory = 'pure' | 'kleisli' | 'logic'
+export type MorphismMode = 'tarski' | 'kleisli'
 
 export interface MorphismDef {
   id: string
   label: string
   haskellSig: string
-  category: MorphismCategory
+  haskellDef: string
+  mode: MorphismMode
   inputs: PortDef[]
   outputs: PortDef[]
+  paramInputs?: PortDef[]
 }
 
 export interface CopyDef {
@@ -36,6 +38,7 @@ export interface DiagramEndpoint {
   id: string
   label: string
   wireType: string
+  side?: 'left' | 'top'
 }
 
 export interface StringDiagram {
