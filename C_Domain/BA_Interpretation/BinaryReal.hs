@@ -10,19 +10,19 @@
 -- | Function implementations for Binary Classification.
 --
 --   This module provides:
---     1. BinaryFun FrmwkMeas / FrmwkGeom -- labelA for each framework
---     2. BinaryKlFun FrmwkMeas -- classifierA (Mon = Dist)
---     3. BinaryKlFun FrmwkGeom -- classifierA (Mon = Identity)
---     4. BinaryBridge FrmwkMeas FrmwkGeom -- encPoint + decOmega
+--     1. BinaryFun MeasU / GeomU -- labelA for each framework
+--     2. BinaryKlFun MeasU -- classifierA (Mon = Dist)
+--     3. BinaryKlFun GeomU -- classifierA (Mon = Identity)
+--     4. BinaryBridge MeasU GeomU -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
   ( module C_Domain.B_Theory.BinaryTheory,
     module C_Domain.BA_Interpretation.BinaryRealMLP,
   )
 where
 
-import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom, FrmwkMeas)
--- instance BinarySorts FrmwkMeas
--- instance BinarySorts FrmwkGeom
+import A_Categorical.BA_Interpretation.StarIntp (GeomU, MeasU)
+-- instance BinarySorts MeasU
+-- instance BinarySorts GeomU
 import A_Categorical.DA_Realization.Dist (Dist (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
 import B_Logical.BA_Interpretation.Tensor hiding (Omega)
@@ -39,36 +39,36 @@ import qualified Torch.Functional.Internal as F
 import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
---  FrmwkMeas: plain function symbols (BinaryFun)
+--  MeasU: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFun FrmwkMeas where
-  labelA :: Point FrmwkMeas -> Omega FrmwkMeas
+instance BinaryFun MeasU where
+  labelA :: Point MeasU -> Omega MeasU
   labelA (x1, x2) =
     let dx = x1 - 0.5
         dy = x2 - 0.5
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  FrmwkMeas: Kleisli function symbols (BinaryKlFun)
+--  MeasU: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun FrmwkMeas where
-  classifierA :: ParamsMLP -> Point FrmwkMeas -> Dist (Omega FrmwkMeas)
+instance BinaryKlFun MeasU where
+  classifierA :: ParamsMLP -> Point MeasU -> Dist (Omega MeasU)
   classifierA paramMLP pt =
-    let ptTens = encPoint @FrmwkMeas @FrmwkGeom pt
+    let ptTens = encPoint @MeasU @GeomU pt
         logits =
           UnsafeMkTensor
             (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
-     in decOmega @FrmwkMeas @FrmwkGeom logits
+     in decOmega @MeasU @GeomU logits
 
 -- ============================================================
---  FrmwkGeom: plain function symbols (BinaryFun)
+--  GeomU: plain function symbols (BinaryFun)
 -- ============================================================
 
-instance BinaryFun FrmwkGeom where
-  -- \| Label in FrmwkGeom: returns R logits (True = +logitScale, False = -logitScale).
-  labelA :: Point FrmwkGeom -> Omega FrmwkGeom
+instance BinaryFun GeomU where
+  -- \| Label in GeomU: returns R logits (True = +logitScale, False = -logitScale).
+  labelA :: Point GeomU -> Omega GeomU
   labelA ptTensor =
     let pt = toDynamic ptTensor
         center = F.mulScalar (Torch.onesLike pt) (0.5 :: Float)
@@ -85,25 +85,25 @@ logitScale :: Float
 logitScale = 10.0
 
 -- ============================================================
---  FrmwkGeom: Kleisli function symbols (BinaryKlFun)
+--  GeomU: Kleisli function symbols (BinaryKlFun)
 -- ============================================================
 
-instance BinaryKlFun FrmwkGeom where
-  classifierA :: ParamsMLP -> Point FrmwkGeom -> Identity (Omega FrmwkGeom)
+instance BinaryKlFun GeomU where
+  classifierA :: ParamsMLP -> Point GeomU -> Identity (Omega GeomU)
   classifierA paramMLP ptTensor = Identity $ do
     let logits = hThetaReal paramMLP (toDynamic ptTensor)
     UnsafeMkTensor logits
 
 -- ============================================================
---  BRIDGE: FrmwkMeas <-> FrmwkGeom (with Dist monad for decoding)
+--  BRIDGE: MeasU <-> GeomU (with Dist monad for decoding)
 -- ============================================================
 
-instance BinaryBridge FrmwkMeas FrmwkGeom where
-  encPoint :: Point FrmwkMeas -> Point FrmwkGeom
+instance BinaryBridge MeasU GeomU where
+  encPoint :: Point MeasU -> Point GeomU
   encPoint (x1, x2) =
     UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
 
-  decOmega :: Omega FrmwkGeom -> Dist (Omega FrmwkMeas)
+  decOmega :: Omega GeomU -> Dist (Omega MeasU)
   decOmega probs =
     let val =
           Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]

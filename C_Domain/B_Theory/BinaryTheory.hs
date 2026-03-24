@@ -5,7 +5,7 @@
 
 module C_Domain.B_Theory.BinaryTheory where
 
-import A_Categorical.B_Theory.StarTheory (Framework (..))
+import A_Categorical.B_Theory.StarTheory (Universe (..))
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 import Data.Kind (Type)
 
@@ -19,7 +19,7 @@ import Data.Kind (Type)
 -- The parameter Theta (= ParamsMLP) is external (from Para), curried in.
 
 -- | BinarySorts: assigns sort names to concrete Haskell types.
-class (Framework frmwk) => BinarySorts frmwk where
+class (Universe frmwk) => BinarySorts frmwk where
   type Point frmwk :: Type -- sort: input data point (e.g. R^2)
   type Omega frmwk :: Type -- sort: truth value (e.g. Bool, [0,1])
 

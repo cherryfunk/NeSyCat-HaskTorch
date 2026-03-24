@@ -22,7 +22,7 @@ module B_Logical.BA_Interpretation.Tensor
   )
 where
 
-import A_Categorical.BA_Interpretation.StarIntp (FrmwkGeom)
+import A_Categorical.BA_Interpretation.StarIntp (GeomU)
 import B_Logical.B_Theory.A2MonBLatTheory
 import B_Logical.B_Theory.TwoMonBLatTheory
 import Data.Functor.Identity (Identity (..), runIdentity)
@@ -39,7 +39,7 @@ type Omega = Tensor '( 'CPU, 0) 'Float '[1]
 --  TwoMonBLat: Binary Logical Operations on Omega (R-valued)
 -- ============================================================
 
-instance TwoMonBLatTheory FrmwkGeom Omega where
+instance TwoMonBLatTheory GeomU Omega where
   type ParamsLogic Omega = Torch.Tensor
 
   vdash a b = Torch.asValue (toDynamic a) <= (Torch.asValue (toDynamic b) :: Float)
@@ -66,20 +66,20 @@ instance TwoMonBLatTheory FrmwkGeom Omega where
   neg a = UnsafeMkTensor (negate (toDynamic a))
 
 ------------------------------------------------------
--- Guard type instance: FrmwkGeom guards are batch tensors
+-- Guard type instance: GeomU guards are batch tensors
 ------------------------------------------------------
 
-type instance Guard FrmwkGeom (Tensor d dt s) = Torch.Tensor
+type instance Guard GeomU (Tensor d dt s) = Torch.Tensor
 
 ------------------------------------------------------
 -- Quantifiers with canonical measure (A2MonBLat)
 ------------------------------------------------------
 
--- | FrmwkGeom quantifier: guard is a batch tensor.
+-- | GeomU quantifier: guard is a batch tensor.
 --   Product functor (-)^N applies predicate once (PyTorch broadcasts).
 --   Reduction via smooth sup/inf (LogSumExp) -- the geometry paradigm's
 --   analogue of the lattice quantifiers.
-instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
+instance A2MonBLatTheory (Tensor d dt s) GeomU Omega where
   -- bigWedge = forall = smooth inf = De Morgan of LogSumExp
   bigWedge betaT guard phi =
     let result = runIdentity (phi (UnsafeMkTensor guard))
@@ -96,8 +96,8 @@ instance A2MonBLatTheory (Tensor d dt s) FrmwkGeom Omega where
         lse = F.logsumexp (toDynamic result `Torch.mul` betaT) 0 False
         reduced = (lse `Torch.sub` Torch.log (Torch.asTensor (fromIntegral n :: Float))) `Torch.div` betaT
      in Identity (UnsafeMkTensor (Torch.reshape [1] reduced))
-  bigOplus _ _ = error "bigOplus over FrmwkGeom not yet supported"
-  bigOtimes _ _ = error "bigOtimes over FrmwkGeom not yet supported"
+  bigOplus _ _ = error "bigOplus over GeomU not yet supported"
+  bigOtimes _ _ = error "bigOtimes over GeomU not yet supported"
 
 ------------------------------------------------------
 -- Internal Helpers

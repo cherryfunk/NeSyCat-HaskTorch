@@ -8,7 +8,7 @@
 -- | Logical interpretation: Classical Boolean Logic ($\Omega = \{\text{True}, \text{False}\}$)
 --
 --   This module provides the interpretation of TwoMonBLatTheory and A2MonBLatTheory
---   in the FrmwkMeas framework with Omega = Bool.
+--   in the MeasU framework with Omega = Bool.
 module B_Logical.BA_Interpretation.Boolean
   ( Omega,
     -- * Re-exported typeclass interface
@@ -25,7 +25,7 @@ module B_Logical.BA_Interpretation.Boolean
   )
 where
 
-import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
+import A_Categorical.BA_Interpretation.StarIntp (MeasU)
 import A_Categorical.DA_Realization.Dist ()  -- Monad instance for Dist
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..), Guard)
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
@@ -40,7 +40,7 @@ type Omega = Bool
 -- TwoMonBLatTheory instance: Boolean lattice operations
 ------------------------------------------------------
 
-instance TwoMonBLatTheory FrmwkMeas Bool where
+instance TwoMonBLatTheory MeasU Bool where
   type ParamsLogic Bool = ()
   vdash = (<=)
   vee _ = (||)
@@ -55,19 +55,19 @@ instance TwoMonBLatTheory FrmwkMeas Bool where
   v1 = True
 
 ------------------------------------------------------
--- Guard type instance: FrmwkMeas guards are finite subsets (lists)
+-- Guard type instance: MeasU guards are finite subsets (lists)
 ------------------------------------------------------
 
-type instance Guard FrmwkMeas a = [a]
+type instance Guard MeasU a = [a]
 
 ------------------------------------------------------
 -- A2MonBLatTheory: one generic instance for all point types
---   Guard FrmwkMeas a = [a], so guard :: [a] and phi :: a -> Dist Bool.
+--   Guard MeasU a = [a], so guard :: [a] and phi :: a -> Dist Bool.
 --   bigWedge/bigVee = commutator (mapM) then lattice reduce (inf/sup)
 --   bigOplus/bigOtimes = commutator then measure reduce
 ------------------------------------------------------
 
-instance A2MonBLatTheory a FrmwkMeas Bool where
+instance A2MonBLatTheory a MeasU Bool where
   -- forall = commutator + inf (lattice meet = and)
   bigWedge _ guard phi = do
     omegas <- mapM phi guard       -- commutator: (M Omega)^A -> M(Omega^A)

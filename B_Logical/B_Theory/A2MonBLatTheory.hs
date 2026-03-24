@@ -10,7 +10,7 @@ module B_Logical.B_Theory.A2MonBLatTheory
   )
 where
 
-import A_Categorical.B_Theory.StarTheory (Framework (..))
+import A_Categorical.B_Theory.StarTheory (Universe (..))
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import Data.Kind (Type)
 
@@ -21,7 +21,7 @@ type family Guard frmwk a :: Type
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
 --   Guarded quantifiers: given a pointwise predicate (a -> M frmwk tau)
 class
-  (TwoMonBLatTheory frmwk tau, Framework frmwk, Monad (M frmwk)) =>
+  (TwoMonBLatTheory frmwk tau, Universe frmwk, Monad (M frmwk)) =>
   A2MonBLatTheory a frmwk tau
   where
   bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau

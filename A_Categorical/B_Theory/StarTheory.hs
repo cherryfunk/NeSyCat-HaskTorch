@@ -5,18 +5,18 @@
 
 module A_Categorical.B_Theory.StarTheory
   ( StarTheory (..),
-    Framework (..),
+    Universe (..),
   )
 where
 
 import Data.Kind (Constraint, Type)
 
--- | Semantic Framework: a (category, monad) pair that determines
+-- | Semantic Universe: a (category, monad) pair that determines
 --   the entire interpretation pipeline.
 --
 --   Cat frmwk : Type -> Constraint  (which types are objects)
 --   M frmwk   : Type -> Type        (the Kleisli monad)
-class Framework frmwk where
+class Universe frmwk where
   type Cat frmwk :: Type -> Constraint
   type M frmwk :: Type -> Type
 

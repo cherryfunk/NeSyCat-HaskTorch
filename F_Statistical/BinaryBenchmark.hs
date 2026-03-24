@@ -3,7 +3,7 @@
 -- | Benchmark for binary classification.
 --
 --   1. Trains via BinaryTrainLib (epsilon level) -> theta*
---   2. Evaluates via classifierA @FrmwkMeas (gamma level) + BenchmarkFun (zeta level)
+--   2. Evaluates via classifierA @MeasU (gamma level) + BenchmarkFun (zeta level)
 --
 --   Training modes:
 --     cabal run binary-benchmark                 -- fixed beta (default)
@@ -19,7 +19,7 @@ import BinaryTrainLib
   )
 
 -- Domain theory (gamma level) -- classifierA, labelA
-import A_Categorical.BA_Interpretation.StarIntp (FrmwkMeas)
+import A_Categorical.BA_Interpretation.StarIntp (MeasU)
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryReal ()
 
@@ -50,14 +50,14 @@ main = do
       trainBinary 1000 0.001 1.0 1.75 ds
 
   -- === BENCHMARKING (zeta level) ===
-  -- Convert tensor data to FrmwkMeas points
-  let toPoints t = map (\[x1, x2] -> (x1, x2)) (Torch.asValue t :: [[Float]]) :: [Point FrmwkMeas]
+  -- Convert tensor data to MeasU points
+  let toPoints t = map (\[x1, x2] -> (x1, x2)) (Torch.asValue t :: [[Float]]) :: [Point MeasU]
       trainPts = toPoints (trainData ds)
       testPts  = toPoints (testData ds)
 
   -- Build (prediction, label) pairs using the framework
   let evalPairs pts =
-        [ (pTrueDist (classifierA @FrmwkMeas thetaStar pt), labelA @FrmwkMeas pt)
+        [ (pTrueDist (classifierA @MeasU thetaStar pt), labelA @MeasU pt)
         | pt <- pts
         ]
 
@@ -72,7 +72,7 @@ main = do
 
   -- Report
   putStrLn ""
-  putStrLn $ printf "Binary Benchmark (mode=%s, classifierA @FrmwkMeas):" mode
+  putStrLn $ printf "Binary Benchmark (mode=%s, classifierA @MeasU):" mode
   putStrLn $ printf "  Accuracy:    Train=%.4f  Test=%.4f" accTrain accTest
   putStrLn $ printf "  F1 Score:    %.4f" f1Test
   putStrLn $ printf "  Precision:   %.4f" precTest

@@ -8,14 +8,14 @@
 
 -- | Abstract binary classification formula.
 --   Uses bigWedge from A2MonBLatTheory for quantification.
---   Works for any framework (FrmwkGeom, FrmwkMeas, etc.).
+--   Works for any framework (GeomU, MeasU, etc.).
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
   )
 where
 
-import A_Categorical.B_Theory.StarTheory (Framework (..))
+import A_Categorical.B_Theory.StarTheory (Universe (..))
 import B_Logical.B_Theory.A2MonBLatTheory (A2MonBLatTheory (..), Guard)
 import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
