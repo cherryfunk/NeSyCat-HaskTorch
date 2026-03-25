@@ -5,14 +5,21 @@ export interface PortDef {
 }
 
 export type MorphismMode = 'tarski' | 'kleisli'
+export type DiagramLayer = 'domain' | 'logical'
+
+export interface InstanceDef {
+  universe: string
+  def: string
+}
 
 export interface MorphismDef {
   id: string
   label: string
   haskellSig: string
   haskellClass: string
-  instances: { universe: string; def: string }[]
+  instances: InstanceDef[]
   mode: MorphismMode
+  layer: DiagramLayer
   inputs: PortDef[]
   outputs: PortDef[]
   paramInputs?: PortDef[]

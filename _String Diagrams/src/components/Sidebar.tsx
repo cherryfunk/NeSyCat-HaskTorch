@@ -1,5 +1,7 @@
+import { useState, useRef, useEffect } from 'react'
 import type { StringDiagram } from '../model/types'
 import theme, { panelStyle, glassBlur } from '../lib/theme'
+import { useDiagramStore } from '../store/diagramStore'
 
 interface Props {
   diagrams: StringDiagram[]
@@ -10,6 +12,50 @@ interface Props {
 }
 
 export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onToggle }: Props) {
+  const createNewDiagram = useDiagramStore((s) => s.createNewDiagram)
+  const editorDiagram = useDiagramStore((s) => s.editorDiagram)
+  const mode = useDiagramStore((s) => s.mode)
+
+  // Inline naming state: when not null, shows an input field for a new diagram
+  const [naming, setNaming] = useState(false)
+  const [newName, setNewName] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (naming && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [naming])
+
+  // Track the ID of the diagram being named
+  const [namingId, setNamingId] = useState<string | null>(null)
+  const updateTitle = useDiagramStore((s) => s.updateEditorTitle)
+
+  function handleCreate() {
+    // Create immediately with a placeholder name so it becomes active + blank canvas shows
+    createNewDiagram('Untitled')
+    const newId = useDiagramStore.getState().activeId
+    setNamingId(newId)
+    setNaming(true)
+    setNewName('')
+  }
+
+  function confirmCreate() {
+    if (newName.trim() && namingId) {
+      updateTitle(newName.trim())
+    }
+    setNaming(false)
+    setNamingId(null)
+  }
+
+  function cancelCreate() {
+    if (newName.trim() && namingId) {
+      updateTitle(newName.trim())
+    }
+    setNaming(false)
+    setNamingId(null)
+  }
+
   return (
     <>
       {/* Sidebar panel */}
@@ -31,7 +77,7 @@ export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onTog
           transition: 'transform 0.25s ease',
         }}
       >
-        {/* Header */}
+        {/* Header with + button */}
         <div
           style={{
             padding: '14px 16px',
@@ -49,6 +95,27 @@ export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onTog
               NeSyCat categorical logic
             </div>
           </div>
+          <button
+            onClick={handleCreate}
+            title="New diagram"
+            style={{
+              width: 26,
+              height: 26,
+              borderRadius: 6,
+              border: `1px solid ${theme.glass.borderColor}`,
+              background: theme.glass.buttonBg,
+              color: theme.text.secondary,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 16,
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            +
+          </button>
         </div>
 
         {/* Section label */}
@@ -69,13 +136,17 @@ export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onTog
         <div style={{ flex: 1, overflow: 'auto' }}>
           {diagrams.map((d) => {
             const isActive = d.id === activeDiagram
+            const isBeingNamed = naming && d.id === namingId
+            const title = (mode === 'edit' && editorDiagram?.id === d.id)
+              ? editorDiagram.title
+              : d.title
             return (
               <div
                 key={d.id}
-                onClick={() => onSelect(d.id)}
+                onClick={() => { if (!isBeingNamed) onSelect(d.id) }}
                 style={{
                   padding: '10px 16px',
-                  cursor: 'pointer',
+                  cursor: isBeingNamed ? 'default' : 'pointer',
                   background: isActive ? `rgba(${theme.node.accentIndigo},0.15)` : 'transparent',
                   borderLeft: isActive
                     ? `3px solid rgba(${theme.node.accentIndigo},0.8)`
@@ -83,32 +154,61 @@ export default function Sidebar({ diagrams, activeDiagram, onSelect, open, onTog
                   transition: 'all 0.15s ease',
                 }}
               >
-                <div
-                  style={{
-                    fontWeight: 500,
-                    fontSize: 13,
-                    color: isActive ? theme.text.primary : theme.text.secondary,
-                    textShadow: theme.text.shadowLight,
-                  }}
-                >
-                  {d.title}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: theme.text.dimmed,
-                    marginTop: 3,
-                  }}
-                >
-                  {d.description}
-                </div>
+                {isBeingNamed ? (
+                  <input
+                    ref={inputRef}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') confirmCreate()
+                      if (e.key === 'Escape') cancelCreate()
+                    }}
+                    onBlur={() => confirmCreate()}
+                    placeholder="Diagram name..."
+                    style={{
+                      width: '100%',
+                      padding: '4px 8px',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      borderRadius: 4,
+                      border: `1px solid rgba(${theme.node.accentIndigo}, 0.4)`,
+                      background: 'rgba(255,255,255,0.04)',
+                      color: theme.text.primary,
+                      outline: 'none',
+                      fontFamily: 'inherit',
+                      boxSizing: 'border-box' as const,
+                    }}
+                  />
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        fontWeight: 500,
+                        fontSize: 13,
+                        color: isActive ? theme.text.primary : theme.text.secondary,
+                        textShadow: theme.text.shadowLight,
+                      }}
+                    >
+                      {title}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: theme.text.dimmed,
+                        marginTop: 3,
+                      }}
+                    >
+                      {d.description || `${d.morphisms.length} morphisms`}
+                    </div>
+                  </>
+                )}
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Toggle ribbon button -- slides with the sidebar */}
+      {/* Toggle ribbon button */}
       <button
         onClick={onToggle}
         style={{

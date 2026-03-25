@@ -1,33 +1,48 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { ReactFlowProvider } from '@xyflow/react'
 import DiagramCanvas from './components/DiagramCanvas'
 import Sidebar from './components/Sidebar'
-import { binaryPredicateDiagram } from './model/diagrams/binaryPredicate'
-import { binarySentenceDiagram } from './model/diagrams/binarySentence'
-import type { StringDiagram } from './model/types'
+import { useDiagramStore } from './store/diagramStore'
 
 const SIDEBAR_WIDTH = 240
 
-const allDiagrams: StringDiagram[] = [
-  binaryPredicateDiagram,
-  binarySentenceDiagram,
-]
-
 export default function App() {
-  const [activeId, setActiveId] = useState(allDiagrams[0].id)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const activeDiagram = allDiagrams.find((d) => d.id === activeId) ?? allDiagrams[0]
+  const activeId = useDiagramStore((s) => s.activeId)
+  const setActiveId = useDiagramStore((s) => s.setActiveId)
+  const mode = useDiagramStore((s) => s.mode)
+  const editorDiagram = useDiagramStore((s) => s.editorDiagram)
+  const builtins = useDiagramStore((s) => s.builtinDiagrams)
+  const userDiagrams = useDiagramStore((s) => s.userDiagrams)
 
+  const allDiagrams = useMemo(() => {
+    const list = [...builtins, ...userDiagrams]
+    // Include the editor diagram if it's new (not yet saved to userDiagrams)
+    if (editorDiagram && !list.some((d) => d.id === editorDiagram.id)) {
+      list.push(editorDiagram)
+    }
+    return list
+  }, [builtins, userDiagrams, editorDiagram])
+
+  const activeDiagram = useMemo(() => {
+    if (mode === 'edit' && editorDiagram) return editorDiagram
+    return allDiagrams.find((d) => d.id === activeId)
+  }, [mode, editorDiagram, allDiagrams, activeId])
+
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const sidebarWidth = sidebarOpen ? SIDEBAR_WIDTH : 0
 
   const toggleSidebar = useCallback(() => {
     setSidebarOpen((prev) => {
       const next = !prev
-      const root = document.documentElement
-      root.style.setProperty('--controls-left', `${(next ? SIDEBAR_WIDTH : 0) + 12}px`)
+      document.documentElement.style.setProperty(
+        '--controls-left',
+        `${(next ? SIDEBAR_WIDTH : 0) + 12}px`
+      )
       return next
     })
   }, [])
+
+  if (!activeDiagram) return null
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>

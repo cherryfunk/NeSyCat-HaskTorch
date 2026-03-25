@@ -22,7 +22,6 @@ interface FanOutNode {
   sourcePort: string
   wireType: string
   wires: { id: string; sourceBox: string; sourcePort: string; targetBox: string; targetPort: string; wireType: string; isMonadic: boolean }[]
-  isOmega: boolean
 }
 
 export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: Edge[] } {
@@ -61,9 +60,8 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
     if (wires.length >= 2) {
       const [sourceBox, sourcePort] = key.split('::')
       const wt = wires[0].wireType
-      const isOmega = wt === 'Omega' || wt === 'M(Omega)'
       const id = `fanout-${sourceBox}-${sourcePort}`
-      fanOutNodes.push({ id, sourceBox, sourcePort, wireType: wt, wires, isOmega })
+      fanOutNodes.push({ id, sourceBox, sourcePort, wireType: wt, wires })
     }
   }
   const fanOutByKey = new Map(fanOutNodes.map((f) => [`${f.sourceBox}::${f.sourcePort}`, f]))
@@ -143,6 +141,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
         haskellClass: m.haskellClass,
         instances: m.instances,
         mode: m.mode,
+        layer: m.layer,
         accent: accentForMode(m.mode),
         inputs: m.inputs,
         outputs: m.outputs,
@@ -158,16 +157,8 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
     const sourceMode = morphModeMap.get(f.sourceBox) ?? 'tarski'
     const accent = accentForMode(sourceMode)
 
-    if (f.isOmega) {
-      const isM = f.wireType === 'M(Omega)' || f.wireType.startsWith('M(')
-      const label = isM ? 'M(\u03A9)' : '\u03A9'
-      nodes.push({
-        id: f.id,
-        type: 'omegaNode',
-        position: { x: pos.x - OMEGA_SIZE / 2, y: pos.y - OMEGA_SIZE / 2 },
-        data: { label, accent, outputCount: f.wires.length },
-      })
-    } else {
+    {
+      // All fan-outs use plain copy dots -- Omega is a wire type, not a node
       nodes.push({
         id: f.id,
         type: 'copyDot',

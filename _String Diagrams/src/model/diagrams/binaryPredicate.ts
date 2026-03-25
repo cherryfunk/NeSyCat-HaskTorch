@@ -52,6 +52,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         },
       ],
       mode: 'tarski',
+      layer: 'domain',
       inputs: [{ id: 'labelA-in-pt', label: 'Point', position: 'left' }],
       outputs: [{ id: 'labelA-out', label: 'Omega', position: 'right' }],
     },
@@ -76,6 +77,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         },
       ],
       mode: 'kleisli',
+      layer: 'domain',
       inputs: [
         { id: 'classA-in-pt', label: 'Point', position: 'left' },
       ],
@@ -94,6 +96,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [{ id: 'neg-label-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'neg-label-out', label: 'Omega', position: 'right' }],
     },
@@ -107,6 +110,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Tensor', def: 'neg a = UnsafeMkTensor (negate (toDynamic a))' },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [{ id: 'neg-pred-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'neg-pred-out', label: 'Omega', position: 'right' }],
     },
@@ -120,6 +124,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Bool', def: 'implies _ a b = not a || b' },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [
         { id: 'imp1-in-a', label: 'Omega', position: 'left' },
         { id: 'imp1-in-b', label: 'Omega', position: 'left' },
@@ -139,6 +144,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Bool', def: 'implies _ a b = not a || b' },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [
         { id: 'imp2-in-a', label: 'Omega', position: 'left' },
         { id: 'imp2-in-b', label: 'Omega', position: 'left' },
@@ -158,6 +164,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Bool', def: 'wedge _ = (&&)' },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [
         { id: 'wedge-in-a', label: 'Omega', position: 'left' },
         { id: 'wedge-in-b', label: 'Omega', position: 'left' },
@@ -177,6 +184,7 @@ export const binaryPredicateDiagram: StringDiagram = {
         { universe: 'Dist', def: 'return = certainly' },
       ],
       mode: 'kleisli',
+      layer: 'logical',
       inputs: [{ id: 'return-in', label: 'Omega', position: 'left' }],
       outputs: [{ id: 'return-out', label: 'M(Omega)', position: 'right' }],
     },

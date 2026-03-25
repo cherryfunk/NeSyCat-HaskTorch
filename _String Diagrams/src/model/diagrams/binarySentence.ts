@@ -38,6 +38,7 @@ export const binarySentenceDiagram: StringDiagram = {
         },
       ],
       mode: 'kleisli',
+      layer: 'domain',
       inputs: [],
       outputs: [{ id: 'bp-out', label: 'Point -> M(Omega)', position: 'right' }],
       paramInputs: [
@@ -69,6 +70,7 @@ export const binarySentenceDiagram: StringDiagram = {
         },
       ],
       mode: 'tarski',
+      layer: 'logical',
       inputs: [
         { id: 'bw-in-guard', label: 'Guard', position: 'left' },
         { id: 'bw-in-pred', label: 'Point -> M(Omega)', position: 'left' },
