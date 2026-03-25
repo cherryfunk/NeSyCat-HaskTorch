@@ -12,6 +12,7 @@ import type { Node, Edge, NodeChange, Connection } from '@xyflow/react'
 import type { StringDiagram } from '../model/types'
 import { layoutDiagram } from '../lib/layout'
 import { validateConnection } from '../lib/connectionValidator'
+import { buildSignature } from '../lib/buildSignature'
 import theme from '../lib/theme'
 import { useDiagramStore } from '../store/diagramStore'
 import MorphismNode from './MorphismNode'
@@ -109,9 +110,6 @@ interface SelectedMorphism {
   haskellClass: string
   instances: { universe: string; def: string }[]
   mode: string
-  inputs: { id: string; label: string; position: string }[]
-  outputs: { id: string; label: string; position: string }[]
-  paramInputs: { id: string; label: string; position: string }[]
 }
 
 interface Props {
@@ -120,7 +118,11 @@ interface Props {
 }
 
 function resolvePortLabel(nodeId: string, handleId: string, diagram: StringDiagram): string {
-  const morph = diagram.morphisms.find((m) => m.id === nodeId)
+  // Check editorDiagram first (has latest state), then fall back to diagram prop
+  const store = useDiagramStore.getState()
+  const source = store.editorDiagram ?? diagram
+
+  const morph = source.morphisms.find((m) => m.id === nodeId)
   if (morph) {
     const port = morph.outputs.find((p) => p.id === handleId)
       ?? morph.inputs.find((p) => p.id === handleId)
@@ -136,11 +138,13 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   const setSelectedNode = useDiagramStore((s) => s.setSelectedNode)
   const selectedNodeId = useDiagramStore((s) => s.selectedNodeId)
   const addMorphismAtPosition = useDiagramStore((s) => s.addMorphismAtPosition)
+  const renamePort = useDiagramStore((s) => s.renamePort)
   const { screenToFlowPosition } = useReactFlow()
 
   const [minimapMode, setMinimapMode] = useState<MinimapMode>('show')
   const [showParams, setShowParams] = useState(true)
   const [viewSelectedNode, setViewSelectedNode] = useState<SelectedMorphism | null>(null)
+  const [editingEdge, setEditingEdge] = useState<{ id: string; label: string; x: number; y: number } | null>(null)
 
   const isEditMode = storeMode === 'edit'
 
@@ -168,7 +172,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         ...e,
         style: { ...e.style, stroke: 'rgba(255,255,255,0.15)', strokeDasharray: '4 4' },
         animated: false,
-        label: undefined,
       }))
 
     return { topInputIds, paramEdgeIds, greyParamEdges }
@@ -219,24 +222,28 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     [onNodesChange, diagram.id, setNodes],
   )
 
-  // Reset when diagram changes
-  // Reset nodes/edges when diagram object changes (view mode only)
+  // Reset nodes/edges when diagram object changes (any mode)
   const prevDiagramRef = useRef(diagram)
   useEffect(() => {
-    if (!isEditMode && prevDiagramRef.current !== diagram) {
+    if (prevDiagramRef.current !== diagram) {
       prevDiagramRef.current = diagram
       const restored = applyStoredPositions(layout.nodes, diagram.id)
       setNodes(restored)
       setEdges(layout.edges)
     }
-  }, [diagram, layout, setNodes, setEdges, isEditMode])
+  }, [diagram, layout, setNodes, setEdges])
 
   // In edit mode, sync morphism data (ports, label, etc.) from store to ReactFlow nodes
   // without changing positions.
   const editorDiagram = useDiagramStore((s) => s.editorDiagram)
   // Serialize editorDiagram morphisms to detect changes
   const morphDataKey = editorDiagram?.morphisms.map(
-    (m) => `${m.id}:${m.label}:${m.inputs.length}:${m.outputs.length}:${m.paramInputs?.length ?? 0}`
+    (m) => `${m.id}:${m.label}:${m.inputs.map((p) => p.label).join(',')}:${m.outputs.map((p) => p.label).join(',')}:${(m.paramInputs ?? []).map((p) => p.label).join(',')}`
+  ).join('|') ?? ''
+
+  // Wire data key for edge label sync
+  const wireDataKey = editorDiagram?.wires.map(
+    (w) => `${w.id}:${w.wireType}`
   ).join('|') ?? ''
 
   useEffect(() => {
@@ -281,9 +288,29 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, morphDataKey, setNodes, setEdges])
 
-  // Toggle params (view mode only -- in edit mode, edges are managed manually)
+  // Sync edge labels when wire types change (port rename -> wire type update -> edge label)
   useEffect(() => {
-    if (isEditMode) return
+    if (!isEditMode || !editorDiagram) return
+    const wireMap = new Map(editorDiagram.wires.map((w) => [w.id, w]))
+    setEdges((current) =>
+      current.map((e) => {
+        const wire = wireMap.get(e.id)
+        if (wire && wire.wireType !== e.label) {
+          return {
+            ...e,
+            label: wire.wireType || undefined,
+            labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
+            labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
+          }
+        }
+        return e
+      })
+    )
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditMode, wireDataKey, setEdges])
+
+  // Toggle params visibility
+  useEffect(() => {
     setNodes((currentNodes) => {
       if (showParams) {
         const currentIds = new Set(currentNodes.map((n) => n.id))
@@ -304,7 +331,36 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         return layout.edges.filter((e) => !paramInfo.paramEdgeIds.has(e.id))
       }
     })
-  }, [showParams, layout, paramInfo, setNodes, setEdges, diagram.id, isEditMode])
+  }, [showParams, layout, paramInfo, setNodes, setEdges, diagram.id])
+
+  // Edge click: edit label inline
+  const renameWire = useDiagramStore((s) => s.renameWire)
+  const onEdgeClick = useCallback(
+    (event: React.MouseEvent, edge: Edge) => {
+      if (!isEditMode) return
+      setEditingEdge({
+        id: edge.id,
+        label: (edge.label as string) || '',
+        x: event.clientX,
+        y: event.clientY,
+      })
+    },
+    [isEditMode],
+  )
+
+  function confirmEdgeRename(newLabel: string) {
+    if (editingEdge) {
+      const label = newLabel.trim() || '?'
+      renameWire(editingEdge.id, label)
+      // Also update the ReactFlow edge directly
+      setEdges((eds) => eds.map((e) =>
+        e.id === editingEdge.id
+          ? { ...e, label, labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' }, labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 } }
+          : e
+      ))
+      setEditingEdge(null)
+    }
+  }
 
   // Node click
   const onNodeClick = useCallback(
@@ -316,22 +372,19 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         return
       }
 
-      // In view mode, show NodeDetail only for morphism nodes
+      // Show NodeDetail for morphism nodes -- signature always from edges
       if (node.type === 'morphismBox') {
         setViewSelectedNode({
           id: node.id,
           label: (data.label as string) || '',
-          haskellSig: (data.haskellSig as string) || '',
+          haskellSig: buildSignature(node.id, diagram),
           haskellClass: (data.haskellClass as string) || '',
           instances: (data.instances as { universe: string; def: string }[]) || [],
           mode: (data.mode as string) || 'tarski',
-          inputs: (data.inputs as { id: string; label: string; position: string }[]) || [],
-          outputs: (data.outputs as { id: string; label: string; position: string }[]) || [],
-          paramInputs: (data.paramInputs as { id: string; label: string; position: string }[]) || [],
         })
       }
     },
-    [isEditMode, setSelectedNode],
+    [isEditMode, setSelectedNode, diagram],
   )
 
   // Double-click on empty canvas to create a new node
@@ -416,6 +469,8 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
 
       // Connect the source to the new node's first input
       const { nodeId: sourceNodeId, handleId: sourceHandleId } = connectStartRef.current
+      const wireType = '?'
+
       const wireId = `wire-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       addWire({
         id: wireId,
@@ -423,11 +478,10 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         sourcePort: sourceHandleId,
         targetBox: newId,
         targetPort: `${newId}-in-0`,
-        wireType: 'Omega U',
+        wireType,
         isMonadic: false,
       })
 
-      // Also add the edge directly to ReactFlow
       setEdges((eds) => [...eds, {
         id: wireId,
         source: sourceNodeId,
@@ -436,12 +490,15 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         targetHandle: `${newId}-in-0`,
         type: 'smoothstep',
         animated: true,
+        label: wireType,
+        labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
+        labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
         style: { stroke: `rgba(${theme.node.accentBlue}, 0.5)`, strokeWidth: 2 },
       }])
 
       connectStartRef.current = null
     },
-    [isEditMode, createNodeAtPosition, addWire, setEdges],
+    [isEditMode, createNodeAtPosition, addWire, setEdges, diagram, renamePort],
   )
 
   // Sync keyboard deletions to the store
@@ -468,10 +525,9 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     [removeWire],
   )
 
-  // Connection handler for edit mode with type validation
+  // Connection handler: type-checks and labels edges
   const onConnect = useCallback(
     (connection: Connection) => {
-      // Clear connectStartRef so onConnectEnd knows this was handled
       connectStartRef.current = null
 
       if (!connection.source || !connection.target) return
@@ -485,14 +541,13 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         targetHandle,
         diagram,
       )
-
       if (!result.valid) {
         console.warn('Invalid connection:', result.reason)
         return
       }
 
-      // Resolve the port label for the edge label
-      const portLabel = resolvePortLabel(connection.source, sourceHandle, diagram)
+      // Default edge label is "?" -- user can click to edit later
+      const wireType = '?'
 
       const wireId = `wire-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       addWire({
@@ -501,11 +556,10 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         sourcePort: sourceHandle,
         targetBox: connection.target,
         targetPort: targetHandle,
-        wireType: portLabel || result.wireType,
+        wireType,
         isMonadic: false,
       })
 
-      // Add edge to ReactFlow directly with label
       setEdges((eds) => [...eds, {
         id: wireId,
         source: connection.source!,
@@ -514,13 +568,13 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         targetHandle,
         type: 'smoothstep',
         animated: true,
-        label: portLabel || undefined,
+        label: wireType,
         labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
         labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
         style: { stroke: `rgba(${theme.node.accentBlue}, 0.5)`, strokeWidth: 2 },
       }])
     },
-    [addWire, diagram, setEdges],
+    [addWire, diagram, setEdges, renamePort],
   )
 
   return (
@@ -538,6 +592,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
+        onEdgeClick={isEditMode ? onEdgeClick : undefined}
         onPaneClick={isEditMode ? onPaneClick : undefined}
         onConnect={isEditMode ? onConnect : undefined}
         onConnectStart={isEditMode ? onConnectStart : undefined}
@@ -629,9 +684,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
           haskellClass={viewSelectedNode.haskellClass}
           instances={viewSelectedNode.instances}
           mode={viewSelectedNode.mode}
-          inputs={viewSelectedNode.inputs}
-          outputs={viewSelectedNode.outputs}
-          paramInputs={viewSelectedNode.paramInputs}
           onClose={() => setViewSelectedNode(null)}
         />
       )}
@@ -641,6 +693,40 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
           morphismId={selectedNodeId}
           onClose={() => setSelectedNode(null)}
         />
+      )}
+
+      {/* Inline edge label editor */}
+      {editingEdge && (
+        <div
+          style={{
+            position: 'fixed',
+            left: editingEdge.x - 60,
+            top: editingEdge.y - 16,
+            zIndex: 100,
+          }}
+        >
+          <input
+            autoFocus
+            defaultValue={editingEdge.label === '?' ? '' : editingEdge.label}
+            placeholder="type name..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') confirmEdgeRename((e.target as HTMLInputElement).value)
+              if (e.key === 'Escape') setEditingEdge(null)
+            }}
+            onBlur={(e) => confirmEdgeRename(e.target.value)}
+            style={{
+              padding: '4px 8px',
+              fontSize: 12,
+              borderRadius: 4,
+              border: `1px solid rgba(${theme.node.accentBlue}, 0.4)`,
+              background: 'rgba(15,15,20,0.9)',
+              color: theme.text.primary,
+              outline: 'none',
+              fontFamily: 'inherit',
+              width: 120,
+            }}
+          />
+        </div>
       )}
     </div>
   )

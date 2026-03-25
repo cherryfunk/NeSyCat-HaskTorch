@@ -62,6 +62,7 @@ interface DiagramStore {
   updateMorphism: (id: string, patch: Partial<MorphismDef>) => void
   addWire: (wire: WireDef) => void
   removeWire: (id: string) => void
+  renameWire: (id: string, wireType: string) => void
   addInput: (ep: DiagramEndpoint) => void
   addOutput: (ep: DiagramEndpoint) => void
   removeInput: (id: string) => void
@@ -219,6 +220,13 @@ export const useDiagramStore = create<DiagramStore>((set, get) => ({
             paramInputs: m.paramInputs?.map(renameIn),
           }
         }),
+        // Edge label = port label: update wireType on all wires from/to this port
+        wires: s.editorDiagram.wires.map((w) => {
+          if (w.sourcePort === portId || w.targetPort === portId) {
+            return { ...w, wireType: label }
+          }
+          return w
+        }),
       },
     }
   }),
@@ -291,6 +299,18 @@ export const useDiagramStore = create<DiagramStore>((set, get) => ({
       editorDiagram: {
         ...s.editorDiagram,
         wires: s.editorDiagram.wires.filter((w) => w.id !== id),
+      },
+    }
+  }),
+
+  renameWire: (id, wireType) => set((s) => {
+    if (!s.editorDiagram) return s
+    return {
+      editorDiagram: {
+        ...s.editorDiagram,
+        wires: s.editorDiagram.wires.map((w) =>
+          w.id === id ? { ...w, wireType } : w
+        ),
       },
     }
   }),

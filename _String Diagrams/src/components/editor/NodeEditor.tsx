@@ -1,6 +1,7 @@
 import theme, { panelStyle, buttonStyle as themeBtnStyle } from '../../lib/theme'
 import { useDiagramStore } from '../../store/diagramStore'
-import type { InstanceDef, PortDef } from '../../model/types'
+import { buildSignature } from '../../lib/buildSignature'
+import type { InstanceDef } from '../../model/types'
 
 interface Props {
   morphismId: string
@@ -11,24 +12,13 @@ export default function NodeEditor({ morphismId, onClose }: Props) {
   const diagram = useDiagramStore((s) => s.editorDiagram)
   const updateMorphism = useDiagramStore((s) => s.updateMorphism)
   const removeMorphism = useDiagramStore((s) => s.removeMorphism)
-  const renamePort = useDiagramStore((s) => s.renamePort)
   const addPort = useDiagramStore((s) => s.addPortToMorphism)
   const removePort = useDiagramStore((s) => s.removePortFromMorphism)
 
   const morph = diagram?.morphisms.find((m) => m.id === morphismId)
-  if (!morph) return null
+  if (!morph || !diagram) return null
 
-  // Auto-generate signature from ports
-  const sig = morph.haskellSig || (() => {
-    const parts: string[] = []
-    for (const p of (morph.paramInputs ?? [])) parts.push(p.label || '?')
-    for (const p of morph.inputs) parts.push(p.label || '?')
-    if (morph.outputs.length > 0) {
-      const out = morph.outputs[0].label || '?'
-      parts.push(morph.mode === 'kleisli' ? `M U (${out})` : out)
-    }
-    return `${morph.label} :: ${parts.join(' -> ')}`
-  })()
+  const sig = buildSignature(morphismId, diagram)
 
   return (
     <div
@@ -61,7 +51,7 @@ export default function NodeEditor({ morphismId, onClose }: Props) {
             {morph.label}
           </div>
           <div style={{ fontSize: 10, color: theme.text.dimmed, marginTop: 2 }}>
-            {morph.mode} &middot; {morph.layer}{morph.haskellClass ? ` \u00b7 ${morph.haskellClass}` : ''}
+            {morph.mode}{morph.haskellClass ? ` \u00b7 ${morph.haskellClass}` : ''}
           </div>
         </div>
         <button onClick={onClose} style={{ ...themeBtnStyle(), borderRadius: 4, fontSize: 12, cursor: 'pointer', padding: '1px 6px', flexShrink: 0 }}>
@@ -69,7 +59,7 @@ export default function NodeEditor({ morphismId, onClose }: Props) {
         </button>
       </div>
 
-      {/* Signature */}
+      {/* Signature (derived from edge labels) */}
       <div style={{ padding: '10px 14px', borderBottom: `1px solid ${theme.glass.borderColor}` }}>
         <pre style={{
           color: `rgba(${morph.mode === 'kleisli' ? theme.node.accentPurple : theme.node.accentBlue}, 0.9)`,
@@ -80,41 +70,15 @@ export default function NodeEditor({ morphismId, onClose }: Props) {
         </pre>
       </div>
 
-      {/* IN section */}
-      <PortSection
-        title="In"
-        ports={morph.inputs}
-        morphId={morphismId}
-        side="input"
-        onRename={renamePort}
-        onAdd={addPort}
-        onRemove={removePort}
-      />
-
-      {/* PARAM section */}
-      <PortSection
-        title="Param"
-        ports={morph.paramInputs ?? []}
-        morphId={morphismId}
-        side="param"
-        onRename={renamePort}
-        onAdd={addPort}
-        onRemove={removePort}
-      />
-
-      {/* OUT section */}
-      <PortSection
-        title="Out"
-        ports={morph.outputs}
-        morphId={morphismId}
-        side="output"
-        onRename={renamePort}
-        onAdd={addPort}
-        onRemove={removePort}
-      />
+      {/* Ports: just +/- for count, no labels (labels come from edges) */}
+      <div style={{ padding: '8px 14px', borderBottom: `1px solid ${theme.glass.borderColor}` }}>
+        <PortCounter title="In" count={morph.inputs.length} morphId={morphismId} side="input" onAdd={addPort} ports={morph.inputs} onRemove={removePort} />
+        <PortCounter title="Param" count={(morph.paramInputs ?? []).length} morphId={morphismId} side="param" onAdd={addPort} ports={morph.paramInputs ?? []} onRemove={removePort} />
+        <PortCounter title="Out" count={morph.outputs.length} morphId={morphismId} side="output" onAdd={addPort} ports={morph.outputs} onRemove={removePort} />
+      </div>
 
       {/* Mode toggle */}
-      <div style={{ padding: '8px 14px', borderTop: `1px solid ${theme.glass.borderColor}` }}>
+      <div style={{ padding: '8px 14px', borderBottom: `1px solid ${theme.glass.borderColor}` }}>
         <div style={{ ...sectionLabelStyle, marginBottom: 6 }}>Mode</div>
         <div style={{ display: 'flex', gap: 4 }}>
           {(['tarski', 'kleisli'] as const).map((m) => (
@@ -161,47 +125,24 @@ const sectionLabelStyle: React.CSSProperties = {
   letterSpacing: '0.05em',
 }
 
-function PortSection({ title, ports, morphId, side, onRename, onAdd, onRemove }: {
+function PortCounter({ title, count, morphId, side, onAdd, ports, onRemove }: {
   title: string
-  ports: PortDef[]
+  count: number
   morphId: string
   side: 'input' | 'output' | 'param'
-  onRename: (morphId: string, portId: string, label: string) => void
   onAdd: (morphId: string, side: 'input' | 'output' | 'param') => void
+  ports: { id: string }[]
   onRemove: (morphId: string, portId: string) => void
 }) {
+  const lastPort = ports[ports.length - 1]
   return (
-    <div style={{ padding: '8px 14px', borderBottom: `1px solid ${theme.glass.borderColor}` }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-        <div style={sectionLabelStyle}>{title}</div>
-        <button
-          onClick={() => onAdd(morphId, side)}
-          style={{ ...tinyBtnStyle }}
-          title={`Add ${title.toLowerCase()}`}
-        >
-          +
-        </button>
-      </div>
-      {ports.length === 0 && (
-        <div style={{ color: theme.text.dimmed, fontSize: 10, fontStyle: 'italic' }}>none</div>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+      <span style={{ ...sectionLabelStyle, width: 40, margin: 0 }}>{title}</span>
+      <span style={{ color: theme.text.secondary, fontSize: 12, width: 16, textAlign: 'center' }}>{count}</span>
+      <button onClick={() => onAdd(morphId, side)} style={tinyBtnStyle} title={`Add ${title.toLowerCase()}`}>+</button>
+      {count > 0 && lastPort && (
+        <button onClick={() => onRemove(morphId, lastPort.id)} style={tinyBtnStyle} title={`Remove last ${title.toLowerCase()}`}>-</button>
       )}
-      {ports.map((p) => (
-        <div key={p.id} style={{ display: 'flex', gap: 4, marginBottom: 3, alignItems: 'center' }}>
-          <input
-            value={p.label}
-            onChange={(e) => onRename(morphId, p.id, e.target.value)}
-            placeholder="type name..."
-            style={{ ...inputStyle, flex: 1, fontSize: 11, padding: '3px 6px' }}
-          />
-          <button
-            onClick={() => onRemove(morphId, p.id)}
-            style={tinyBtnStyle}
-            title="Remove"
-          >
-            -
-          </button>
-        </div>
-      ))}
     </div>
   )
 }

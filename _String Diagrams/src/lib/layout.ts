@@ -16,6 +16,26 @@ function accentForMode(mode: string): string {
   return theme.node.accentBlue
 }
 
+function edgeLabelProps(label: string) {
+  if (!label) return {}
+  return {
+    label,
+    labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
+    labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
+  }
+}
+
+// Resolve the actual label for a wire from its source port
+function resolveWireLabel(w: { sourceBox: string; sourcePort: string; wireType: string }, diagram: StringDiagram): string {
+  const morph = diagram.morphisms.find((m) => m.id === w.sourceBox)
+  if (morph) {
+    const port = morph.outputs.find((p) => p.id === w.sourcePort)
+    if (port && port.label) return port.label
+  }
+  // Fall back to wireType
+  return w.wireType || ''
+}
+
 interface FanOutNode {
   id: string
   sourceBox: string
@@ -229,6 +249,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           type: 'smoothstep',
           animated: true,
           style: { stroke: edgeColor, strokeWidth: 2 },
+          ...edgeLabelProps(resolveWireLabel(w, diagram)),
         })
       }
       continue
@@ -236,7 +257,6 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
 
     // Skip wires to output endpoints (no target node)
     if (outputIds.has(w.targetBox)) {
-      // Wire just ends at the morphism output -- no target node
       continue
     }
 
@@ -264,6 +284,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           type: 'smoothstep',
           animated: true,
           style: { stroke: edgeColor, strokeWidth: 2 },
+          ...edgeLabelProps(resolveWireLabel(w, diagram)),
         })
       }
 
@@ -276,6 +297,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
         type: 'smoothstep',
         animated: true,
         style: { stroke: edgeColor, strokeWidth: 2 },
+        ...edgeLabelProps(resolveWireLabel(w, diagram)),
       })
     } else {
       edges.push({
@@ -291,6 +313,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           strokeWidth: isParam ? 1.5 : 2,
           strokeDasharray: isParam ? '4 4' : undefined,
         },
+        ...edgeLabelProps(resolveWireLabel(w, diagram)),
       })
     }
   }
