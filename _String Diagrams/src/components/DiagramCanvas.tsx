@@ -10,7 +10,7 @@ import {
 } from '@xyflow/react'
 import type { Node, Edge, NodeChange, Connection } from '@xyflow/react'
 import type { StringDiagram } from '../model/types'
-import { layoutDiagram } from '../lib/layout'
+import { buildReactFlowGraph } from '../lib/buildGraph'
 import { validateConnection } from '../lib/connectionValidator'
 import { buildSignature } from '../lib/buildSignature'
 import theme from '../lib/theme'
@@ -18,6 +18,8 @@ import { useDiagramStore } from '../store/diagramStore'
 import MorphismNode from './MorphismNode'
 import EndpointNode from './EndpointNode'
 import CopyDot from './CopyDot'
+import VariableNode from './VariableNode'
+import WallNode from './WallNode'
 import NodeDetail from './NodeDetail'
 import EditorToolbar from './editor/EditorToolbar'
 import NodeEditor from './editor/NodeEditor'
@@ -26,6 +28,8 @@ const nodeTypes = {
   morphismBox: MorphismNode,
   endpoint: EndpointNode,
   copyDot: CopyDot,
+  variableNode: VariableNode,
+  wallNode: WallNode,
 }
 
 type MinimapMode = 'show' | 'hidden'
@@ -74,11 +78,8 @@ function loadPositions(diagramId: string): Record<string, { x: number; y: number
   try {
     const raw = localStorage.getItem(POS_KEY)
     if (!raw) return {}
-    const all = JSON.parse(raw)
-    return all[diagramId] ?? {}
-  } catch {
-    return {}
-  }
+    return (JSON.parse(raw))[diagramId] ?? {}
+  } catch { return {} }
 }
 
 function savePositions(diagramId: string, nodes: Node[]) {
@@ -86,9 +87,7 @@ function savePositions(diagramId: string, nodes: Node[]) {
     const raw = localStorage.getItem(POS_KEY)
     const all = raw ? JSON.parse(raw) : {}
     const positions: Record<string, { x: number; y: number }> = {}
-    for (const n of nodes) {
-      positions[n.id] = n.position
-    }
+    for (const n of nodes) positions[n.id] = n.position
     all[diagramId] = positions
     localStorage.setItem(POS_KEY, JSON.stringify(all))
   } catch { /* ignore */ }
@@ -117,21 +116,6 @@ interface Props {
   sidebarWidth: number
 }
 
-function resolvePortLabel(nodeId: string, handleId: string, diagram: StringDiagram): string {
-  // Check editorDiagram first (has latest state), then fall back to diagram prop
-  const store = useDiagramStore.getState()
-  const source = store.editorDiagram ?? diagram
-
-  const morph = source.morphisms.find((m) => m.id === nodeId)
-  if (morph) {
-    const port = morph.outputs.find((p) => p.id === handleId)
-      ?? morph.inputs.find((p) => p.id === handleId)
-      ?? morph.paramInputs?.find((p) => p.id === handleId)
-    if (port) return port.label
-  }
-  return ''
-}
-
 export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   const storeMode = useDiagramStore((s) => s.mode)
   const addWire = useDiagramStore((s) => s.addWire)
@@ -139,6 +123,9 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   const selectedNodeId = useDiagramStore((s) => s.selectedNodeId)
   const addMorphismAtPosition = useDiagramStore((s) => s.addMorphismAtPosition)
   const renamePort = useDiagramStore((s) => s.renamePort)
+  const renameWire = useDiagramStore((s) => s.renameWire)
+  const removeMorphism = useDiagramStore((s) => s.removeMorphism)
+  const removeWire = useDiagramStore((s) => s.removeWire)
   const { screenToFlowPosition } = useReactFlow()
 
   const [minimapMode, setMinimapMode] = useState<MinimapMode>('show')
@@ -148,44 +135,53 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
 
   const isEditMode = storeMode === 'edit'
 
-  const layout = useMemo(() => layoutDiagram(diagram), [diagram])
-
-  // Identify parameter node/edge IDs
-  const paramInfo = useMemo(() => {
-    const topInputIds = new Set(
-      diagram.inputs.filter((i) => i.side === 'top').map((i) => i.id)
-    )
-    const paramTargetPorts = new Set<string>()
-    for (const m of diagram.morphisms) {
-      for (const p of (m.paramInputs ?? [])) {
-        paramTargetPorts.add(p.id)
-      }
-    }
-    const isParamEdge = (e: Edge) =>
-      topInputIds.has(e.source) || paramTargetPorts.has(e.targetHandle ?? '')
-
-    const paramEdgeIds = new Set(layout.edges.filter(isParamEdge).map((e) => e.id))
-
-    const greyParamEdges = layout.edges
-      .filter(isParamEdge)
-      .map((e) => ({
-        ...e,
-        style: { ...e.style, stroke: 'rgba(255,255,255,0.15)', strokeDasharray: '4 4' },
-        animated: false,
-      }))
-
-    return { topInputIds, paramEdgeIds, greyParamEdges }
-  }, [layout, diagram])
-
+  // === ONE FUNCTION builds everything. Both modes use this. ===
+  const graph = useMemo(() => buildReactFlowGraph(diagram), [diagram])
   const initialNodes = useMemo(
-    () => applyStoredPositions(layout.nodes, diagram.id),
-    [layout.nodes, diagram.id],
+    () => applyStoredPositions(graph.nodes, diagram.id),
+    [graph.nodes, diagram.id],
   )
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layout.edges)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(graph.edges)
 
-  // Save positions on drag
+  // Reset only when switching to a different diagram
+  const prevDiagramIdRef = useRef(diagram.id)
+  useEffect(() => {
+    if (prevDiagramIdRef.current !== diagram.id) {
+      prevDiagramIdRef.current = diagram.id
+      setNodes(applyStoredPositions(graph.nodes, diagram.id))
+      setEdges(graph.edges)
+    }
+  }, [diagram.id, graph, setNodes, setEdges])
+
+  // When diagram content changes (same ID, e.g. after addWire/addMorphism in edit mode),
+  // merge new nodes/edges without losing positions
+  const prevGraphRef = useRef(graph)
+  useEffect(() => {
+    if (prevGraphRef.current === graph) return
+    prevGraphRef.current = graph
+
+    setNodes((current) => {
+      const currentMap = new Map(current.map((n) => [n.id, n]))
+      // Keep positions of existing nodes, add new ones from graph
+      return graph.nodes.map((gn) => {
+        const existing = currentMap.get(gn.id)
+        if (existing) {
+          // Preserve position, update data
+          return { ...gn, position: existing.position, draggable: gn.draggable }
+        }
+        // New node -- apply stored position or use graph default
+        const stored = loadPositions(diagram.id)
+        const pos = stored[gn.id]
+        return pos ? { ...gn, position: pos } : gn
+      })
+    })
+
+    setEdges(graph.edges)
+  }, [graph, diagram.id, setNodes, setEdges])
+
+  // Save positions on drag + sync wall-variable alignment
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const handleNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -194,12 +190,13 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
       if (hasPositionChange) {
         setNodes((current) => {
           let changed = false
+          const wallNode = current.find((n) => n.type === 'wallNode')
+
           const updated = current.map((n) => {
+            // Sync anchor nodes with fan-out nodes
             if (n.id.startsWith('anchor-')) {
               const inputId = n.id.replace('anchor-', '')
-              const fanOutNode = current.find((fn) =>
-                fn.id.startsWith('fanout-') && fn.id.includes(inputId)
-              )
+              const fanOutNode = current.find((fn) => fn.id.startsWith('fanout-') && fn.id.includes(inputId))
               if (fanOutNode) {
                 const targetX = fanOutNode.position.x - 120
                 const targetY = fanOutNode.position.y
@@ -209,12 +206,22 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
                 }
               }
             }
+            // Sync variable nodes with wall position
+            if (n.type === 'variableNode' && wallNode) {
+              const targetX = wallNode.position.x - 69
+              if (n.position.x !== targetX) {
+                changed = true
+                return { ...n, position: { ...n.position, x: targetX } }
+              }
+            }
             return n
           })
+
           if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
           saveTimerRef.current = setTimeout(() => {
             setNodes((cur) => { savePositions(diagram.id, cur); return cur })
           }, 300)
+
           return changed ? updated : current
         })
       }
@@ -222,123 +229,12 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     [onNodesChange, diagram.id, setNodes],
   )
 
-  // Reset nodes/edges when diagram object changes (any mode)
-  const prevDiagramRef = useRef(diagram)
-  useEffect(() => {
-    if (prevDiagramRef.current !== diagram) {
-      prevDiagramRef.current = diagram
-      const restored = applyStoredPositions(layout.nodes, diagram.id)
-      setNodes(restored)
-      setEdges(layout.edges)
-    }
-  }, [diagram, layout, setNodes, setEdges])
+  // --- Interaction handlers ---
 
-  // In edit mode, sync morphism data (ports, label, etc.) from store to ReactFlow nodes
-  // without changing positions.
-  const editorDiagram = useDiagramStore((s) => s.editorDiagram)
-  // Serialize editorDiagram morphisms to detect changes
-  const morphDataKey = editorDiagram?.morphisms.map(
-    (m) => `${m.id}:${m.label}:${m.inputs.map((p) => p.label).join(',')}:${m.outputs.map((p) => p.label).join(',')}:${(m.paramInputs ?? []).map((p) => p.label).join(',')}`
-  ).join('|') ?? ''
-
-  // Wire data key for edge label sync
-  const wireDataKey = editorDiagram?.wires.map(
-    (w) => `${w.id}:${w.wireType}`
-  ).join('|') ?? ''
-
-  useEffect(() => {
-    if (!isEditMode || !editorDiagram) return
-    const morphMap = new Map(editorDiagram.morphisms.map((m) => [m.id, m]))
-    const morphIds = new Set(editorDiagram.morphisms.map((m) => m.id))
-
-    // Update existing nodes and remove deleted ones
-    setNodes((current) =>
-      current
-        .filter((n) => n.type !== 'morphismBox' || morphIds.has(n.id))
-        .map((n) => {
-          const morph = morphMap.get(n.id)
-          if (!morph || n.type !== 'morphismBox') return n
-          return {
-            ...n,
-            data: {
-              ...n.data,
-              label: morph.label,
-              haskellSig: morph.haskellSig,
-              haskellClass: morph.haskellClass,
-              instances: morph.instances,
-              mode: morph.mode,
-              layer: morph.layer,
-              inputs: morph.inputs,
-              outputs: morph.outputs,
-              paramInputs: morph.paramInputs ?? [],
-            },
-          }
-        })
-    )
-
-    // Also remove edges connected to deleted morphisms
-    setEdges((current) =>
-      current.filter((e) => {
-        // Keep edges where both source and target still exist as morphisms or other node types
-        const sourceExists = morphIds.has(e.source) || !e.source.startsWith('morph-')
-        const targetExists = morphIds.has(e.target) || !e.target.startsWith('morph-')
-        return sourceExists && targetExists
-      })
-    )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditMode, morphDataKey, setNodes, setEdges])
-
-  // Sync edge labels when wire types change (port rename -> wire type update -> edge label)
-  useEffect(() => {
-    if (!isEditMode || !editorDiagram) return
-    const wireMap = new Map(editorDiagram.wires.map((w) => [w.id, w]))
-    setEdges((current) =>
-      current.map((e) => {
-        const wire = wireMap.get(e.id)
-        if (wire && wire.wireType !== e.label) {
-          return {
-            ...e,
-            label: wire.wireType || undefined,
-            labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
-            labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
-          }
-        }
-        return e
-      })
-    )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditMode, wireDataKey, setEdges])
-
-  // Toggle params visibility
-  useEffect(() => {
-    setNodes((currentNodes) => {
-      if (showParams) {
-        const currentIds = new Set(currentNodes.map((n) => n.id))
-        const stored = loadPositions(diagram.id)
-        const paramNodesToAdd = layout.nodes
-          .filter((n) => paramInfo.topInputIds.has(n.id) && !currentIds.has(n.id))
-          .map((n) => { const pos = stored[n.id]; return pos ? { ...n, position: pos } : n })
-        return [...currentNodes, ...paramNodesToAdd]
-      } else {
-        return currentNodes.filter((n) => !paramInfo.topInputIds.has(n.id))
-      }
-    })
-    setEdges(() => {
-      if (showParams) {
-        const nonParamEdges = layout.edges.filter((e) => !paramInfo.paramEdgeIds.has(e.id))
-        return [...nonParamEdges, ...paramInfo.greyParamEdges]
-      } else {
-        return layout.edges.filter((e) => !paramInfo.paramEdgeIds.has(e.id))
-      }
-    })
-  }, [showParams, layout, paramInfo, setNodes, setEdges, diagram.id])
-
-  // Edge click: edit label inline
-  const renameWire = useDiagramStore((s) => s.renameWire)
+  // Edge click: edit label
   const onEdgeClick = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
       if (isEditMode) {
-        // Edit mode: open inline rename editor
         setEditingEdge({
           id: edge.id,
           label: (edge.label as string) || '',
@@ -346,7 +242,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
           y: event.clientY,
         })
       }
-      // Both modes: deselect any selected node
       setSelectedNode(null)
       setViewSelectedNode(null)
     },
@@ -357,12 +252,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     if (editingEdge) {
       const label = newLabel.trim() || '?'
       renameWire(editingEdge.id, label)
-      // Also update the ReactFlow edge directly
-      setEdges((eds) => eds.map((e) =>
-        e.id === editingEdge.id
-          ? { ...e, label, labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' }, labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 } }
-          : e
-      ))
       setEditingEdge(null)
     }
   }
@@ -377,12 +266,11 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         return
       }
 
-      // Show NodeDetail for morphism nodes -- signature always from edges
       if (node.type === 'morphismBox') {
         setViewSelectedNode({
           id: node.id,
           label: (data.label as string) || '',
-          haskellSig: buildSignature(node.id, editorDiagram ?? diagram),
+          haskellSig: buildSignature(node.id, diagram),
           haskellClass: (data.haskellClass as string) || '',
           instances: (data.instances as { universe: string; def: string }[]) || [],
           mode: (data.mode as string) || 'tarski',
@@ -392,14 +280,14 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     [isEditMode, setSelectedNode, diagram],
   )
 
-  // Double-click on empty canvas to create a new node
-  // ReactFlow has no onPaneDoubleClick, so we detect double-click via timing on onPaneClick
+  // Double-click on canvas to create node
   const lastPaneClickRef = useRef<{ time: number; x: number; y: number }>({ time: 0, x: 0, y: 0 })
 
   const createNodeAtPosition = useCallback(
     (clientX: number, clientY: number) => {
       const position = screenToFlowPosition({ x: clientX, y: clientY })
       const newId = addMorphismAtPosition(position.x, position.y)
+      // Add immediately for instant feedback
       setNodes((current) => [...current, {
         id: newId,
         type: 'morphismBox',
@@ -431,7 +319,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
       const dx = Math.abs(event.clientX - last.x)
       const dy = Math.abs(event.clientY - last.y)
       if (now - last.time < 400 && dx < 10 && dy < 10) {
-        // Double-click detected
         createNodeAtPosition(event.clientX, event.clientY)
         lastPaneClickRef.current = { time: 0, x: 0, y: 0 }
       } else {
@@ -441,7 +328,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
     [isEditMode, createNodeAtPosition],
   )
 
-  // Add node on edge drop: when user drags a connection and drops on empty canvas
+  // Edge drop: create node on empty canvas
   const connectStartRef = useRef<{ nodeId: string; handleId: string } | null>(null)
 
   const onConnectStart = useCallback(
@@ -457,25 +344,17 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   const onConnectEnd = useCallback(
     (event: MouseEvent | TouchEvent) => {
       if (!isEditMode || !connectStartRef.current) return
-
-      // Check if the drop landed on empty canvas (not on a node or handle)
       const target = (event as MouseEvent).target as HTMLElement
       const isOnNodeOrHandle = target.closest('.react-flow__node') || target.closest('.react-flow__handle')
       if (isOnNodeOrHandle) {
         connectStartRef.current = null
         return
       }
-
-      // Create a new node at the drop position
       const { clientX, clientY } = 'changedTouches' in event
         ? (event as TouchEvent).changedTouches[0]
         : (event as MouseEvent)
       const newId = createNodeAtPosition(clientX, clientY)
-
-      // Connect the source to the new node's first input
       const { nodeId: sourceNodeId, handleId: sourceHandleId } = connectStartRef.current
-      const wireType = '?'
-
       const wireId = `wire-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       addWire({
         id: wireId,
@@ -483,39 +362,19 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         sourcePort: sourceHandleId,
         targetBox: newId,
         targetPort: `${newId}-in-0`,
-        wireType,
+        wireType: '?',
         isMonadic: false,
       })
-
-      setEdges((eds) => [...eds, {
-        id: wireId,
-        source: sourceNodeId,
-        target: newId,
-        sourceHandle: sourceHandleId,
-        targetHandle: `${newId}-in-0`,
-        type: 'smoothstep',
-        animated: true,
-        label: wireType,
-        labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
-        labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
-        style: { stroke: `rgba(${theme.node.accentBlue}, 0.5)`, strokeWidth: 2 },
-      }])
-
       connectStartRef.current = null
     },
-    [isEditMode, createNodeAtPosition, addWire, setEdges, diagram, renamePort],
+    [isEditMode, createNodeAtPosition, addWire],
   )
 
-  // Sync keyboard deletions to the store
-  const removeMorphism = useDiagramStore((s) => s.removeMorphism)
-  const removeWire = useDiagramStore((s) => s.removeWire)
-
+  // Delete sync
   const onNodesDelete = useCallback(
     (deleted: Node[]) => {
       for (const n of deleted) {
-        if (n.type === 'morphismBox') {
-          removeMorphism(n.id)
-        }
+        if (n.type === 'morphismBox') removeMorphism(n.id)
       }
     },
     [removeMorphism],
@@ -523,36 +382,29 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
 
   const onEdgesDelete = useCallback(
     (deleted: Edge[]) => {
-      for (const e of deleted) {
-        removeWire(e.id)
-      }
+      for (const e of deleted) removeWire(e.id)
     },
     [removeWire],
   )
 
-  // Connection handler: type-checks and labels edges
+  // Connect handler
   const onConnect = useCallback(
     (connection: Connection) => {
       connectStartRef.current = null
-
       if (!connection.source || !connection.target) return
       const sourceHandle = connection.sourceHandle ?? connection.source
       const targetHandle = connection.targetHandle ?? connection.target
 
-      const result = validateConnection(
-        connection.source,
-        sourceHandle,
-        connection.target,
-        targetHandle,
-        diagram,
-      )
+      const liveDiagram = useDiagramStore.getState().editorDiagram ?? diagram
+      const result = validateConnection(connection.source, sourceHandle, connection.target, targetHandle, liveDiagram)
       if (!result.valid) {
         console.warn('Invalid connection:', result.reason)
         return
       }
 
-      // Default edge label is "?" -- user can click to edit later
-      const wireType = '?'
+      // Use variable label as wireType if source is a variable
+      const sourceVar = liveDiagram.inputs.find((i) => i.id === connection.source)
+      const wireType = sourceVar?.label ?? '?'
 
       const wireId = `wire-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       addWire({
@@ -564,22 +416,8 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         wireType,
         isMonadic: false,
       })
-
-      setEdges((eds) => [...eds, {
-        id: wireId,
-        source: connection.source!,
-        target: connection.target!,
-        sourceHandle,
-        targetHandle,
-        type: 'smoothstep',
-        animated: true,
-        label: wireType,
-        labelStyle: { fill: theme.text.dimmed, fontSize: 10, fontFamily: 'inherit' },
-        labelBgStyle: { fill: theme.canvas.background, fillOpacity: 0.8 },
-        style: { stroke: `rgba(${theme.node.accentBlue}, 0.5)`, strokeWidth: 2 },
-      }])
     },
-    [addWire, diagram, setEdges, renamePort],
+    [addWire, diagram],
   )
 
   return (
@@ -631,7 +469,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         )}
       </ReactFlow>
 
-      {/* Toolbar -- edit mode uses EditorToolbar, view mode uses simple buttons */}
+      {/* Toolbar */}
       {isEditMode ? (
         <EditorToolbar />
       ) : (
@@ -656,7 +494,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
               {minimapMode === 'show' ? <IconMinimap /> : <IconMinimapOff />}
             </button>
           </div>
-
           <div className="sd-toolbar-group">
             <button
               className="sd-toolbar-btn"
@@ -667,8 +504,6 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
               {showParams ? <IconParams /> : <IconParamsOff />}
             </button>
           </div>
-
-          {/* View/Edit mode toggle */}
           <div className="sd-toolbar-group">
             <button
               className="sd-toolbar-btn"
@@ -681,7 +516,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         </div>
       )}
 
-      {/* Detail panels */}
+      {/* Detail panels -- same in both modes */}
       {!isEditMode && viewSelectedNode && (
         <NodeDetail
           label={viewSelectedNode.label}
@@ -702,14 +537,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
 
       {/* Inline edge label editor */}
       {editingEdge && (
-        <div
-          style={{
-            position: 'fixed',
-            left: editingEdge.x - 60,
-            top: editingEdge.y - 16,
-            zIndex: 100,
-          }}
-        >
+        <div style={{ position: 'fixed', left: editingEdge.x - 60, top: editingEdge.y - 16, zIndex: 100 }}>
           <input
             autoFocus
             defaultValue={editingEdge.label === '?' ? '' : editingEdge.label}

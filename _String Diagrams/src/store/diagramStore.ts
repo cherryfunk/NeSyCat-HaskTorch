@@ -51,6 +51,11 @@ interface DiagramStore {
   createNewDiagram: (name: string) => void
 
   // Editor actions (mutate editorDiagram)
+  // Variables (wall inputs)
+  addVariable: () => void
+  renameVariable: (id: string, name: string) => void
+  removeVariable: (id: string) => void
+
   updateEditorTitle: (title: string) => void
   addMorphismAtPosition: (x: number, y: number) => string // returns new morph id
   addPortToMorphism: (morphId: string, side: 'input' | 'output' | 'param') => void
@@ -128,6 +133,45 @@ export const useDiagramStore = create<DiagramStore>((set, get) => ({
     }
     set({ editorDiagram: diagram, activeId: id, mode: 'edit', selectedNodeId: null })
   },
+
+  addVariable: () => set((s) => {
+    if (!s.editorDiagram) return s
+    const id = uniqueId('var')
+    const ep: DiagramEndpoint = { id, label: '?', wireType: '?', side: 'left' }
+    return {
+      editorDiagram: {
+        ...s.editorDiagram,
+        inputs: [...s.editorDiagram.inputs, ep],
+      },
+    }
+  }),
+
+  renameVariable: (id, name) => set((s) => {
+    if (!s.editorDiagram) return s
+    return {
+      editorDiagram: {
+        ...s.editorDiagram,
+        inputs: s.editorDiagram.inputs.map((inp) =>
+          inp.id === id ? { ...inp, label: name, wireType: name } : inp
+        ),
+        // Update all wires from this variable
+        wires: s.editorDiagram.wires.map((w) =>
+          w.sourceBox === id ? { ...w, wireType: name } : w
+        ),
+      },
+    }
+  }),
+
+  removeVariable: (id) => set((s) => {
+    if (!s.editorDiagram) return s
+    return {
+      editorDiagram: {
+        ...s.editorDiagram,
+        inputs: s.editorDiagram.inputs.filter((inp) => inp.id !== id),
+        wires: s.editorDiagram.wires.filter((w) => w.sourceBox !== id),
+      },
+    }
+  }),
 
   updateEditorTitle: (title) => set((s) => {
     if (!s.editorDiagram) return s
@@ -285,10 +329,15 @@ export const useDiagramStore = create<DiagramStore>((set, get) => ({
 
   addWire: (wire) => set((s) => {
     if (!s.editorDiagram) return s
+    // Remove any existing wire with same source+target ports (replace ghost wires)
+    const filtered = s.editorDiagram.wires.filter(
+      (w) => !(w.sourceBox === wire.sourceBox && w.sourcePort === wire.sourcePort
+        && w.targetBox === wire.targetBox && w.targetPort === wire.targetPort)
+    )
     return {
       editorDiagram: {
         ...s.editorDiagram,
-        wires: [...s.editorDiagram.wires, wire],
+        wires: [...filtered, wire],
       },
     }
   }),
