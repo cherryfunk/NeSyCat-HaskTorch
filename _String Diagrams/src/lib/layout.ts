@@ -25,14 +25,8 @@ function edgeLabelProps(label: string) {
   }
 }
 
-// Resolve the actual label for a wire from its source port
-function resolveWireLabel(w: { sourceBox: string; sourcePort: string; wireType: string }, diagram: StringDiagram): string {
-  const morph = diagram.morphisms.find((m) => m.id === w.sourceBox)
-  if (morph) {
-    const port = morph.outputs.find((p) => p.id === w.sourcePort)
-    if (port && port.label) return port.label
-  }
-  // Fall back to wireType
+// Edge label = wireType. That's it. No port labels, no other source.
+function resolveWireLabel(w: { wireType: string }): string {
   return w.wireType || ''
 }
 
@@ -249,7 +243,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           type: 'smoothstep',
           animated: true,
           style: { stroke: edgeColor, strokeWidth: 2 },
-          ...edgeLabelProps(resolveWireLabel(w, diagram)),
+          ...edgeLabelProps(resolveWireLabel(w)),
         })
       }
       continue
@@ -284,7 +278,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           type: 'smoothstep',
           animated: true,
           style: { stroke: edgeColor, strokeWidth: 2 },
-          ...edgeLabelProps(resolveWireLabel(w, diagram)),
+          ...edgeLabelProps(resolveWireLabel(w)),
         })
       }
 
@@ -297,7 +291,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
         type: 'smoothstep',
         animated: true,
         style: { stroke: edgeColor, strokeWidth: 2 },
-        ...edgeLabelProps(resolveWireLabel(w, diagram)),
+        ...edgeLabelProps(resolveWireLabel(w)),
       })
     } else {
       edges.push({
@@ -313,7 +307,7 @@ export function layoutDiagram(diagram: StringDiagram): { nodes: Node[]; edges: E
           strokeWidth: isParam ? 1.5 : 2,
           strokeDasharray: isParam ? '4 4' : undefined,
         },
-        ...edgeLabelProps(resolveWireLabel(w, diagram)),
+        ...edgeLabelProps(resolveWireLabel(w)),
       })
     }
   }

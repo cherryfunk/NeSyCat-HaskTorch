@@ -337,15 +337,20 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
   const renameWire = useDiagramStore((s) => s.renameWire)
   const onEdgeClick = useCallback(
     (event: React.MouseEvent, edge: Edge) => {
-      if (!isEditMode) return
-      setEditingEdge({
-        id: edge.id,
-        label: (edge.label as string) || '',
-        x: event.clientX,
-        y: event.clientY,
-      })
+      if (isEditMode) {
+        // Edit mode: open inline rename editor
+        setEditingEdge({
+          id: edge.id,
+          label: (edge.label as string) || '',
+          x: event.clientX,
+          y: event.clientY,
+        })
+      }
+      // Both modes: deselect any selected node
+      setSelectedNode(null)
+      setViewSelectedNode(null)
     },
-    [isEditMode],
+    [isEditMode, setSelectedNode],
   )
 
   function confirmEdgeRename(newLabel: string) {
@@ -377,7 +382,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         setViewSelectedNode({
           id: node.id,
           label: (data.label as string) || '',
-          haskellSig: buildSignature(node.id, diagram),
+          haskellSig: buildSignature(node.id, editorDiagram ?? diagram),
           haskellClass: (data.haskellClass as string) || '',
           instances: (data.instances as { universe: string; def: string }[]) || [],
           mode: (data.mode as string) || 'tarski',
@@ -592,7 +597,7 @@ export default function DiagramCanvas({ diagram, sidebarWidth }: Props) {
         onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
-        onEdgeClick={isEditMode ? onEdgeClick : undefined}
+        onEdgeClick={onEdgeClick}
         onPaneClick={isEditMode ? onPaneClick : undefined}
         onConnect={isEditMode ? onConnect : undefined}
         onConnectStart={isEditMode ? onConnectStart : undefined}
