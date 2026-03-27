@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
--- | Star vocabulary: the monad types available in the framework.
+-- | Star vocabulary: the monad types available in the universe.
 --   These are names with their data structure -- realizations (Monad instances)
 --   live in DA_Realization/.
 module A_Categorical.D_Vocabulary.StarVocab

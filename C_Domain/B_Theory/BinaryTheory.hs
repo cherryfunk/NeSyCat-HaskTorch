@@ -15,23 +15,23 @@ import Data.Kind (Type)
 -- Fun    = {labelA : Point -> Omega}
 -- KlFun  = {classifierA : Theta -> Point -> M(Omega)}
 --
--- The monad comes from the framework (M frmwk).
+-- The monad comes from the universe (M u).
 -- The parameter Theta (= ParamsMLP) is external (from Para), curried in.
 
 -- | BinarySorts: assigns sort names to concrete Haskell types.
-class (Universe frmwk) => BinarySorts frmwk where
-  type Point frmwk :: Type -- sort: input data point (e.g. R^2)
-  type Omega frmwk :: Type -- sort: truth value (e.g. Bool, [0,1])
+class (Universe u) => BinarySorts u where
+  type Point u :: Type -- sort: input data point (e.g. R^2)
+  type Omega u :: Type -- sort: truth value (e.g. Bool, [0,1])
 
 -- | BinaryFun: plain (deterministic) function symbols.
-class (BinarySorts frmwk) => BinaryFun frmwk where
-  labelA :: Point frmwk -> Omega frmwk
+class (BinarySorts u) => BinaryFun u where
+  labelA :: Point u -> Omega u
 
--- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(M frmwk)).
-class (BinaryFun frmwk, Monad (M frmwk)) => BinaryKlFun frmwk where
-  classifierA :: ParamsMLP -> Point frmwk -> M frmwk (Omega frmwk)
+-- | BinaryKlFun: Kleisli function symbols (morphisms in Kl(M u)).
+class (BinaryFun u, Monad (M u)) => BinaryKlFun u where
+  classifierA :: ParamsMLP -> Point u -> M u (Omega u)
 
--- | Bridge for encoding/decoding between two framework interpretations.
+-- | Bridge for encoding/decoding between two universe interpretations.
 class (BinarySorts from, BinarySorts to) => BinaryBridge from to where
   encPoint :: Point from -> Point to
   decOmega :: Omega to -> M from (Omega from)

@@ -8,7 +8,7 @@
 -- | Logical interpretation: Classical Boolean Logic ($\Omega = \{\text{True}, \text{False}\}$)
 --
 --   This module provides the interpretation of TwoMonBLatTheory and A2MonBLatTheory
---   in the MeasU framework with Omega = Bool.
+--   in the MeasU universe with Omega = Bool.
 module B_Logical.BA_Interpretation.Boolean
   ( Omega,
     -- * Re-exported typeclass interface

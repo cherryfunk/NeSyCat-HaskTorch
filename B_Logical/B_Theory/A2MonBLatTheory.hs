@@ -15,16 +15,16 @@ import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import Data.Kind (Type)
 
 -- | Guard: the subset that a guarded quantifier ranges over.
---   Indexed by framework and element type.
-type family Guard frmwk a :: Type
+--   Indexed by universe and element type.
+type family Guard u a :: Type
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
---   Guarded quantifiers: given a pointwise predicate (a -> M frmwk tau)
+--   Guarded quantifiers: given a pointwise predicate (a -> M u tau)
 class
-  (TwoMonBLatTheory frmwk tau, Universe frmwk, Monad (M frmwk)) =>
-  A2MonBLatTheory a frmwk tau
+  (TwoMonBLatTheory u tau, Universe u, Monad (M u)) =>
+  A2MonBLatTheory a u tau
   where
-  bigWedge :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
-  bigVee :: ParamsLogic tau -> Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
-  bigOplus :: Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
-  bigOtimes :: Guard frmwk a -> (a -> M frmwk tau) -> M frmwk tau
+  bigWedge :: ParamsLogic tau -> Guard u a -> (a -> M u tau) -> M u tau
+  bigVee :: ParamsLogic tau -> Guard u a -> (a -> M u tau) -> M u tau
+  bigOplus :: Guard u a -> (a -> M u tau) -> M u tau
+  bigOtimes :: Guard u a -> (a -> M u tau) -> M u tau

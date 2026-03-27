@@ -8,10 +8,10 @@ module B_Logical.B_Theory.TwoMonBLatTheory where
 import Data.Kind (Type)
 
 -- | Theory of a double monoid bounded lattice (2Mon-BLat), still without axioms.
---   Parameterized by the framework (frmwk) and truth value type (tau).
---   The functional dependency tau -> frmwk ensures each truth type
---   is interpreted in exactly one framework.
-class TwoMonBLatTheory frmwk tau | tau -> frmwk where
+--   Parameterized by the universe (u) and truth value type (tau).
+--   The functional dependency tau -> u ensures each truth type
+--   is interpreted in exactly one universe.
+class TwoMonBLatTheory u tau | tau -> u where
   -- | Logic parameters (Para morphism parameter space).
   --   Default: () (no parameters, e.g. classical real-valued logic).
   type ParamsLogic tau :: Type

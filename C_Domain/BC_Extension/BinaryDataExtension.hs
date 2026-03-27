@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeFamilies #-}
 
--- | Sort assignment (Point, Omega) for the measure theory framework.
+-- | Sort assignment (Point, Omega) for the measure theory universe.
 module C_Domain.BC_Extension.BinaryDataExtension where
 
 import A_Categorical.BA_Interpretation.StarIntp (MeasU)

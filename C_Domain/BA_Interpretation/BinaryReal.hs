@@ -10,7 +10,7 @@
 -- | Function implementations for Binary Classification.
 --
 --   This module provides:
---     1. BinaryFun MeasU / GeomU -- labelA for each framework
+--     1. BinaryFun MeasU / GeomU -- labelA for each universe
 --     2. BinaryKlFun MeasU -- classifierA (Mon = Dist)
 --     3. BinaryKlFun GeomU -- classifierA (Mon = Identity)
 --     4. BinaryBridge MeasU GeomU -- encPoint + decOmega

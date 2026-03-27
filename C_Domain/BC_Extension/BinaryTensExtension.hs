@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
 
--- | Sort assignment (Point, Omega) for the geometry framework.
+-- | Sort assignment (Point, Omega) for the geometry universe.
 module C_Domain.BC_Extension.BinaryTensExtension where
 
 import A_Categorical.BA_Interpretation.StarIntp (GeomU)

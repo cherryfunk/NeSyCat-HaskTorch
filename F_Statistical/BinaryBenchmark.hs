@@ -55,7 +55,7 @@ main = do
       trainPts = toPoints (trainData ds)
       testPts  = toPoints (testData ds)
 
-  -- Build (prediction, label) pairs using the framework
+  -- Build (prediction, label) pairs using the universe
   let evalPairs pts =
         [ (pTrueDist (classifierA @MeasU thetaStar pt), labelA @MeasU pt)
         | pt <- pts

@@ -8,7 +8,7 @@
 
 -- | Abstract binary classification formula.
 --   Uses bigWedge from A2MonBLatTheory for quantification.
---   Works for any framework (GeomU, MeasU, etc.).
+--   Works for any universe (GeomU, MeasU, etc.).
 module D_Grammatical.B_Theory.BinaryFormulas
   ( binaryPredicate,
     binarySentence,
@@ -23,35 +23,35 @@ import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP)
 
 -- | Abstract pointwise predicate for binary classification.
 binaryPredicate ::
-  forall frmwk.
-  ( BinaryKlFun frmwk,
-    TwoMonBLatTheory frmwk (Omega frmwk),
-    Monad (M frmwk)
+  forall u.
+  ( BinaryKlFun u,
+    TwoMonBLatTheory u (Omega u),
+    Monad (M u)
   ) =>
-  ParamsLogic (Omega frmwk) ->
+  ParamsLogic (Omega u) ->
   ParamsMLP ->
-  Point frmwk ->
-  M frmwk (Omega frmwk)
+  Point u ->
+  M u (Omega u)
 binaryPredicate lp paramMLP pt = do
-  pred <- classifierA @frmwk paramMLP pt
-  let label = labelA @frmwk pt
+  pred <- classifierA @u paramMLP pt
+  let label = labelA @u pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
 -- | Sentence: forall x in S. phi(x) -- a guarded quantifier.
---   The guard (Guard frmwk a) specifies the subset S to quantify over.
+--   The guard (Guard u a) specifies the subset S to quantify over.
 --   The predicate (binaryPredicate) is pointwise on elements of type a.
 binarySentence ::
-  forall frmwk a.
-  ( BinaryKlFun frmwk,
-    TwoMonBLatTheory frmwk (Omega frmwk),
-    A2MonBLatTheory a frmwk (Omega frmwk),
-    Monad (M frmwk),
-    a ~ Point frmwk
+  forall u a.
+  ( BinaryKlFun u,
+    TwoMonBLatTheory u (Omega u),
+    A2MonBLatTheory a u (Omega u),
+    Monad (M u),
+    a ~ Point u
   ) =>
-  ParamsLogic (Omega frmwk) ->
-  Guard frmwk a ->
+  ParamsLogic (Omega u) ->
+  Guard u a ->
   ParamsMLP ->
-  M frmwk (Omega frmwk)
+  M u (Omega u)
 binarySentence lp guard paramMLP =
   bigWedge lp guard
-    (binaryPredicate @frmwk lp paramMLP)
+    (binaryPredicate @u lp paramMLP)
