@@ -37,7 +37,7 @@ binaryPredicate lp paramMLP pt = do
   let label = labelA @frmwk pt
   return (wedge lp (implies lp label pred) (implies lp (neg label) (neg pred)))
 
--- | Sentence: forall x in S. phi(x) — a guarded quantifier.
+-- | Sentence: forall x in S. phi(x) -- a guarded quantifier.
 --   The guard (Guard frmwk a) specifies the subset S to quantify over.
 --   The predicate (binaryPredicate) is pointwise on elements of type a.
 binarySentence ::

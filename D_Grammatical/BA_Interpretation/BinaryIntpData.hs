@@ -16,6 +16,6 @@ import D_Grammatical.B_Theory.BinaryFormulas (binarySentence)
 
 -- | Binary axiom in MeasU (DATA + Dist).
 --   Evaluates the formula probabilistically (Mon = Dist).
---   Guard is [Point MeasU] = [(Float, Float)] — a finite subset of R^2.
+--   Guard is [Point MeasU] = [(Float, Float)] -- a finite subset of R^2.
 binaryAxiomData :: [Point MeasU] -> ParamsMLP -> M MeasU (Omega MeasU)
 binaryAxiomData guard paramMLP = binarySentence @MeasU () guard paramMLP

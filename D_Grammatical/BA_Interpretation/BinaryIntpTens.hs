@@ -17,7 +17,7 @@ import Data.Functor.Identity (runIdentity)
 import qualified Torch
 
 -- | Binary axiom in GeomU (TENS + Identity).
---   Guard is Torch.Tensor — a batch tensor (finite subset of the tensor space).
+--   Guard is Torch.Tensor -- a batch tensor (finite subset of the tensor space).
 binaryAxiomTens :: Torch.Tensor -> Torch.Tensor -> ParamsMLP -> Omega GeomU
 binaryAxiomTens betaT guard paramMLP =
   runIdentity (binarySentence @GeomU betaT guard paramMLP)
