@@ -28,7 +28,7 @@ import qualified Torch
 import qualified Torch.Functional.Internal as F
 
 -- | Omega := I(tau) = R^1 (a 1-element tensor)
-type Omega = Torch.Tensor  -- shape: [1], dtype: Float
+type Omega = Torch.Tensor -- shape: [1], dtype: Float
 
 -- ============================================================
 --  TwoMonBLat: Binary Logical Operations on Omega (R-valued)
@@ -39,14 +39,10 @@ instance TwoMonBLatTheory GeomU Omega where
 
   vdash a b = Torch.asValue a <= (Torch.asValue b :: Float)
 
-  -- \| Disjunction (vee = smooth max):
-  --   vee(a, b) = (1/beta) . logaddexp(beta.a, beta.b)
   vee betaT a b =
     let pa = a `Torch.mul` betaT
         pb = b `Torch.mul` betaT
      in F.logaddexp pa pb `Torch.div` betaT
-
-  -- wedge/implies use defaults (De Morgan via vee)
 
   bot = Torch.asTensor [(-1.0 / 0.0) :: Float]
   top = Torch.asTensor [(1.0 / 0.0) :: Float]
@@ -55,7 +51,6 @@ instance TwoMonBLatTheory GeomU Omega where
   v0 = Torch.asTensor [0.0 :: Float]
   v1 = Torch.asTensor [1.0 :: Float]
 
-  -- \| Negation: -x (additive inverse on R)
   neg a = negate a
 
 ------------------------------------------------------

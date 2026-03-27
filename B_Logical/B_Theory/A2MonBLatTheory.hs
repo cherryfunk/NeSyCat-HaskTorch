@@ -15,11 +15,9 @@ import B_Logical.B_Theory.TwoMonBLatTheory (TwoMonBLatTheory (..))
 import Data.Kind (Type)
 
 -- | Guard: the subset that a guarded quantifier ranges over.
---   Indexed by universe and element type.
 type family Guard u a :: Type
 
 -- | Theory of an aggregated 2-monoid bounded lattice (A2Mon-BLat).
---   Guarded quantifiers: given a pointwise predicate (a -> M u tau)
 class
   (TwoMonBLatTheory u tau, Universe u, Monad (M u)) =>
   A2MonBLatTheory a u tau
