@@ -28,7 +28,6 @@ import Torch.Device (Device (..), DeviceType (..))
 import Torch.Optim (mkAdam, runStep)
 import Torch.Tensor (toDevice)
 import Torch.NN ()
-import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- | A binary classification dataset (circle-in-square).
 data BinaryDataset = BinaryDataset
@@ -96,7 +95,7 @@ trainBinary numEpochs learningRate lambda betaFixed ds = do
     let knowLoss =
           if lambda == 0.0
             then zeroTens
-            else lossKnow (toDynamic (binaryAxiomTens betaT td model))
+            else lossKnow (binaryAxiomTens betaT td model)
     let totalLoss = lossComb dataLoss knowLoss lambdaTens
     (newModel, newOpt) <- runStep model opt totalLoss lrTens
     if epoch `mod` 100 == 0 || epoch == numEpochs || epoch == 1
@@ -155,7 +154,7 @@ trainBinaryBeta numEpochs learningRate initBeta lambda ds = do
       let knowLoss =
             if lambda == 0.0
               then zeroTens
-              else lossKnow (toDynamic (binaryAxiomTens betaVal td model))
+              else lossKnow (binaryAxiomTens betaVal td model)
       let totalLoss = lossComb dataLoss knowLoss lambdaTens
       (newModel, newOpt) <- runStep model opt totalLoss lrTens
       newBInd <-

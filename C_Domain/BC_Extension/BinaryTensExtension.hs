@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
 
 -- | Sort assignment (Point, Omega) for the geometry universe.
@@ -7,10 +6,8 @@ module C_Domain.BC_Extension.BinaryTensExtension where
 import A_Categorical.BA_Interpretation.StarIntp (GeomU)
 import C_Domain.B_Theory.BinaryTheory (BinarySorts (..))
 import qualified B_Logical.BA_Interpretation.Tensor as TensLogic
-import Torch.Typed.Tensor (Tensor)
-import Torch.DType (DType (..))
-import Torch.Device (DeviceType (..))
+import qualified Torch
 
 instance BinarySorts GeomU where
-  type Point  GeomU = Tensor '( 'CPU, 0) 'Float '[2]
-  type Omega  GeomU = TensLogic.Omega  -- = Tensor '(CPU,0) Float '[1]
+  type Point  GeomU = Torch.Tensor  -- shape: [2], dtype: Float
+  type Omega  GeomU = TensLogic.Omega  -- = Torch.Tensor

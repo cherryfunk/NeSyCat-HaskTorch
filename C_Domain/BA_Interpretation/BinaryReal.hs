@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE InstanceSigs #-}
@@ -21,8 +20,6 @@ module C_Domain.BA_Interpretation.BinaryReal
 where
 
 import A_Categorical.BA_Interpretation.StarIntp (GeomU, MeasU)
--- instance BinarySorts MeasU
--- instance BinarySorts GeomU
 import A_Categorical.DA_Realization.Dist (Dist (..))
 import qualified B_Logical.BA_Interpretation.Boolean as BoolLogic
 import B_Logical.BA_Interpretation.Tensor hiding (Omega)
@@ -32,11 +29,8 @@ import C_Domain.BC_Extension.BinaryDataExtension ()
 import C_Domain.BC_Extension.BinaryTensExtension ()
 import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
 import Data.Functor.Identity (Identity (..))
-import Torch (asTensor)
 import qualified Torch
-import Torch.Device (Device (..), DeviceType (..))
 import qualified Torch.Functional.Internal as F
-import Torch.Typed.Tensor (Tensor (..), toDynamic)
 
 -- ============================================================
 --  MeasU: plain function symbols (BinaryFun)
@@ -57,9 +51,7 @@ instance BinaryKlFun MeasU where
   classifierA :: ParamsMLP -> Point MeasU -> Dist (Omega MeasU)
   classifierA paramMLP pt =
     let ptTens = encPoint @MeasU @GeomU pt
-        logits =
-          UnsafeMkTensor
-            (hThetaReal paramMLP (Torch.reshape [1, 2] (toDynamic ptTens)))
+        logits = hThetaReal paramMLP (Torch.reshape [1, 2] ptTens)
      in decOmega @MeasU @GeomU logits
 
 -- ============================================================
@@ -67,19 +59,17 @@ instance BinaryKlFun MeasU where
 -- ============================================================
 
 instance BinaryFun GeomU where
-  -- \| Label in GeomU: returns R logits (True = +logitScale, False = -logitScale).
+  -- | Label in GeomU: returns R logits (True = +logitScale, False = -logitScale).
   labelA :: Point GeomU -> Omega GeomU
-  labelA ptTensor =
-    let pt = toDynamic ptTensor
-        center = F.mulScalar (Torch.onesLike pt) (0.5 :: Float)
+  labelA pt =
+    let center = F.mulScalar (Torch.onesLike pt) (0.5 :: Float)
         diff = pt `Torch.sub` center
         dist2 = Torch.sumDim (Torch.Dim (-1)) Torch.KeepDim Torch.Float (diff * diff)
         radiusSq = F.mulScalar (Torch.onesLike dist2) (0.09 :: Float)
         isInside = Torch.lt dist2 radiusSq
         boolFloat = Torch.toType Torch.Float isInside
         scale = F.mulScalar (Torch.onesLike boolFloat) logitScale
-        val = boolFloat `Torch.mul` (scale `Torch.add` scale) `Torch.sub` scale
-     in UnsafeMkTensor val
+     in boolFloat `Torch.mul` (scale `Torch.add` scale) `Torch.sub` scale
 
 logitScale :: Float
 logitScale = 10.0
@@ -90,9 +80,8 @@ logitScale = 10.0
 
 instance BinaryKlFun GeomU where
   classifierA :: ParamsMLP -> Point GeomU -> Identity (Omega GeomU)
-  classifierA paramMLP ptTensor = Identity $ do
-    let logits = hThetaReal paramMLP (toDynamic ptTensor)
-    UnsafeMkTensor logits
+  classifierA paramMLP ptTensor =
+    Identity (hThetaReal paramMLP ptTensor)
 
 -- ============================================================
 --  BRIDGE: MeasU <-> GeomU (with Dist monad for decoding)
@@ -101,11 +90,10 @@ instance BinaryKlFun GeomU where
 instance BinaryBridge MeasU GeomU where
   encPoint :: Point MeasU -> Point GeomU
   encPoint (x1, x2) =
-    UnsafeMkTensor (Torch.toDevice (Device CPU 0) (asTensor [x1, x2]))
+    Torch.toDevice (Torch.Device Torch.CPU 0) (Torch.asTensor [x1, x2])
 
   decOmega :: Omega GeomU -> Dist (Omega MeasU)
   decOmega probs =
-    let val =
-          Torch.asValue (Torch.sigmoid (toDynamic probs)) :: [[Float]]
+    let val = Torch.asValue (Torch.sigmoid probs) :: [[Float]]
         p = realToFrac (head (head val)) :: Double
      in FiniteSupp [(True, p), (False, 1.0 - p)]

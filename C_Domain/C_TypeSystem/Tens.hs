@@ -1,28 +1,15 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-
 -- | The TENS type system (geometry paradigm).
---   TensObj type class replaces the old TENS GADT.
+--   TensObj marks which types are objects of the geometry domain category.
 module C_Domain.C_TypeSystem.Tens
   ( TensObj (..),
   )
 where
 
 import qualified Torch
-import Torch.Typed.Tensor (Tensor, toDynamic)
-
--- | Eq for typed Tensors: device-polymorphic.
-instance Eq (Tensor device dtype shape) where
-  (==) :: Tensor device dtype shape -> Tensor device dtype shape -> Bool
-  a == b = toDynamic a == toDynamic b
 
 -- | Type membership in the TENS type system.
 class TensObj a
 
-instance TensObj (Tensor d dt s)
+instance TensObj Torch.Tensor
 instance (TensObj a, TensObj b) => TensObj (a, b)
 instance TensObj ()
