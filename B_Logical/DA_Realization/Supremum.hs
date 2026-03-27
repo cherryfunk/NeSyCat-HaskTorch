@@ -9,25 +9,25 @@ import Numeric.Natural (Natural)
 maxBudget :: Int
 maxBudget = 10000
 
--- Bool: finite
-instance QuantVocabLattice Bool where
-  sup phi = max (phi True) (phi False)
-  inf phi = min (phi True) (phi False)
-
 -- Unit: trivial
 instance QuantVocabLattice () where
   sup phi = phi ()
   inf phi = phi ()
 
+-- Bool: finite
+instance QuantVocabLattice Bool where
+  sup phi = max (phi True) (phi False)
+  inf phi = min (phi True) (phi False)
+
 -- Natural: countable
 instance QuantVocabLattice Natural where
-  sup phi = lazyFold max (-(1.0/0.0)) (map phi [0..])
-  inf phi = lazyFold min (1.0/0.0) (map phi [0..])
+  sup phi = lazyFold max (-(1.0 / 0.0)) (map phi [0 ..])
+  inf phi = lazyFold min (1.0 / 0.0) (map phi [0 ..])
 
 -- Integer: countable (interleaved)
 instance QuantVocabLattice Integer where
-  sup phi = lazyFold max (-(1.0/0.0)) (map phi (0 : concatMap (\n -> [n,-n]) [1..]))
-  inf phi = lazyFold min (1.0/0.0) (map phi (0 : concatMap (\n -> [n,-n]) [1..]))
+  sup phi = lazyFold max (-(1.0 / 0.0)) (map phi (0 : concatMap (\n -> [n, -n]) [1 ..]))
+  inf phi = lazyFold min (1.0 / 0.0) (map phi (0 : concatMap (\n -> [n, -n]) [1 ..]))
 
 -- Double: continuous (not supported)
 instance QuantVocabLattice Double where

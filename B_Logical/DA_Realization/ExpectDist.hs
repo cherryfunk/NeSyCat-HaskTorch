@@ -10,8 +10,8 @@ module B_Logical.DA_Realization.ExpectDist
   )
 where
 
-import A_Categorical.D_Vocabulary.StarVocab (Dist (..))
 import A_Categorical.DA_Realization.Dist ()
+import A_Categorical.D_Vocabulary.StarVocab (Dist (..))
 import B_Logical.D_Vocabulary.QuantifierVocab (QuantVocabDist (..))
 
 -- | Universal instance: Dist is always finitely supported.
@@ -20,7 +20,8 @@ instance QuantVocabDist a where
   expectDist (Pure x) f = f x
   expectDist (Bind m k) f = expectDist m (\x -> expectDist (k x) f)
   expectDist (FiniteSupp xs) f = sum [p * f x | (x, p) <- xs]
-  expectDist (FinUniform xs) f = expectDist (FiniteSupp [(x, 1.0 / fromIntegral (length xs)) | x <- xs]) f
+  expectDist (FinUniform xs) f =
+    expectDist (FiniteSupp [(x, 1.0 / fromIntegral (length xs)) | x <- xs]) f
 
 -- | P(True) for Dist: canonical isomorphism Dist(Bool) -> [0,1].
 pTrueDist :: Dist Bool -> Double

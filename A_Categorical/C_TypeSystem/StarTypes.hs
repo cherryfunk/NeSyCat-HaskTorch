@@ -24,31 +24,19 @@ class CatFunTyp (f :: k)
 
 instance CatFunTyp () -- terminal constant type constructor
 
-instance CatFunTyp Void -- initial constant type constructor
-
 -- Endofunctor/Monad symbols: Type -> Type
 instance {-# OVERLAPPABLE #-} (Monad m) => CatFunTyp m
 
 -- Bi-endofunctor symbols: (Type, Type) -> Type  (curried as Type -> Type -> Type)
 instance CatFunTyp (,) -- product type constructor
 
-instance CatFunTyp Either -- coproduct type constructor
-
 instance CatFunTyp (->) -- exponential type constructor
 
 -- | CatRelTyp: categorical relation types (type-level predicates)
---   The dualizing object in Star is Constraint.
 class CatRelTyp (r :: k)
 
--- Unary relations on types: Type -> Constraint (type classes)
 instance CatRelTyp Eq
 
 instance CatRelTyp Ord
 
 instance CatRelTyp Num
-
-instance CatRelTyp Integral
-
-instance CatRelTyp RealFloat
-
-instance CatRelTyp Bounded
