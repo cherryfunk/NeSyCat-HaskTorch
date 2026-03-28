@@ -43,15 +43,13 @@ instance TwoMonBLatTheory GeomU Omega where
     let pa = a `Torch.mul` betaT
         pb = b `Torch.mul` betaT
      in F.logaddexp pa pb `Torch.div` betaT
-
+  neg = negate
   bot = Torch.asTensor [(-1.0 / 0.0) :: Float]
   top = Torch.asTensor [(1.0 / 0.0) :: Float]
-  oplus a b = Torch.add a b
-  otimes a b = Torch.mul a b
+  oplus = Torch.add
+  otimes = Torch.mul
   v0 = Torch.asTensor [0.0 :: Float]
   v1 = Torch.asTensor [1.0 :: Float]
-
-  neg a = negate a
 
 ------------------------------------------------------
 -- Guard type instance: GeomU guards are batch tensors

@@ -19,7 +19,6 @@ instance QuantVocabLattice Bool where
   sup phi = max (phi True) (phi False)
   inf phi = min (phi True) (phi False)
 
--- Natural: countable
 instance QuantVocabLattice Natural where
   sup phi = lazyFold max (-(1.0 / 0.0)) (map phi [0 ..])
   inf phi = lazyFold min (1.0 / 0.0) (map phi [0 ..])

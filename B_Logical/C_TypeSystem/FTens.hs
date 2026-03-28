@@ -14,11 +14,8 @@ import C_Domain.C_TypeSystem.Tens (TensObj)
 -- | Objects of FTENS: the Cartesian closed, monad-closed extension of TENS.
 class FTensObj a
 
--- | Embed any TensObj into FTensObj.
 instance (TensObj a) => FTensObj a
 
--- | Exponential object (function space).
 instance (FTensObj a, FTensObj b) => FTensObj (a -> b)
 
--- | Monadic object (for Kleisli lifting).
 instance (Monad m, FTensObj a) => FTensObj (m a)

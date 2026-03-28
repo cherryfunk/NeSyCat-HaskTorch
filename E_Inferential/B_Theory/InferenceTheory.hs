@@ -19,11 +19,8 @@ where
 class InferenceFun cat where
   type Loss cat :: *
 
-  -- | lossKnow : Omega -> R. Knowledge loss / penalty on axiom satisfaction.
   lossKnow :: cat -> Loss cat
 
-  -- | lossData : prediction x label -> R. Pointwise data loss.
   lossData :: cat -> cat -> Loss cat
 
-  -- | lossComb : J_data x J_know x lam -> J. Combined objective.
   lossComb :: Loss cat -> Loss cat -> cat -> Loss cat

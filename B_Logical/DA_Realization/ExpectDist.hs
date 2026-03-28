@@ -15,7 +15,6 @@ import A_Categorical.D_Vocabulary.StarVocab (Dist (..))
 import B_Logical.D_Vocabulary.QuantifierVocab (QuantVocabDist (..))
 
 -- | Universal instance: Dist is always finitely supported.
---   E_d[f] = Sum p_i * f(x_i).
 instance QuantVocabDist a where
   expectDist (Pure x) f = f x
   expectDist (Bind m k) f = expectDist m (\x -> expectDist (k x) f)

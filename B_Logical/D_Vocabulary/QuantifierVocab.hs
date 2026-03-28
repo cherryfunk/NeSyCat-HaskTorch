@@ -22,10 +22,8 @@ class QuantVocabLattice a where
   sup :: (a -> Double) -> Double
   inf :: (a -> Double) -> Double
 
--- | Measure quantifier symbol: expectation under Dist.
 class QuantVocabDist a where
   expectDist :: Dist a -> (a -> Double) -> Double
 
--- | Measure quantifier symbol: expectation under Giry.
 class QuantVocabGiry a where
   expectGiry :: Giry a -> (a -> Double) -> Double

@@ -15,10 +15,8 @@ import Statistics.Distribution (ContDistr, Mean, Variance)
 --   Represented as a free monad (symbolic/lazy) -- evaluation via expect.
 --   Only finite support constructors are allowed.
 data Dist a where
-  -- Monadic structure
   Pure :: a -> Dist a
   Bind :: Dist x -> (x -> Dist a) -> Dist a
-  -- Finite support
   FiniteSupp :: [(a, Double)] -> Dist a
   FinUniform :: [a] -> Dist a
 

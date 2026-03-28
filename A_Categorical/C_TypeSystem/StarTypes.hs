@@ -19,18 +19,14 @@ instance CatObjTyp Type -- = 1-ary object kind
 
 instance CatObjTyp (Type, Type) -- = 2-ary object kind
 
--- | CatFunTyp: categorical function types (type constructors)
 class CatFunTyp (f :: k)
 
--- Endofunctor/Monad symbols: Type -> Type
 instance {-# OVERLAPPABLE #-} (Monad m) => CatFunTyp m
 
--- Bi-endofunctor symbols: (Type, Type) -> Type, curried
 instance CatFunTyp (,) -- product
 
 instance CatFunTyp (->) -- exponential
 
--- | CatRelTyp: categorical relation types (type-level predicates)
 class CatRelTyp (r :: k)
 
 instance CatRelTyp Eq

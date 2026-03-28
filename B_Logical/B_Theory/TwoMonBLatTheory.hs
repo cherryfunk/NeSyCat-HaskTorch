@@ -1,7 +1,7 @@
+{-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE DefaultSignatures #-}
 
 module B_Logical.B_Theory.TwoMonBLatTheory where
 
@@ -12,37 +12,28 @@ import Data.Kind (Type)
 --   The functional dependency tau -> u ensures each truth type
 --   is interpreted in exactly one universe.
 class TwoMonBLatTheory u tau | tau -> u where
-  -- | Logic parameters (Para morphism parameter space).
-  --   Default: () (no parameters, e.g. classical real-valued logic).
-  type ParamsLogic tau :: Type
-  type ParamsLogic tau = ()
-
-  -- Comparison:
   vdash :: tau -> tau -> Bool
 
-  -- Bounded Lattice:
-  -- Join Lattice:
   vee :: ParamsLogic tau -> tau -> tau -> tau
   bot :: tau
 
-  -- Meet Lattice:
   wedge :: ParamsLogic tau -> tau -> tau -> tau
   top :: tau
 
-  -- Negation:
   neg :: tau -> tau
 
-  -- Implication:
   implies :: ParamsLogic tau -> tau -> tau -> tau
 
-  -- Monoids:
-  -- Monoid 1:
   oplus :: tau -> tau -> tau
   v0 :: tau
 
-  -- Monoid 2:
   otimes :: tau -> tau -> tau
   v1 :: tau
+
+  -- \| Logic parameters (Para morphism parameter space).
+  --   Default: () (no parameters, e.g. classical real-valued logic).
+  type ParamsLogic tau :: Type
+  type ParamsLogic tau = ()
 
   -- Default implementations (De Morgan):
   default wedge :: ParamsLogic tau -> tau -> tau -> tau

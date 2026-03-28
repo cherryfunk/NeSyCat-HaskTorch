@@ -15,16 +15,25 @@ import Numeric.Natural (Natural)
 -- | Type membership in the DATA type system.
 class DataObj a
 
-instance DataObj Bool
-instance DataObj Natural
-instance DataObj Integer
-instance DataObj Char
-instance DataObj Double
-instance DataObj Float
-instance DataObj Int
-instance DataObj ()
 instance (DataObj a, DataObj b) => DataObj (a, b)
+
 instance (DataObj a) => DataObj [a]
+
+instance DataObj Bool
+
+instance DataObj Natural
+
+instance DataObj Integer
+
+instance DataObj Char
+
+instance DataObj Double
+
+instance DataObj Float
+
+instance DataObj Int
+
+instance DataObj ()
 
 -- | Generic table lookup.
 tableLookup :: (Eq k, Show k) => (row -> k) -> k -> [row] -> row

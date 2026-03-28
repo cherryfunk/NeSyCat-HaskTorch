@@ -23,11 +23,9 @@ class (Universe u) => BinarySorts u where
   type Point u :: Type
   type Omega u :: Type
 
--- | BinaryFun: plain (deterministic) function symbols.
 class (BinarySorts u) => BinaryFun u where
   labelA :: Point u -> Omega u
 
--- | BinaryKlFun: Kleisli function symbols.
 class (BinaryFun u, Monad (M u)) => BinaryKlFun u where
   classifierA :: ParamsMLP -> Point u -> M u (Omega u)
 
