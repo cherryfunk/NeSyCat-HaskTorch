@@ -5,14 +5,14 @@
 
 -- | Logical interpretation: Tensor-valued Logic on R (Omega = R^1, a tensor space).
 --
---   All operations work on logits in R (no sigmoid, no [0,1] restriction):
---     * neg x  = -x              (additive inverse)
---     * vee    = smooth max      (LogSumExp)
---     * wedge  = smooth min      (De Morgan dual)
---     * True   = +inf,  False = -inf
+-- All operations work on logits in R (no sigmoid, no [0,1] restriction):
+-- * neg x  = -x              (additive inverse)
+-- * vee    = smooth max      (LogSumExp)
+-- * wedge  = smooth min      (De Morgan dual)
+-- * True   = +inf,  False = -inf
 --
---   ParamsLogic Omega = Torch.Tensor (the beta smoothing parameter).
---   This is standard model theory over (R, +, x, <=).
+-- ParamsLogic Omega = Torch.Tensor (the beta smoothing parameter).
+-- This is standard model theory over (R, +, x, <=).
 module B_Logical.BA_Interpretation.Tensor
   ( module B_Logical.BA_Interpretation.Tensor,
     module B_Logical.B_Theory.A2MonBLatTheory,
@@ -62,9 +62,9 @@ type instance Guard GeomU Torch.Tensor = Torch.Tensor
 ------------------------------------------------------
 
 -- | GeomU quantifier: guard is a batch tensor.
---   Product functor (-)^N applies predicate once (PyTorch broadcasts).
---   Reduction via smooth sup/inf (LogSumExp) -- the geometry paradigm's
---   analogue of the lattice quantifiers.
+-- Product functor (-)^N applies predicate once (PyTorch broadcasts).
+-- Reduction via smooth sup/inf (LogSumExp) -- the geometry paradigm's
+-- analogue of the lattice quantifiers.
 instance A2MonBLatTheory Torch.Tensor GeomU Omega where
   -- bigWedge = forall = smooth inf = De Morgan of LogSumExp
   bigWedge betaT guard phi =
@@ -90,7 +90,7 @@ instance A2MonBLatTheory Torch.Tensor GeomU Omega where
 ------------------------------------------------------
 
 -- | Numerically stable log-sigmoid: log sigma(x) = -log(1 + exp(-x))
---   Maps R -> (-inf, 0]: large positive -> 0, large negative -> -inf.
+-- Maps R -> (-inf, 0]: large positive -> 0, large negative -> -inf.
 logSigmoid :: Torch.Tensor -> Torch.Tensor
 logSigmoid x = negate (Torch.log (Torch.exp (negate x) `Torch.add` Torch.onesLike x))
 

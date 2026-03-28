@@ -1,0 +1,8 @@
+packages: .
+
+constraints:
+  ghc-typelits-natnormalise == 0.9.3,
+  ghc-typelits-knownnat == 0.8.2,
+  ghc-typelits-extra == 0.5.2,
+  finite-typelits == 0.2.1.0,
+  constraints == 0.14.4
