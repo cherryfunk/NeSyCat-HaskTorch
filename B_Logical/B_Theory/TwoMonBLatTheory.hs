@@ -9,8 +9,10 @@ import Data.Kind (Type)
 
 -- | Theory of a double monoid bounded lattice (2Mon-BLat), still without axioms.
 --   Parameterized by the universe (u) and truth value type (tau).
---   The functional dependency tau -> u ensures each truth type
---   is interpreted in exactly one universe.
+--   The fundep tau -> u encodes that objects in different categories are
+--   genuinely different: Bool in Set vs Bool in Meas are distinct objects
+--   even if they share the same underlying elements. To reuse a type
+--   across universes, use newtypes (e.g. newtype SetBool = SetBool Bool).
 class TwoMonBLatTheory u tau | tau -> u where
   vdash :: tau -> tau -> Bool
 
