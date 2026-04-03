@@ -20,7 +20,7 @@ import BinaryTrainLib
 
 -- Domain theory (gamma level) -- classifierA, labelA
 import A_Categorical.BA_Interpretation.StarIntp (MeasU)
-import C_Domain.B_Theory.BinaryTheory (BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
+import C_Domain.B_Theory.BinaryTheory (BinaryRel (..), BinaryKlRel (..), BinarySorts (..))
 import C_Domain.BA_Interpretation.BinaryReal ()
 
 -- Categorical realization -- pTrueDist

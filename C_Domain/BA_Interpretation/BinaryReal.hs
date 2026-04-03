@@ -6,12 +6,12 @@
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 
--- | Function implementations for Binary Classification.
+-- | Relation implementations for Binary Classification.
 --
 --   This module provides:
---     1. BinaryFun MeasU / GeomU -- labelA for each universe
---     2. BinaryKlFun MeasU -- classifierA (Mon = Dist)
---     3. BinaryKlFun GeomU -- classifierA (Mon = Identity)
+--     1. BinaryRel MeasU / GeomU -- labelA for each universe
+--     2. BinaryKlRel MeasU -- classifierA (Mon = Dist)
+--     3. BinaryKlRel GeomU -- classifierA (Mon = Identity)
 --     4. BinaryBridge MeasU GeomU -- encPoint + decOmega
 module C_Domain.BA_Interpretation.BinaryReal
   ( module C_Domain.B_Theory.BinaryTheory,
@@ -27,16 +27,16 @@ import qualified B_Logical.BA_Interpretation.Tensor as TensLogic
 import C_Domain.BA_Interpretation.BinaryRealMLP (ParamsMLP, binarySpecReal, hThetaReal)
 import C_Domain.BC_Extension.BinaryDataExtension ()
 import C_Domain.BC_Extension.BinaryTensExtension ()
-import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryFun (..), BinaryKlFun (..), BinarySorts (..))
+import C_Domain.B_Theory.BinaryTheory (BinaryBridge (..), BinaryRel (..), BinaryKlRel (..), BinarySorts (..))
 import Data.Functor.Identity (Identity (..))
 import qualified Torch
 import qualified Torch.Functional.Internal as F
 
 -- ============================================================
---  MeasU: plain function symbols (BinaryFun)
+--  MeasU: plain relation symbols (BinaryRel)
 -- ============================================================
 
-instance BinaryFun MeasU where
+instance BinaryRel MeasU where
   labelA :: Point MeasU -> Omega MeasU
   labelA (x1, x2) =
     let dx = x1 - 0.5
@@ -44,10 +44,10 @@ instance BinaryFun MeasU where
      in dx * dx + dy * dy < 0.09
 
 -- ============================================================
---  MeasU: Kleisli function symbols (BinaryKlFun)
+--  MeasU: Kleisli relation symbols (BinaryKlRel)
 -- ============================================================
 
-instance BinaryKlFun MeasU where
+instance BinaryKlRel MeasU where
   classifierA :: ParamsMLP -> Point MeasU -> Dist (Omega MeasU)
   classifierA paramMLP pt =
     let ptTens = encPoint @MeasU @GeomU pt
@@ -55,10 +55,10 @@ instance BinaryKlFun MeasU where
      in decOmega @MeasU @GeomU logits
 
 -- ============================================================
---  GeomU: plain function symbols (BinaryFun)
+--  GeomU: plain relation symbols (BinaryRel)
 -- ============================================================
 
-instance BinaryFun GeomU where
+instance BinaryRel GeomU where
   -- | Label in GeomU: returns R logits (True = +logitScale, False = -logitScale).
   labelA :: Point GeomU -> Omega GeomU
   labelA pt =
@@ -75,10 +75,10 @@ logitScale :: Float
 logitScale = 10.0
 
 -- ============================================================
---  GeomU: Kleisli function symbols (BinaryKlFun)
+--  GeomU: Kleisli relation symbols (BinaryKlRel)
 -- ============================================================
 
-instance BinaryKlFun GeomU where
+instance BinaryKlRel GeomU where
   classifierA :: ParamsMLP -> Point GeomU -> Identity (Omega GeomU)
   classifierA paramMLP ptTensor =
     Identity (hThetaReal paramMLP ptTensor)

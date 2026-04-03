@@ -1,3 +1,8 @@
+---
+description: 
+alwaysApply: true
+---
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -43,7 +48,7 @@ The codebase mirrors the paper's layered categorical structure. Each top-level d
 
 - **`B_Logical/`** — Beta-level: logical connectives. The `TwoMonBLatTheory` class defines a double-monoid bounded lattice (∨, ∧, ⊕, ⊗ with bounds). Interpretations: `Boolean`, `Real` (LogSumExp/TensReal). The `TENS` and `FDATA` modules are the two main tensor-based interpretations.
 
-- **`C_Domain/`** — Gamma-level: domain-specific theories. Currently only the Binary domain exists, with its own theory declaring domain sorts and function symbols, plus extensions and interpretations using HaskTorch tensors.
+- **`C_Domain/`** — Gamma-level: domain-specific theories. Currently only the Binary domain exists, with its own theory declaring domain sorts and relation symbols (Tarski and Kleisli), plus extensions and interpretations using HaskTorch tensors.
 
 - **`D_Grammatical/`** — Delta-level: formulas/axioms. Combines logical connectives with domain interpretations to express axioms (e.g., `axiomReal` builds ∀-quantified classification constraints). Executables live here.
 
